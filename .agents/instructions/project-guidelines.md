@@ -38,8 +38,8 @@ Workflow: branch from `main` → PR → `main`.
 | Item | Value |
 |------|-------|
 | Platform | Zeabur (GitHub-linked) on dedicated server **Ocean** |
-| Zeabur project ID | `<!-- filled after create -->` |
-| Service ID | `<!-- filled after deploy -->` |
+| Zeabur project ID | `6a33221c7cea1559991a43e5` |
+| Service ID | `6a3322239a194960c7edec34` |
 | Server | Ocean (`server-69ea44a68736baad13c7c617`, IP `178.104.245.43`) |
 | Public URL | https://ai-transformation.io |
 | Deploy branch | `main` |

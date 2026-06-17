@@ -25,3 +25,11 @@ Run `bash scripts/setup-cloud-agent-env.sh` when starting a Claude cloud session
 ## Project-specific notes
 
 Add Claude-only notes below when needed — keep shared behavior in `.agents/instructions/`.
+
+## Zeabur Deployment
+
+- Project ID: `6a33221c7cea1559991a43e5`
+- Service ID: `6a3322239a194960c7edec34`
+- Server: Ocean (`178.104.245.43`)
+- URL: https://ai-transformation.zeabur.app
+- Infra details: `docs/INFRA_SETUP.md`
