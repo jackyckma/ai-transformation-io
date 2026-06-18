@@ -2,19 +2,19 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 const nav = [
-  { href: '/functions/executive', label: 'Functions' },
   { href: '/frameworks', label: 'Frameworks' },
+  { href: '/playbook', label: 'Playbook' },
   { href: '/assessment', label: 'Assessment' },
   { href: '/ask', label: 'Ask' },
 ];
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link href="/" className="font-semibold tracking-tight">
           AI Transformation
-          <span className="ml-1 text-[var(--muted)]">.io</span>
+          <span className="ml-1 font-normal text-[var(--muted)]">.io</span>
         </Link>
         <nav className="hidden items-center gap-6 text-sm md:flex">
           {nav.map((item) => (
@@ -35,7 +35,7 @@ export function SiteFooter() {
       <p>
         Corporate knowledge for enterprise AI transformation.{' '}
         <a href="https://ai-transformation.org" className="underline hover:text-[var(--foreground)]">
-          Learn together on .org →
+          Harvest Hub on .org →
         </a>
       </p>
     </footer>

@@ -24,17 +24,23 @@ export const CONTENT_REGISTRY: Record<
   string,
   { file: string; pillar: ContentPageMeta['pillar']; pathname: string; description?: string }
 > = {
-  'transformation-roadmap': {
-    file: 'transformation-roadmap.md',
-    pillar: 'framework',
-    pathname: '/frameworks/roadmap',
-    description: 'Seven stages from business alignment to governed scaling.',
-  },
   'what-is-ai-transformation': {
     file: 'what-is-ai-transformation.md',
     pillar: 'framework',
     pathname: '/frameworks/what-is-ai-transformation',
     description: 'Beyond deployment — operating model change for enterprise AI.',
+  },
+  'ai-transformation-vs-digital-transformation': {
+    file: 'ai-transformation-vs-digital-transformation.md',
+    pillar: 'framework',
+    pathname: '/frameworks/vs-digital-transformation',
+    description: 'How AI transformation differs from digitizing existing processes.',
+  },
+  'transformation-roadmap': {
+    file: 'transformation-roadmap.md',
+    pillar: 'framework',
+    pathname: '/frameworks/roadmap',
+    description: 'Seven stages from business alignment to governed scaling.',
   },
   'governance-and-operating-model': {
     file: 'governance-and-operating-model.md',
@@ -42,7 +48,75 @@ export const CONTENT_REGISTRY: Record<
     pathname: '/frameworks/governance',
     description: 'Autonomy boundaries, accountability, and operating model design.',
   },
+  'measuring-ai-value': {
+    file: 'measuring-ai-value.md',
+    pillar: 'framework',
+    pathname: '/frameworks/measuring-value',
+    description: 'ROI, Return on Autonomy, and board-ready measurement.',
+  },
+  'use-cases-by-industry': {
+    file: 'use-cases-by-industry.md',
+    pillar: 'resource',
+    pathname: '/playbook/use-cases',
+    description: 'Industry and function examples to ground your roadmap.',
+  },
+  'ai-patterns-copilots-agents-automation': {
+    file: 'ai-patterns-copilots-agents-automation.md',
+    pillar: 'resource',
+    pathname: '/playbook/patterns',
+    description: 'Copilot, RAG, agent, and automation patterns — when to use each.',
+  },
+  'common-pitfalls': {
+    file: 'common-pitfalls.md',
+    pillar: 'resource',
+    pathname: '/playbook/common-pitfalls',
+    description: 'Why AI transformation stalls — and how to avoid pilot purgatory.',
+  },
+  glossary: {
+    file: 'glossary.md',
+    pillar: 'resource',
+    pathname: '/playbook/glossary',
+    description: 'Definitions for autonomy, RoA, workflow redesign, and more.',
+  },
+  faq: {
+    file: 'faq.md',
+    pillar: 'resource',
+    pathname: '/playbook/faq',
+    description: 'Answers to the questions leaders ask first.',
+  },
 };
+
+/** Curated intro articles for .org /learn (SEO + community visitors). */
+export const ORG_LEARN_SLUGS = [
+  'what-is-ai-transformation',
+  'transformation-roadmap',
+  'common-pitfalls',
+  'ai-patterns-copilots-agents-automation',
+  'faq',
+] as const;
+
+export function getParamSlugMap(routePrefix: string): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(CONTENT_REGISTRY)
+      .filter(([, entry]) => entry.pathname.startsWith(`${routePrefix}/`))
+      .map(([slug, entry]) => {
+        const param = entry.pathname.slice(routePrefix.length + 1);
+        return [param, slug];
+      }),
+  );
+}
+
+export function getPagesByPillar(pillar: ContentPageMeta['pillar']): ContentPageMeta[] {
+  return getAllPages().filter((page) => page.pillar === pillar);
+}
+
+export function getOrgLearnPages(): ContentPageMeta[] {
+  return ORG_LEARN_SLUGS.flatMap((slug) => {
+    const page = getAllPages().find((p) => p.slug === slug);
+    if (!page) return [];
+    return [{ ...page, pathname: `/learn/${slug}` }];
+  });
+}
 
 function extractTitle(markdown: string, fallback: string): string {
   const match = markdown.match(/^#\s+(.+)$/m);

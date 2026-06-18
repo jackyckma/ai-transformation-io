@@ -1,21 +1,29 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #fafafa;
-  --foreground: #0f172a;
-  --accent: #1e40af;
-  --muted: #64748b;
+  --background: #f8f6f2;
+  --foreground: #1a1520;
+  --accent: #9a7b4f;
+  --accent-fg: #ffffff;
+  --muted: #5c5a55;
   --card: #ffffff;
-  --border: #e2e8f0;
+  --border: #e8e4dc;
+  --glow: 0 0 40px rgba(154, 123, 79, 0.08);
+  --hero-from: #f3efe8;
+  --hero-to: #f8f6f2;
 }
 
 .dark {
-  --background: #0b1120;
-  --foreground: #f1f5f9;
-  --accent: #60a5fa;
-  --muted: #94a3b8;
-  --card: #111827;
-  --border: #1e293b;
+  --background: #0c0f14;
+  --foreground: #f4f4f5;
+  --accent: #c4a574;
+  --accent-fg: #0c0f14;
+  --muted: #9ca3af;
+  --card: #141820;
+  --border: #252b36;
+  --glow: 0 0 40px rgba(196, 165, 116, 0.12);
+  --hero-from: #1a1520;
+  --hero-to: #0c0f14;
 }
 
 body {
@@ -24,29 +32,37 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+.hero-mesh {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(196, 165, 116, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(96, 165, 250, 0.08), transparent 50%),
+    linear-gradient(180deg, var(--hero-from) 0%, var(--hero-to) 100%);
+}
+
 .markdown-body {
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--foreground);
 }
 
 .markdown-body h2 {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   margin-bottom: 0.75rem;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .markdown-body h3 {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 
 .markdown-body p,
 .markdown-body ul,
 .markdown-body ol {
-  margin: 0.75rem 0;
+  margin: 0.85rem 0;
   color: var(--muted);
 }
 
@@ -56,7 +72,7 @@ body {
 }
 
 .markdown-body li {
-  margin: 0.35rem 0;
+  margin: 0.4rem 0;
 }
 
 .markdown-body strong {
@@ -65,17 +81,18 @@ body {
 }
 
 .markdown-body blockquote {
-  margin: 1rem 0;
-  border-left: 3px solid var(--accent);
-  padding-left: 1rem;
+  margin: 1.25rem 0;
+  border-left: 2px solid var(--accent);
+  padding-left: 1.25rem;
   color: var(--muted);
+  font-style: italic;
 }
 
 .markdown-body pre {
   overflow-x: auto;
-  margin: 1rem 0;
+  margin: 1.25rem 0;
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--border);
   background: var(--card);
   font-size: 0.875rem;
@@ -88,7 +105,7 @@ body {
 
 .markdown-body table {
   width: 100%;
-  margin: 1rem 0;
+  margin: 1.25rem 0;
   border-collapse: collapse;
   font-size: 0.925rem;
 }
@@ -96,12 +113,12 @@ body {
 .markdown-body th,
 .markdown-body td {
   border: 1px solid var(--border);
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   text-align: left;
 }
 
 .markdown-body hr {
-  margin: 2rem 0;
+  margin: 2.5rem 0;
   border: none;
   border-top: 1px solid var(--border);
 }
@@ -109,4 +126,5 @@ body {
 .markdown-body a {
   color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 3px;
 }

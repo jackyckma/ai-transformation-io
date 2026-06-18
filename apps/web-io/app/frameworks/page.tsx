@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllPages } from '@ai-transformation/content';
+import { getPagesByPillar } from '@ai-transformation/content';
+import { ContentCard } from '@/components/content-card';
+import { SectionLabel } from '@/components/section-label';
 
 export const metadata: Metadata = {
   title: 'Frameworks',
@@ -8,27 +10,23 @@ export const metadata: Metadata = {
 };
 
 export default function FrameworksHubPage() {
-  const pages = getAllPages().filter((p) => p.pillar === 'framework');
+  const pages = getPagesByPillar('framework');
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-semibold">Frameworks</h1>
-      <p className="mt-4 text-[var(--muted)]">
+    <div className="mx-auto max-w-5xl px-6 py-16">
+      <SectionLabel>Cornerstone · frameworks</SectionLabel>
+      <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">Frameworks</h1>
+      <p className="mt-6 max-w-2xl text-lg text-[var(--muted)]">
         Cross-functional language for enterprise AI transformation — grounded in research, free of hype.
       </p>
-      <ul className="mt-10 space-y-4">
-        {pages.map((page) => (
-          <li key={page.slug}>
-            <Link
-              href={page.pathname}
-              className="block rounded-lg border border-[var(--border)] px-4 py-4 hover:border-[var(--accent)]"
-            >
-              <span className="font-medium">{page.title}</span>
-              <p className="mt-1 text-sm text-[var(--muted)]">{page.description}</p>
-            </Link>
-          </li>
+      <div className="mt-12 grid gap-5 sm:grid-cols-2">
+        {pages.map((page, index) => (
+          <ContentCard key={page.slug} page={page} index={index + 1} />
         ))}
-      </ul>
+      </div>
+      <Link href="/playbook" className="mt-12 inline-block text-sm text-[var(--accent)] underline">
+        Continue to the playbook →
+      </Link>
     </div>
   );
 }

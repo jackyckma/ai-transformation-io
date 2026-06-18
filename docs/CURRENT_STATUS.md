@@ -4,16 +4,16 @@
 
 ## Summary
 
-Wave 0 ✅ · Wave 1 ✅ · **Wave 2 ✅** — question box merged (`e905f31`).
+Wave 0 ✅ · Wave 1 ✅ · Wave 2 ✅ · **Content + design refresh 🔄**
+
+Richer playbook content on both domains; editorial design refresh; .org title fixed.
 
 ## What works
 
-- https://ai-transformation.io — home + `/frameworks/*` + `/ask`
-- https://ai-transformation.io/sitemap.xml
-- https://ai-transformation.org — Harvest Hub shell + `/ask`
+- https://ai-transformation.io — frameworks + **playbook** (10 KB articles), `/ask`
+- https://ai-transformation.org — **learn hub** + Harvest Hub contribute flows, `/ask`
 - `POST /api/inquiries` → SQLite `contributions` table
-- `/api/health` on .io
-- Git push → Zeabur auto-deploy
+- Git push → Zeabur auto-deploy (may need manual redeploy if git hook stalls)
 
 ## Next wave
 

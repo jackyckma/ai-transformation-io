@@ -1,25 +1,113 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f8faf8;
-  --foreground: #14532d;
+  --background: #f4faf6;
+  --foreground: #0f2918;
   --accent: #059669;
-  --muted: #4b5563;
+  --accent-fg: #ffffff;
+  --muted: #4b6b55;
   --card: #ffffff;
-  --border: #d1fae5;
+  --border: #d1e7d9;
+  --glow: 0 0 40px rgba(5, 150, 105, 0.08);
+  --hero-from: #e8f5ee;
+  --hero-to: #f4faf6;
 }
 
 .dark {
-  --background: #052e16;
-  --foreground: #ecfdf5;
-  --accent: #34d399;
-  --muted: #9ca3af;
-  --card: #064e3b;
-  --border: #065f46;
+  --background: #0f1410;
+  --foreground: #f0fdf4;
+  --accent: #6ee7b7;
+  --accent-fg: #052e16;
+  --muted: #a3b5a8;
+  --card: #162018;
+  --border: #2a3d30;
+  --glow: 0 0 40px rgba(110, 231, 183, 0.1);
+  --hero-from: #142018;
+  --hero-to: #0f1410;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.hero-mesh {
+  background:
+    radial-gradient(ellipse 75% 55% at 15% 0%, rgba(110, 231, 183, 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 45% at 85% 15%, rgba(52, 211, 153, 0.06), transparent 50%),
+    linear-gradient(180deg, var(--hero-from) 0%, var(--hero-to) 100%);
+}
+
+.markdown-body {
+  line-height: 1.75;
+  color: var(--foreground);
+}
+
+.markdown-body h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.markdown-body h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.85rem 0;
+  color: var(--muted);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.25rem;
+}
+
+.markdown-body li {
+  margin: 0.4rem 0;
+}
+
+.markdown-body strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.markdown-body blockquote {
+  margin: 1.25rem 0;
+  border-left: 2px solid var(--accent);
+  padding-left: 1.25rem;
+  color: var(--muted);
+}
+
+.markdown-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.markdown-body table {
+  width: 100%;
+  margin: 1.25rem 0;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+}
+
+.markdown-body hr {
+  margin: 2.5rem 0;
+  border: none;
+  border-top: 1px solid var(--border);
 }

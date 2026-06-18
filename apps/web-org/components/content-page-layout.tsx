@@ -18,9 +18,7 @@ export function ContentPageLayout({
     <article>
       <header className="hero-mesh border-b border-[var(--border)]">
         <div className="mx-auto max-w-3xl px-6 py-16">
-          <SectionLabel>
-            {doc.pillar} · knowledge base
-          </SectionLabel>
+          <SectionLabel>Learn · harvest hub</SectionLabel>
           <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">{doc.title}</h1>
           <p className="mt-4 text-lg text-[var(--muted)]">{doc.description}</p>
         </div>
