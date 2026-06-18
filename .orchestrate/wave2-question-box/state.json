@@ -62,13 +62,13 @@
       "handoffPath": "handoffs/merge-question-box.md",
       "startedAt": "2026-06-18T11:40:36.618Z",
       "finishedAt": "2026-06-18T11:44:38.612Z",
-      "lastUpdate": "2026-06-18T11:44:39.066Z",
+      "lastUpdate": "2026-06-18T11:50:20.617Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 1,
       "failureMode": null,
-      "verification": "type-check-only",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-question-box",
@@ -88,11 +88,11 @@
       "finishedAt": "2026-06-18T11:50:18.292Z",
       "lastUpdate": "2026-06-18T11:50:18.293Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
@@ -151,6 +151,14 @@
     {
       "at": "2026-06-18T11:44:39.509Z",
       "message": "git-sync failed (verify-question-box pending -> running): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
+    },
+    {
+      "at": "2026-06-18T11:50:18.613Z",
+      "message": "git-sync failed (verify-question-box running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
+    },
+    {
+      "at": "2026-06-18T11:50:20.618Z",
+      "message": "merge-question-box: verification recorded (unit-test-verified) by verifier verify-question-box"
     }
   ]
 }
