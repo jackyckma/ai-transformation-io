@@ -10,14 +10,14 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-18T10:57:39.257Z",
       "finishedAt": null,
-      "lastUpdate": "2026-06-18T10:57:26.239Z",
+      "lastUpdate": "2026-06-18T10:57:39.257Z",
       "note": "respawned by local-cli (was error; attempts=1)",
-      "attempts": 1,
+      "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
@@ -105,6 +105,10 @@
     {
       "at": "2026-06-18T10:57:27.413Z",
       "message": "backend-inquiries: respawned by local-cli (was error)"
+    },
+    {
+      "at": "2026-06-18T10:57:28.775Z",
+      "message": "ask-forms: respawned by local-cli (was error)"
     }
   ]
 }
