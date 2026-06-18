@@ -62,36 +62,37 @@
       "handoffPath": "handoffs/merge-question-box.md",
       "startedAt": "2026-06-18T11:40:36.618Z",
       "finishedAt": "2026-06-18T11:44:38.612Z",
-      "lastUpdate": "2026-06-18T11:44:38.613Z",
+      "lastUpdate": "2026-06-18T11:44:39.066Z",
       "note": null,
       "slackTs": null,
       "prNumber": 1,
       "failureMode": null,
-      "verification": null,
+      "verification": "type-check-only",
       "attempts": 1
     },
     {
       "name": "verify-question-box",
       "type": "verifier",
       "branch": "orch/wave2-question-box/verify-question-box",
-      "startingRef": "orch/wave2-question-box/merge-question-box",
+      "startingRef": "orch/wave2-question-box/question-box",
       "dependsOn": [
         "merge-question-box"
       ],
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-18T11:44:39.236Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-18T11:44:39.236Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     }
   ],
   "attention": [
@@ -134,6 +135,18 @@
     {
       "at": "2026-06-18T11:40:36.893Z",
       "message": "git-sync failed (merge-question-box pending -> running): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
+    },
+    {
+      "at": "2026-06-18T11:44:38.980Z",
+      "message": "git-sync failed (merge-question-box running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
+    },
+    {
+      "at": "2026-06-18T11:44:39.065Z",
+      "message": "verify-question-box: startingRef reconciled orch/wave2-question-box/merge-question-box -> orch/wave2-question-box/question-box (target merge-question-box handed off on actual branch)"
+    },
+    {
+      "at": "2026-06-18T11:44:39.066Z",
+      "message": "merge-question-box: verification self-reported (type-check-only)"
     }
   ]
 }
