@@ -1,62 +1,59 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f8f6f2;
-  --foreground: #1a1520;
-  --accent: #9a7b4f;
-  --accent-fg: #ffffff;
-  --muted: #5c5a55;
+  --background: #faf9f7;
+  --foreground: #1c1917;
+  --accent: #8b7355;
+  --accent-fg: #faf9f7;
+  --muted: #78716c;
   --card: #ffffff;
-  --border: #e8e4dc;
-  --glow: 0 0 40px rgba(154, 123, 79, 0.08);
-  --hero-from: #f3efe8;
-  --hero-to: #f8f6f2;
+  --border: #e7e5e4;
 }
 
 .dark {
-  --background: #0c0f14;
-  --foreground: #f4f4f5;
-  --accent: #c4a574;
-  --accent-fg: #0c0f14;
-  --muted: #9ca3af;
-  --card: #141820;
-  --border: #252b36;
-  --glow: 0 0 40px rgba(196, 165, 116, 0.12);
-  --hero-from: #1a1520;
-  --hero-to: #0c0f14;
+  --background: #121110;
+  --foreground: #e7e5e4;
+  --accent: #c4a882;
+  --accent-fg: #121110;
+  --muted: #a8a29e;
+  --card: #1a1918;
+  --border: #292524;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-weight: 300;
 }
 
-.hero-mesh {
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(196, 165, 116, 0.14), transparent 55%),
-    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(96, 165, 250, 0.08), transparent 50%),
-    linear-gradient(180deg, var(--hero-from) 0%, var(--hero-to) 100%);
+.font-serif {
+  font-family: var(--font-serif), 'Lora', Georgia, serif;
 }
 
 .markdown-body {
-  line-height: 1.75;
-  color: var(--foreground);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  font-weight: 300;
 }
 
 .markdown-body h2 {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
-  font-size: 1.4rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif), 'Lora', Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
 }
 
 .markdown-body h3 {
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-family: var(--font-serif), 'Lora', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--foreground);
 }
 
 .markdown-body p,
@@ -72,17 +69,17 @@ body {
 }
 
 .markdown-body li {
-  margin: 0.4rem 0;
+  margin: 0.35rem 0;
 }
 
 .markdown-body strong {
   color: var(--foreground);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .markdown-body blockquote {
   margin: 1.25rem 0;
-  border-left: 2px solid var(--accent);
+  border-left: 1px solid var(--border);
   padding-left: 1.25rem;
   color: var(--muted);
   font-style: italic;
@@ -92,28 +89,28 @@ body {
   overflow-x: auto;
   margin: 1.25rem 0;
   padding: 1rem;
-  border-radius: 0.75rem;
+  border-radius: 0.25rem;
   border: 1px solid var(--border);
   background: var(--card);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
 }
 
 .markdown-body code {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.9em;
+  font-size: 0.88em;
 }
 
 .markdown-body table {
   width: 100%;
   margin: 1.25rem 0;
   border-collapse: collapse;
-  font-size: 0.925rem;
+  font-size: 0.9rem;
 }
 
 .markdown-body th,
 .markdown-body td {
   border: 1px solid var(--border);
-  padding: 0.6rem 0.85rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
 }
 

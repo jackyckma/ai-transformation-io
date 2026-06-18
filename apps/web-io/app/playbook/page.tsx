@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getPagesByPillar } from '@ai-transformation/content';
-import { ContentCard } from '@/components/content-card';
-import { SectionLabel } from '@/components/section-label';
+import { ArticleList } from '@/components/article-list';
+import { PageIntro } from '@/components/page-intro';
 
 export const metadata: Metadata = {
   title: 'Playbook',
@@ -13,22 +13,14 @@ export default function PlaybookHubPage() {
   const pages = getPagesByPillar('resource');
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
-      <SectionLabel>Reference · depth</SectionLabel>
-      <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">
-        AI Transformation Playbook
-      </h1>
-      <p className="mt-6 max-w-2xl text-lg text-[var(--muted)]">
-        Patterns, pitfalls, use cases, and definitions — the supporting layer behind the frameworks.
-        Built from our knowledge base for visitors arriving from search.
-      </p>
-      <div className="mt-12 grid gap-5 sm:grid-cols-2">
-        {pages.map((page, index) => (
-          <ContentCard key={page.slug} page={page} index={index + 1} />
-        ))}
-      </div>
-      <Link href="/frameworks" className="mt-12 inline-block text-sm text-[var(--accent)] underline">
-        ← Start with frameworks
+    <div className="mx-auto max-w-2xl px-6 py-14">
+      <PageIntro
+        title="Playbook"
+        description="Patterns, pitfalls, use cases, glossary, and FAQ — supporting depth behind the frameworks."
+      />
+      <ArticleList pages={pages} />
+      <Link href="/frameworks" className="mt-10 inline-block text-sm font-light text-[var(--muted)] hover:text-[var(--foreground)]">
+        ← Frameworks
       </Link>
     </div>
   );

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getOrgLearnPages } from '@ai-transformation/content';
-import { ContentCard } from '@/components/content-card';
-import { SectionLabel } from '@/components/section-label';
+import { ArticleList } from '@/components/article-list';
+import { PageIntro } from '@/components/page-intro';
 
 export const metadata: Metadata = {
   title: 'Learn',
@@ -13,27 +13,20 @@ export default function LearnHubPage() {
   const pages = getOrgLearnPages();
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
-      <SectionLabel>Intro · playbook</SectionLabel>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">Learn together</h1>
-      <p className="mt-6 max-w-2xl text-lg text-[var(--muted)]">
-        Foundational guides from our knowledge base — so visitors from search find substance before they
-        contribute stories or prompts.
-      </p>
-      <div className="mt-12 grid gap-5 sm:grid-cols-2">
-        {pages.map((page, index) => (
-          <ContentCard key={page.slug} page={page} index={index + 1} />
-        ))}
-      </div>
-      <p className="mt-12 text-sm text-[var(--muted)]">
-        More depth on{' '}
-        <a href="https://ai-transformation.io/playbook" className="text-[var(--accent)] underline">
+    <div className="mx-auto max-w-2xl px-6 py-14">
+      <PageIntro
+        title="Learn"
+        description="Foundational guides from our knowledge base — substance for visitors before they contribute."
+      />
+      <ArticleList pages={pages} />
+      <p className="mt-10 text-sm font-light text-[var(--muted)]">
+        More on{' '}
+        <a href="https://ai-transformation.io/playbook" className="underline hover:text-[var(--foreground)]">
           ai-transformation.io/playbook
         </a>
-        .
       </p>
-      <Link href="/" className="mt-4 inline-block text-sm text-[var(--accent)] underline">
-        ← Harvest Hub home
+      <Link href="/" className="mt-4 inline-block text-sm font-light text-[var(--muted)] hover:text-[var(--foreground)]">
+        ← Home
       </Link>
     </div>
   );

@@ -29,20 +29,20 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 
 - v1 authentication: Google OAuth only (no magic link).
 - Assessment: 30+ questions using the Three Gaps framework, not a shorter MVP quiz.
-- Defer newsletter on both sites until agent automation can reduce manual curation; plan separate newsletters per domain when launched.
+- Defer newsletter on both sites until agent automation can reduce manual curation; design infrastructure for separate per-domain newsletters and switchboard before launch.
 - Defer prominent consultancy CTAs until assessment is mature; use low-key contact or comment forms first; no schedule-call booking in early versions.
 - Prefer Harvest Hub contribution model over a self-hosted discussion forum for .org.
 - .org community: public read, login required to post.
 - Site UI language: English-only; light theme default with dark mode toggle.
 - .io content organized by job function; .org content is community-oriented and not necessarily by function.
-- Research output: internal strategy in `usr/`, public website ideas in `knowledge-base/`.
-- Design infrastructure to support a future newsletter and switchboard workflow before launching newsletter.
-- Use Zeabur skills for Zeabur deploy and instance management.
+- Research output: internal strategy in `usr/`, public website ideas in `knowledge-base/`; prioritize enriching both sites from knowledge-base before interaction features.
+- Site design: content-first blog/editorial, not product-marketing (no oversized bold sans titles, pill CTAs, or subscribe funnels); refined elegant typography — serif titles with light sans body, not heavy or loud; reference jackyma.info, ai-business.live, powerhouse.zeabur.app (no specific serif font mandated).
+- Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
 - Default to commit and push to `main` for deploy until production stage; no extra approval needed for commit/push.
 
 ## Learned Workspace Facts
 
-- ai-transformation.io is corporate-facing; ai-transformation.org is community "learn together" positioning.
+- ai-transformation.io is a corporate-facing executive info portal; ai-transformation.org is community Harvest Hub (brand as AI Transformation · Harvest Hub, not "Learn Together").
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
 - Development follows lane-based architecture with wave milestones.

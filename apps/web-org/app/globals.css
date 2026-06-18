@@ -1,61 +1,58 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f4faf6;
-  --foreground: #0f2918;
-  --accent: #059669;
-  --accent-fg: #ffffff;
-  --muted: #4b6b55;
+  --background: #f7faf8;
+  --foreground: #1a2e22;
+  --accent: #3d7a5c;
+  --accent-fg: #f7faf8;
+  --muted: #6b7f72;
   --card: #ffffff;
-  --border: #d1e7d9;
-  --glow: 0 0 40px rgba(5, 150, 105, 0.08);
-  --hero-from: #e8f5ee;
-  --hero-to: #f4faf6;
+  --border: #dce8e0;
 }
 
 .dark {
-  --background: #0f1410;
-  --foreground: #f0fdf4;
-  --accent: #6ee7b7;
-  --accent-fg: #052e16;
-  --muted: #a3b5a8;
-  --card: #162018;
-  --border: #2a3d30;
-  --glow: 0 0 40px rgba(110, 231, 183, 0.1);
-  --hero-from: #142018;
-  --hero-to: #0f1410;
+  --background: #0f1411;
+  --foreground: #e2ebe5;
+  --accent: #7ec9a0;
+  --accent-fg: #0f1411;
+  --muted: #8fa396;
+  --card: #161c18;
+  --border: #2a352e;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-weight: 300;
 }
 
-.hero-mesh {
-  background:
-    radial-gradient(ellipse 75% 55% at 15% 0%, rgba(110, 231, 183, 0.12), transparent 55%),
-    radial-gradient(ellipse 50% 45% at 85% 15%, rgba(52, 211, 153, 0.06), transparent 50%),
-    linear-gradient(180deg, var(--hero-from) 0%, var(--hero-to) 100%);
+.font-serif {
+  font-family: var(--font-serif), 'Lora', Georgia, serif;
 }
 
 .markdown-body {
-  line-height: 1.75;
-  color: var(--foreground);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  font-weight: 300;
 }
 
 .markdown-body h2 {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-family: var(--font-serif), 'Lora', Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--foreground);
 }
 
 .markdown-body h3 {
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-family: var(--font-serif), 'Lora', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--foreground);
 }
 
 .markdown-body p,
@@ -71,19 +68,20 @@ body {
 }
 
 .markdown-body li {
-  margin: 0.4rem 0;
+  margin: 0.35rem 0;
 }
 
 .markdown-body strong {
   color: var(--foreground);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .markdown-body blockquote {
   margin: 1.25rem 0;
-  border-left: 2px solid var(--accent);
+  border-left: 1px solid var(--border);
   padding-left: 1.25rem;
   color: var(--muted);
+  font-style: italic;
 }
 
 .markdown-body a {
@@ -96,13 +94,13 @@ body {
   width: 100%;
   margin: 1.25rem 0;
   border-collapse: collapse;
-  font-size: 0.925rem;
+  font-size: 0.9rem;
 }
 
 .markdown-body th,
 .markdown-body td {
   border: 1px solid var(--border);
-  padding: 0.6rem 0.85rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
