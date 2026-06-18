@@ -10,7 +10,7 @@
 | M0 — Plan & lane architecture | 2026-06-18 | ✅ |
 | M1 — Deploy loop (Wave 0) | 2026-06-18 | ✅ |
 | M2 — .io content MVP (Wave 1) | 2026-06-18 | ✅ |
-| M3 — First Harvest loop (Wave 2) | TBD | ⏳ Next |
+| M3 — First Harvest loop (Wave 2) | 2026-06-18 | 🔄 Orchestrating (cloud agent) |
 | M4 — Assessment live (Wave 3) | TBD | ⏳ |
 | M5 — Auth + save (Wave 4) | TBD | ⏳ |
 | M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ |

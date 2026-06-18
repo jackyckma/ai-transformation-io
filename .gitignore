@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.example
+.cursor-env
 node_modules/
 dist/
 .turbo/
