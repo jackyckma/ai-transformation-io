@@ -54,18 +54,18 @@
         "backend-inquiries",
         "ask-forms"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-e56af3c2-7d7f-468a-a08a-a4ca9bea8997",
+      "runId": "run-c663c80e-303d-427f-9fed-16e729c1e96a",
+      "parentAgentId": "bc-fc0166d6-bf77-4f7c-b540-9219d6b89a4c",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/merge-question-box.md",
       "startedAt": "2026-06-18T11:40:36.618Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-18T11:40:36.618Z",
+      "finishedAt": "2026-06-18T11:44:38.612Z",
+      "lastUpdate": "2026-06-18T11:44:38.613Z",
       "note": null,
       "slackTs": null,
-      "prNumber": null,
+      "prNumber": 1,
       "failureMode": null,
       "verification": null,
       "attempts": 1
@@ -130,6 +130,10 @@
     {
       "at": "2026-06-18T11:40:36.075Z",
       "message": "ask-forms: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-18T11:40:36.893Z",
+      "message": "git-sync failed (merge-question-box pending -> running): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
     }
   ]
 }
