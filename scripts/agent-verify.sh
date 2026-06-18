@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-VERIFY_L0="${VERIFY_L0:-}"   # e.g. npm run lint && npm run typecheck
+VERIFY_L0="${VERIFY_L0:-pnpm typecheck}"
 VERIFY_L1="${VERIFY_L1:-}"   # e.g. npm test
 
 echo "==> agent-verify (project: $ROOT)"

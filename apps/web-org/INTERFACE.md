@@ -1,0 +1,27 @@
+# L9 — Web ORG INTERFACE
+
+## Purpose
+Thin UI for ai-transformation.org. Harvest Hub community face.
+
+## Owns
+- `apps/web-org/**`
+
+## Provides
+- Learn Together pages per product-architecture.md IA
+- Warmer visual identity than web-io
+
+## Consumes
+| Lane | Contract |
+|------|----------|
+| L0 | API client, types |
+| L2–L6 | `/api/*` via `API_BASE_URL` |
+
+## Must NOT
+- Import backend src directly
+- Duplicate .io function playbooks (link to .io instead)
+
+## Wave
+0 (shell), 5 (harvest UI)
+
+## Verification
+- `pnpm --filter @ai-transformation/web-org build`

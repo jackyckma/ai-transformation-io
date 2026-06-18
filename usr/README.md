@@ -11,12 +11,17 @@
 | 03 | [Site Architecture Recommendations](03-site-architecture-recommendations.md) | MVP site structure, tech stack, SEO strategy, launch checklist |
 | 04 | [Business Model Ideas](04-business-model-ideas.md) | Monetization phases, newsletter strategy, partnership opportunities |
 | 05 | [Competitive Landscape](05-competitive-landscape.md) | Who else is in this space, content gaps, differentiation matrix |
+| 06 | [Implementation Research](06-implementation-research-discussion.md) | Two-site content IA, community models, assessment & consultancy funnel |
+| 07 | [Pre-scaffold Decisions](07-pre-scaffold-decisions.md) | Confirmed product choices before build |
+| 08 | [Forum: Discourse vs Built](08-forum-discourse-vs-built.md) | Discussion forum technical comparison |
+| 09 | [Community Strategy & Alternatives](09-community-strategy-alternatives.md) | Headless options, forum viability, Harvest Hub model |
+| 10 | [Harvest Hub × Newsletter Infrastructure](10-harvest-hub-newsletter-infrastructure.md) | Curated switchboard model, contributions schema, defer send |
 
 ## How These Relate to knowledge-base/
 
 ```
 Research (usr/01) ──→ Content drafts (knowledge-base/) ──→ Website pages
-Strategy (usr/02-05) ──→ Informs site build decisions
+Strategy (usr/02-06) ──→ Informs site build decisions
 ```
 
 - **usr/** = why and how we build the site (strategy, positioning, business)

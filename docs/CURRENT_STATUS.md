@@ -4,25 +4,36 @@
 
 ## Summary
 
-AI Transformation website (ai-transformation.io) — pre-scaffold phase. Research and content drafts complete; development methodology imported; infrastructure setup in progress.
+Wave 0 monorepo scaffold complete locally. Lane architecture + wave plan documented. Deploy config update pending on Zeabur.
 
 ## What works
 
-- Research synthesis and content drafts in `usr/` and `knowledge-base/`
-- ai-dev-methodologies framework bootstrapped (AGENTS.md, CLAUDE.md, `.agents/`, docs/)
-- GitHub repo: https://github.com/jackyckma/ai-transformation-io
-- Zeabur Git deploy on Ocean — https://ai-transformation.zeabur.app (live)
-- Placeholder static page deployed
+- pnpm monorepo: `packages/shared`, `packages/content`, `apps/backend`, `apps/web-io`, `apps/web-org`, `apps/combined`
+- Dual Next.js shells with distinct identity (.io corporate / .org community)
+- Hono backend `/api/health`
+- Host-based proxy in `apps/combined`
+- DNS + email routing on both domains (placeholder until Zeabur root updated)
 
-## Known gaps
+## Lane status (Wave 0)
 
-- Site scaffold not yet chosen/built (Astro vs Next.js TBD)
-- Cloudflare DNS still points to old IP (`167.71.58.160`); needs A → `178.104.245.43`
-- Cloudflare Email Routing not configured (API blocked by token IP filter)
-- No package.json / build pipeline yet
+| Lane | 上次完成 | 下次 |
+|------|----------|------|
+| L0 Shared | Types, schemas, API client stub | Assessment + contribution schemas |
+| L1 Platform | Combined proxy scaffold | Zeabur deploy verify |
+| L2 Backend | Health route | DB + inquiry API (Wave 2) |
+| L8 Web IO | Home + shell pages | MDX content (Wave 1) |
+| L9 Web ORG | Harvest Hub home + shell | Story/prompt forms (Wave 5) |
+
+Full table: [product-architecture.md](./product-architecture.md)
 
 ## Next steps
 
-1. Update Cloudflare DNS A record → `178.104.245.43` (see `docs/INFRA_SETUP.md`)
-2. Configure Email Routing: info@ → multitude.multiplex@gmail.com
-3. Discuss and scaffold the website from `knowledge-base/` content
+1. **Zeabur:** Set Root Directory → `apps/combined`; env: `API_BASE_URL`, `SITE_IO_HOST`, `SITE_ORG_HOST`
+2. Push to `main` → verify both domains serve Next.js (not static placeholder)
+3. **Wave 1:** MDX pipeline + knowledge-base pages on .io
+
+## Docs
+
+- [product-architecture.md](./product-architecture.md) — site IA + lanes
+- [project-progress.md](./project-progress.md) — waves 0–8
+- [traceability-index.md](./traceability-index.md)

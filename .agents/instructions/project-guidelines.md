@@ -14,15 +14,23 @@ Customize this file for **ai-transformation.io**. Shared methodologies live in `
 | Name | AI Transformation (ai-transformation.io) |
 | Purpose | Website about enterprise AI transformation — frameworks, roadmaps, governance, value measurement |
 | Content sources | `knowledge-base/` (public content), `usr/` (internal strategy) |
-| Phase | Pre-scaffold — infra setup complete, site not yet built |
+| Phase | Wave 0 shipped — monorepo scaffold; Wave 1 content MVP next |
+| Architecture | See `docs/ARCHITECTURE.md` |
 
 ## Stack
 
 | Item | Value |
 |------|-------|
-| Language / framework | TBD (likely Astro or Next.js static on Cloudflare/Zeabur) |
-| Package manager | TBD (likely pnpm) |
-| Test runner | TBD |
+| Monorepo | pnpm workspaces + Turborepo |
+| Frontends | Next.js App Router — `apps/web-io` (.io), `apps/web-org` (.org) |
+| Backend | Hono — `apps/backend` (shared API, host-agnostic) |
+| Deploy entry | `apps/combined` (host proxy → Zeabur Root Directory) |
+| Shared | `packages/shared` (types, API client, validation) |
+| Language | TypeScript |
+| Styling | Tailwind CSS (per frontend) |
+| Content | MDX from `knowledge-base/` (web-io); org content TBD |
+| Package manager | pnpm |
+| Node | 20+ |
 
 ## Git branching
 
@@ -41,7 +49,7 @@ Workflow: branch from `main` → PR → `main`.
 | Zeabur project ID | `6a33221c7cea1559991a43e5` |
 | Service ID | `6a3322239a194960c7edec34` |
 | Server | Ocean (`server-69ea44a68736baad13c7c617`, IP `178.104.245.43`) |
-| Public URL | https://ai-transformation.io |
+| Domains | ai-transformation.io (`web-io`), ai-transformation.org (`web-org`) |
 | Deploy branch | `main` |
 | GitHub repo | https://github.com/jackyckma/ai-transformation-io |
 

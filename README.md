@@ -1,33 +1,47 @@
 # AI Transformation
 
-Website about enterprise AI transformation — closing the gap between AI deployment and operating model change.
+Dual-domain platform for enterprise AI transformation knowledge and community learning.
 
-**Domain:** [ai-transformation.io](https://ai-transformation.io)
+| Domain | App | Role |
+|--------|-----|------|
+| [ai-transformation.io](https://ai-transformation.io) | `apps/web-io` | Corporate — frameworks, assessment, playbooks |
+| [ai-transformation.org](https://ai-transformation.org) | `apps/web-org` | Community — Harvest Hub (stories, prompts) |
 
-## Repository layout
+## Monorepo
 
-| Path | Purpose |
-|------|---------|
-| `knowledge-base/` | Website content drafts (cornerstone pages, FAQ, glossary) |
-| `usr/` | Internal strategy docs (positioning, competitive analysis, business model) |
-| `docs/` | Live project status and agent handoff |
-| `.agents/` | AI development methodology (from [ai-dev-methodologies](https://github.com/jackyckma/ai-dev-methodologies)) |
-| `public/` | Static assets (placeholder until site scaffold) |
+```
+apps/
+  backend/     Hono API (shared, host-agnostic)
+  web-io/      Next.js — .io
+  web-org/     Next.js — .org
+  combined/    Zeabur entry — host proxy
+packages/
+  shared/      Types, Zod schemas, API client
+  content/     MDX/content pipeline (Wave 1+)
+```
 
 ## Development
 
-This project uses the [ai-dev-methodologies](https://github.com/jackyckma/ai-dev-methodologies) framework. Agent entry points:
+```bash
+pnpm install
+pnpm build          # build all apps
+pnpm dev            # dev all apps in parallel (or run individually)
+pnpm start          # production: combined proxy on $PORT
+```
 
-- `AGENTS.md` — Codex / OpenAI agents
-- `CLAUDE.md` — Claude Code
-- `.cursor/rules/shared-instructions.mdc` — Cursor
+**Zeabur Root Directory:** `apps/combined`
 
-## Deploy
+## Planning
 
-- **Platform:** Zeabur (GitHub-linked) on dedicated server Ocean
-- **Branch:** `main`
-- **DNS:** Cloudflare → A record to Zeabur server IP
+- [docs/product-architecture.md](docs/product-architecture.md) — site IA + lanes
+- [docs/project-progress.md](docs/project-progress.md) — wave delivery plan
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — technical architecture
+
+## Agent entry points
+
+- `AGENTS.md` · `CLAUDE.md` · `.cursor/rules/shared-instructions.mdc`
+- Lane skills: `.agents/skills/lane-*/SKILL.md`
 
 ## Status
 
-Pre-scaffold. See [docs/CURRENT_STATUS.md](docs/CURRENT_STATUS.md).
+[docs/CURRENT_STATUS.md](docs/CURRENT_STATUS.md)
