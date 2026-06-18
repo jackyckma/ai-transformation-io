@@ -115,22 +115,36 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 
 ### Wave 3 — Assessment (36 questions)
 
-**Goal:** Full Three Gaps assessment — client UX + scoring API.
+**Goal:** Full Three Gaps assessment — functional multi-step UX + scoring API + radar results.
+
+**Locked decisions (2026-06-18):**
+
+| Topic | Decision |
+|-------|----------|
+| Question copy | **Agents draft** all 36 from `usr/07` structure + `knowledge-base/` Three Gaps content |
+| Question format | **Likert 1–5** maturity scale (1 = not in place, 5 = systematic) — best fit for gap averaging + radar |
+| Results UI | **Gap radar** chart + weakest-gap callout + per-gap scores |
+| Assessment UX | **Re-open UI design** — functional flow (wizard/progress), not article-index layout; **keep** Lora titles + light Geist body + existing palette |
+| Results CTAs | Link to live `/frameworks/*`, `/playbook/*`, `/ask`, `.org` reflection — **fine-tune after seeing results** |
+| Save progress | Deferred to Wave 4 (anonymous completion only in Wave 3) |
 
 | Lane | Deliverables |
 |------|--------------|
-| L0 | Question types, gap scoring schemas |
-| L4 | Question bank JSON (~36 questions) |
-| L4 | `POST /api/assessment/score` — returns gap radar + weakest gap |
-| L8 | `/assessment` multi-step UI, results page |
-| L8 | Results link to playbook articles + .org reflection CTA |
+| L0 | Question + answer types, gap scoring schemas, radar result shape |
+| L4 | `data/simulators/assessment/questions.json` — 36 agent-drafted questions (3 gaps × 12) |
+| L4 | `POST /api/assessment/score` — gap scores + weakest gap + sub-dimension breakdown |
+| L8 | Assessment UX: intro → stepped questions (grouped by gap) → results with radar |
+| L8 | Reusable assessment components (progress, Likert row, radar chart) — functional, not editorial article chrome |
+| L8 | Results page with provisional CTAs to frameworks/playbook/ask/.org |
 
 **Exit criteria:**
-- [ ] Complete assessment without login
-- [ ] Results show Three Gaps breakdown
+- [ ] Complete 36-question assessment without login
+- [ ] Results show Three Gaps radar + weakest gap
 - [ ] Unit tests for scoring logic
+- [ ] Question bank fixture committed under `data/simulators/assessment/`
+- [ ] Assessment UI uses site fonts/theme but purpose-built layout (wider than `max-w-2xl` article column if needed for radar)
 
-**Note:** Progress **not** saved until Wave 4.
+**Note:** Progress **not** saved until Wave 4. Post-results CTA copy/links may need founder pass after first visual review.
 
 ---
 
@@ -344,6 +358,11 @@ Waves 3 requires Wave 2 DB. Wave 7 requires Wave 6 capabilities stub + L7 conten
 | 2026-06-18 | Agent lane split | Single L10 vs split | **L10** internal jobs; **L11** external agent protocol |
 | 2026-06-18 | Agent read quotas | Unlimited vs capped | **3/day anonymous, 10/day registered** (v1) |
 | 2026-06-18 | Agent write auth | Per-post vs one-time | **One email authorize → 180-day write token** (v1) |
+| 2026-06-18 | Wave 3 question copy | Founder vs agent draft | **Agents draft** from usr/07 + knowledge-base |
+| 2026-06-18 | Wave 3 question format | Likert vs checkbox vs agree/disagree | **Likert 1–5** maturity scale |
+| 2026-06-18 | Wave 3 results UI | Text vs radar | **Gap radar** + weakest-gap callout |
+| 2026-06-18 | Wave 3 assessment UX | Editorial article layout vs functional | **Functional wizard flow**; keep fonts/theme, not article-index chrome |
+| 2026-06-18 | Wave 3 results CTAs | Function playbooks vs live articles | **Frameworks + playbook + ask + .org** — refine after visual review |
 
 ---
 
