@@ -1,0 +1,90 @@
+{
+  "$schema": "/home/ubuntu/.cursor/plugins/cache/cursor-public/9333/e46364b8be46000b7df0f260550cd712afbb8d36/skills/orchestrate/schemas/plan.schema.json",
+  "goal": "Wave 2: question box — SQLite, POST /api/inquiries, /ask on .io and .org",
+  "summary": "Wave 2 question box: SQLite + POST /api/inquiries + /ask forms on .io and .org",
+  "rootSlug": "wave2-question-box",
+  "baseBranch": "main",
+  "prBase": "main",
+  "repoUrl": "https://github.com/jackyckma/ai-transformation-io",
+  "selfAgentId": "bc-fc0166d6-bf77-4f7c-b540-9219d6b89a4c",
+  "syncStateToGit": true,
+  "acceptanceCriteria": [
+    "SQLite-backed contributions table exists and migrations run idempotently on backend startup",
+    "POST /api/inquiries validates input, persists a contributions row (source=web_inquiry), returns 201 {ok:true,id}, and returns 400 on invalid input",
+    "/ask on both ai-transformation.io and ai-transformation.org render working forms that submit to POST /api/inquiries",
+    "All workspace packages typecheck and both Next apps build; the wave ships as a single draft PR to main"
+  ],
+  "tasks": [
+    {
+      "name": "backend-inquiries",
+      "type": "worker",
+      "scopedGoal": "Add server-side persistence and the inquiry submission API for Wave 2 of the ai-transformation pnpm+turbo monorepo. This is the only task touching packages/shared and apps/backend.\n\n1) packages/shared (L0): Edit packages/shared/src/index.ts. KEEP all existing exports (healthResponseSchema, contributionSourceSchema, inquiryPayloadSchema, createApiClient, SITE_IO, SITE_ORG). Add a Zod `inquiryResponseSchema` describing the success response { ok: true, id: string } and export its inferred type. Extend the object returned by `createApiClient(baseUrl)` with a method `submitInquiry(payload: InquiryPayload): Promise<{ ok: true; id: string }>` that POSTs JSON to `${base}/api/inquiries` with header content-type: application/json and throws on a non-2xx response. Do NOT import from apps/*. No business logic beyond validation/client. Verify with `pnpm --filter @ai-transformation/shared typecheck`.\n\n2) apps/backend (L2 core + L5 harvest):\n- Create a DB module under apps/backend/src/db/ that opens a SQLite database via better-sqlite3. Add `better-sqlite3` to apps/backend/package.json dependencies and `@types/better-sqlite3` to devDependencies. Resolve the db file path from `process.env.SQLITE_PATH ?? 'data/app.db'` (relative to repo root); create the parent directory if it does not exist. Run an idempotent migration on startup (CREATE TABLE IF NOT EXISTS) for a `contributions` table with columns: id TEXT PRIMARY KEY, source TEXT NOT NULL, site TEXT, user_id TEXT, email TEXT NOT NULL, name TEXT, subject TEXT, body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', metadata TEXT NOT NULL DEFAULT '{}', published_slug TEXT, created_at TEXT NOT NULL, reviewed_at TEXT, reviewed_by TEXT. Add an index on (source, created_at). Export a function to get the db instance and an `insertContribution` helper.\n- Implement the harvest lane in apps/backend/src/lanes/harvest/index.ts: export a Hono router (default export or named) exposing `POST /inquiries` (it will be mounted under /api, so the public path is POST /api/inquiries). Parse the JSON body with `inquiryPayloadSchema` from @ai-transformation/shared. On success insert a contributions row with source='web_inquiry', site = payload.site ?? null, email = payload.email, name = payload.name ?? null, body = payload.question, status='new', metadata='{}', id = crypto.randomUUID(), created_at = new Date().toISOString(); respond 201 { ok: true, id }. On Zod validation failure respond 400 { ok: false, error: <first issue message or flattened message> }.\n- Mount the harvest router in apps/backend/src/index.ts under /api (e.g. app.route('/api', harvestRouter)) WITHOUT removing or moving the existing GET /api/health route and WITHOUT changing CORS. Lane logic stays in the lane file; index.ts only mounts.\n- Update root .gitignore to ignore the sqlite db files: add `*.db`, `*.db-*`, `data/*.db`. Never commit a db file.\n\nUse crypto.randomUUID() (built-in, no new dep) for ids. Ensure `pnpm install` succeeds from repo root and both `pnpm --filter @ai-transformation/shared typecheck` and `pnpm --filter @ai-transformation/backend typecheck` pass. Manually verify: start backend with `SQLITE_PATH=/tmp/wave2-inq.db PORT=3001 pnpm --filter @ai-transformation/backend dev` (or build+start), then `curl -i -X POST localhost:3001/api/inquiries -H 'content-type: application/json' --data @data/simulators/harvest/inquiry.json` expecting 201 and {ok:true,id}; then POST an invalid body (e.g. {\"email\":\"x\"}) expecting 400; confirm GET /api/health still returns ok.",
+      "pathsAllowed": [
+        "packages/shared/**",
+        "apps/backend/**",
+        ".gitignore"
+      ],
+      "pathsForbidden": [
+        "apps/web-io/**",
+        "apps/web-org/**",
+        "apps/combined/**"
+      ],
+      "acceptance": [
+        "POST /api/inquiries with a valid body persists a contributions row with source='web_inquiry' and returns HTTP 201 {ok:true,id}",
+        "POST /api/inquiries with an invalid body returns HTTP 400 {ok:false,error}",
+        "A SQLite contributions table is created idempotently on startup; db path is env-configurable (SQLITE_PATH) and db files are gitignored",
+        "packages/shared adds inquiryResponseSchema + createApiClient().submitInquiry without removing existing exports",
+        "pnpm --filter @ai-transformation/shared typecheck and pnpm --filter @ai-transformation/backend typecheck both pass; GET /api/health still returns ok"
+      ],
+      "verify": "## Setup\n- From repo root: `pnpm install`.\n\n## Automated\n- `pnpm --filter @ai-transformation/shared typecheck`\n- `pnpm --filter @ai-transformation/backend typecheck`\n\n## Manual\n- Start backend: `SQLITE_PATH=/tmp/wave2-inq.db PORT=3001 pnpm --filter @ai-transformation/backend dev` (wait for listen log).\n- `curl -i -X POST localhost:3001/api/inquiries -H 'content-type: application/json' --data @data/simulators/harvest/inquiry.json` → expect HTTP 201 and JSON {ok:true,id:...}.\n- `curl -i -X POST localhost:3001/api/inquiries -H 'content-type: application/json' -d '{\"email\":\"x\"}'` → expect HTTP 400 and {ok:false,error}.\n- `curl -s localhost:3001/api/health` → expect {ok:true,...}.\n- Inspect /tmp/wave2-inq.db: one row in contributions with source='web_inquiry'.\n\n## Gotchas\n- Keep GET /api/health and CORS intact. Mount lane router under /api; do not put lane logic in index.ts."
+    },
+    {
+      "name": "ask-forms",
+      "type": "worker",
+      "scopedGoal": "Build the Wave 2 question-box UI on both Next.js App Router frontends (React 19, Tailwind v4). Replace the placeholder /ask pages with working forms. This task only touches apps/web-io and apps/web-org. Do NOT modify packages/shared or apps/backend, and do NOT rely on any new shared exports — use a plain fetch.\n\nFinalized contract (build to this exactly): the form submits POST to `/api/inquiries` with JSON body { email: string, question: string, name?: string, site: 'io' | 'org' }. Success = HTTP 201 { ok: true, id }. Validation failure = HTTP 400 { ok: false, error }. Mirror these client-side constraints before submitting: email required and valid, question between 10 and 5000 characters, name optional (<=120 chars).\n\nResolve the endpoint as `target = (process.env.NEXT_PUBLIC_API_BASE_URL ?? '') + '/api/inquiries'` so production uses the relative path (the combined proxy routes /api to the backend) and local dev can override the base.\n\n1) apps/web-io: Keep apps/web-io/app/ask/page.tsx as a server component exporting metadata, and have it render a new Client Component form at apps/web-io/components/inquiry-form.tsx (must start with 'use client'). The form posts with site='io'. Match existing .io styling — study apps/web-io/components/site-chrome.tsx, content-page-layout.tsx, theme-toggle.tsx and app/globals.css (CSS variables such as var(--muted)). Provide labelled, accessible inputs (email, optional name, question textarea), inline validation messages, a disabled/submitting state while the request is in flight, a success confirmation (e.g. 'Thanks — we'll be in touch.'), and an error message when the request fails or returns a non-201.\n2) apps/web-org: Same approach at apps/web-org/app/ask/page.tsx + a new Client Component apps/web-org/components/inquiry-form.tsx posting with site='org'. Use the warmer .org community tone (heading like 'Ask the community'). Match .org styling (apps/web-org/components/site-chrome.tsx, theme-toggle.tsx, app/globals.css).\n\nEnsure `pnpm install` succeeds, `pnpm --filter @ai-transformation/web-io typecheck` and `pnpm --filter @ai-transformation/web-org typecheck` pass, and `pnpm --filter @ai-transformation/web-io build` and `pnpm --filter @ai-transformation/web-org build` succeed.",
+      "pathsAllowed": [
+        "apps/web-io/app/ask/**",
+        "apps/web-io/components/**",
+        "apps/web-org/app/ask/**",
+        "apps/web-org/components/**"
+      ],
+      "pathsForbidden": [
+        "packages/shared/**",
+        "apps/backend/**",
+        "apps/combined/**"
+      ],
+      "acceptance": [
+        "/ask on .io renders an accessible form (email, optional name, question) that POSTs to /api/inquiries with site='io' and shows submitting/success/error states",
+        "/ask on .org renders the equivalent form posting with site='org' in the .org community tone",
+        "Client-side validation mirrors the contract (valid email; question 10-5000 chars; name optional <=120)",
+        "pnpm typecheck and build pass for both @ai-transformation/web-io and @ai-transformation/web-org",
+        "packages/shared and apps/backend are untouched"
+      ],
+      "verify": "## Setup\n- From repo root: `pnpm install`.\n\n## Automated\n- `pnpm --filter @ai-transformation/web-io typecheck` and `pnpm --filter @ai-transformation/web-org typecheck`.\n- `pnpm --filter @ai-transformation/web-io build` and `pnpm --filter @ai-transformation/web-org build`.\n\n## Manual\n- Run a web app dev server and open /ask; confirm the form renders, client validation blocks bad input, and submit issues a POST to /api/inquiries (verify in browser devtools network tab; the backend need not be running for this UI check).\n\n## Gotchas\n- inquiry-form components must be Client Components ('use client'). page.tsx stays a server component for metadata. Do not import new exports from @ai-transformation/shared."
+    },
+    {
+      "name": "merge-question-box",
+      "type": "worker",
+      "scopedGoal": "Integration + ship task for the Wave 2 question box. Your clone starts from the backend slice branch. Follow the merge discipline below to merge the ask-forms slice branch into the merge target branch. The two slices touch disjoint paths (packages/shared + apps/backend vs apps/web-io + apps/web-org), so conflicts are unlikely; if any conflict arises, keep both sides' changes.\n\nAfter merging, from the repo root run `pnpm install`, then verify the whole wave end to end:\n- Typecheck all four packages: `pnpm --filter @ai-transformation/shared typecheck`, `pnpm --filter @ai-transformation/backend typecheck`, `pnpm --filter @ai-transformation/web-io typecheck`, `pnpm --filter @ai-transformation/web-org typecheck`.\n- Build both web apps: `pnpm --filter @ai-transformation/web-io build` and `pnpm --filter @ai-transformation/web-org build`.\n- Start the backend: `SQLITE_PATH=/tmp/wave2-merge.db PORT=3001 pnpm --filter @ai-transformation/backend dev` (or build then start). POST data/simulators/harvest/inquiry.json to /api/inquiries and confirm HTTP 201 {ok:true,id}; query /tmp/wave2-merge.db and confirm exactly one contributions row with source='web_inquiry'; POST an invalid body and confirm 400; confirm GET /api/health still returns ok.\n\nThen open a draft pull request to main (base main) summarizing Wave 2: SQLite contributions store, POST /api/inquiries, and the /ask forms on .io and .org. Do not merge or close the PR.",
+      "dependsOn": ["backend-inquiries", "ask-forms"],
+      "startingRef": "orch/wave2-question-box/backend-inquiries",
+      "openPR": true,
+      "acceptance": [
+        "The ask-forms slice is merged with the backend slice so the branch contains both backend + frontend changes",
+        "All four packages typecheck and both web apps build successfully",
+        "Running backend persists an inquiry via POST /api/inquiries (201 {ok:true,id}) with a contributions row source='web_inquiry'; invalid input returns 400; /api/health still ok",
+        "A draft PR to main is opened summarizing the Wave 2 question box"
+      ],
+      "verify": "## Setup\n- Repo already contains both slices after the merge. `pnpm install` from repo root.\n\n## Automated\n- Typecheck shared, backend, web-io, web-org.\n- Build web-io and web-org.\n\n## Manual\n- Start backend with SQLITE_PATH=/tmp/wave2-merge.db PORT=3001.\n- POST data/simulators/harvest/inquiry.json to /api/inquiries → 201 {ok:true,id}; check db row; POST invalid → 400; GET /api/health → ok.\n\n## Gotchas\n- Disjoint paths; prefer keeping both sides on any unexpected conflict. Keep .orchestrate/ out of the PR diff."
+    },
+    {
+      "name": "verify-question-box",
+      "type": "verifier",
+      "verifies": "merge-question-box",
+      "scopedGoal": "Independently verify the integrated Wave 2 question box on the merged branch. Actually run the checks — do not pattern-match. From repo root: `pnpm install`; typecheck shared, backend, web-io, web-org; build web-io and web-org. Then start the backend (SQLITE_PATH=/tmp/wave2-verify.db PORT=3001), POST data/simulators/harvest/inquiry.json to /api/inquiries and confirm HTTP 201 {ok:true,id}, confirm a contributions row with source='web_inquiry' was persisted in the SQLite db, POST an invalid body and confirm HTTP 400 {ok:false,error}, and confirm GET /api/health still returns ok. Also confirm both apps/web-io/app/ask and apps/web-org/app/ask render forms that POST to /api/inquiries with the correct site value. Report a Verification verdict with execution evidence for every merge-question-box acceptance criterion.",
+      "acceptance": [
+        "Verification section includes concrete execution evidence (commands run + outcomes) for every merge-question-box acceptance criterion"
+      ]
+    }
+  ]
+}
