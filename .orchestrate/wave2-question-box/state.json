@@ -73,20 +73,20 @@
     {
       "name": "verify-question-box",
       "type": "verifier",
-      "branch": "orch/wave2-question-box/verify-question-box",
+      "branch": "`orch/wave2-question-box/question-box` (no commits made — pure verification; restored `pnpm-lock.yaml` that `pnpm install` had touched)",
       "startingRef": "orch/wave2-question-box/question-box",
       "dependsOn": [
         "merge-question-box"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-2339f685-d35a-40b2-9e38-b7054fa14c79",
+      "runId": "run-d5e678aa-cc46-460d-a77f-728c9727812c",
+      "parentAgentId": "bc-fc0166d6-bf77-4f7c-b540-9219d6b89a4c",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-question-box.md",
       "startedAt": "2026-06-18T11:44:39.236Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-18T11:44:39.236Z",
+      "finishedAt": "2026-06-18T11:50:18.292Z",
+      "lastUpdate": "2026-06-18T11:50:18.293Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -147,6 +147,10 @@
     {
       "at": "2026-06-18T11:44:39.066Z",
       "message": "merge-question-box: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-18T11:44:39.509Z",
+      "message": "git-sync failed (verify-question-box pending -> running): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
     }
   ]
 }
