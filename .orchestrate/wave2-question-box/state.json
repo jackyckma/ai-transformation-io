@@ -37,13 +37,13 @@
       "handoffPath": "handoffs/ask-forms.md",
       "startedAt": "2026-06-18T10:57:43.081Z",
       "finishedAt": "2026-06-18T11:40:35.530Z",
-      "lastUpdate": "2026-06-18T11:40:35.530Z",
+      "lastUpdate": "2026-06-18T11:40:36.075Z",
       "note": "respawned by local-cli (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "merge-question-box",
@@ -57,17 +57,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-18T11:40:36.618Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-18T11:40:36.618Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     },
     {
       "name": "verify-question-box",
@@ -121,6 +122,14 @@
     {
       "at": "2026-06-18T11:13:48.516Z",
       "message": "ask-forms: tool_call idle 340694ms; last=2026-06-18T11:08:07.822Z"
+    },
+    {
+      "at": "2026-06-18T11:40:35.822Z",
+      "message": "git-sync failed (ask-forms running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave2-question-box push\nremote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for …"
+    },
+    {
+      "at": "2026-06-18T11:40:36.075Z",
+      "message": "ask-forms: verification self-reported (live-ui-verified)"
     }
   ]
 }
