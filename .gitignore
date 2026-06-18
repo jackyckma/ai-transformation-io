@@ -13,3 +13,6 @@ dist/
 .DS_Store
 *.swp
 *~
+*.db
+*.db-*
+data/*.db

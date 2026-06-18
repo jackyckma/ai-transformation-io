@@ -27,6 +27,12 @@ export const inquiryPayloadSchema = z.object({
 });
 
 export type InquiryPayload = z.infer<typeof inquiryPayloadSchema>;
+export const inquiryResponseSchema = z.object({
+  ok: z.literal(true),
+  id: z.string(),
+});
+
+export type InquiryResponse = z.infer<typeof inquiryResponseSchema>;
 
 export function createApiClient(baseUrl: string) {
   const base = baseUrl.replace(/\/$/, '');
@@ -36,6 +42,15 @@ export function createApiClient(baseUrl: string) {
       const res = await fetch(`${base}/api/health`);
       if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
       return healthResponseSchema.parse(await res.json());
+    },
+    async submitInquiry(payload: InquiryPayload): Promise<InquiryResponse> {
+      const res = await fetch(`${base}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Inquiry submission failed: ${res.status}`);
+      return inquiryResponseSchema.parse(await res.json());
     },
   };
 }
