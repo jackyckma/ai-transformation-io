@@ -10,8 +10,8 @@
 | M0 — Plan & lane architecture | 2026-06-18 | ✅ |
 | M1 — Deploy loop (Wave 0) | 2026-06-18 | ✅ |
 | M2 — .io content MVP (Wave 1) | 2026-06-18 | ✅ |
-| M3 — First Harvest loop (Wave 2) | 2026-06-18 | 🔄 Orchestrating (cloud agent) |
-| M4 — Assessment live (Wave 3) | TBD | ⏳ |
+| M3 — First Harvest loop (Wave 2) | 2026-06-18 | ✅ |
+| M4 — Assessment live (Wave 3) | TBD | ⏳ Next |
 | M5 — Auth + save (Wave 4) | TBD | ⏳ |
 | M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ |
 | M7 — Agent + newsletter infra (Wave 6) | TBD | ⏳ |
@@ -80,9 +80,11 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L9 | `/ask` page (shared component pattern via L0) |
 
 **Exit criteria:**
-- [ ] Submit question from both sites → stored with `source=web_inquiry`
+- [x] Submit question from both sites → stored with `source=web_inquiry`
 - [ ] Simulator fixture + stub test
 - [ ] Founder can query DB or admin JSON endpoint
+
+**Merged:** PR #1 (`e905f31`) — SQLite + `POST /api/inquiries` + `/ask` forms on .io and .org.
 
 ---
 
