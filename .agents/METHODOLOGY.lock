@@ -1,0 +1,21 @@
+# Methodology bundle pin — update only after a manual sync (see framework-adoption.md).
+
+source: https://github.com/jackyckma/ai-dev-methodologies
+version: "1.1.0"
+source_commit: 61f94d4
+synced_at: 2026-06-18
+synced_by: agent session
+customized_files:
+  - .agents/instructions/project-guidelines.md
+  - docs/AGENT_ENV.md
+  - scripts/agent-verify.sh
+  - AGENTS.md
+  - CLAUDE.md
+  - .cursor/rules/shared-instructions.mdc
+  - .agents/skills/lane-shared/SKILL.md
+  - .agents/skills/lane-platform/SKILL.md
+  - .agents/skills/lane-backend-core/SKILL.md
+  - .agents/skills/lane-web-io/SKILL.md
+  - .agents/skills/lane-web-org/SKILL.md
+  - .agents/skills/lane-harvest/SKILL.md
+notes: Synced 1.0.0 → 1.1.0 (framework-owned files + optional bundled skills). Hybrid merges preserved project Learned sections, Zeabur IDs, and lane skills.

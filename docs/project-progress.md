@@ -257,6 +257,7 @@ Waves 1 and 2 can partially overlap after Wave 0; Wave 3 requires Wave 2 DB.
 | 2026-06-18 | Newsletter send | Buttondown/Resend vs ZSend | **Zeabur ZSend** |
 | 2026-06-18 | Dev methodology | Ad hoc vs lane-based | **Lane-based + waves** |
 | 2026-06-18 | Newsletter replies | Third-party inbound | **Cloudflare Email Worker → backend webhook** |
+| 2026-06-18 | Methodology sync | Stay on 1.0.0 vs sync 1.1.0 | **Synced ai-dev-methodologies 1.0.0 → 1.1.0** (framework-owned + bundled skills) |
 
 ---
 

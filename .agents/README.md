@@ -21,6 +21,20 @@ Cross-agent instructions for this project. Bootstrapped from [ai-dev-methodologi
 | `issue-quality.md` | GitHub Issue template for agents |
 | `lane-based-development.md` | Optional — multi-module products |
 
+## Methodology pin
+
+| File | Purpose |
+|------|---------|
+| `METHODOLOGY.lock` | Bundle version synced into this project — read before manual updates |
+| `instructions/framework-adoption.md` | Import rules and manual sync process |
+
+## Optional skills
+
+| Skill | Purpose |
+|-------|---------|
+| `skills/complexity-review/` | PR diff review for over-engineering |
+| `skills/deferred-shortcuts/` | Scan `defer:` comments into a ledger |
+
 ## Optional defaults
 
 See `defaults/` for founder Zeabur / Cloudflare / AI provider conventions.
