@@ -14,7 +14,8 @@
 | [POSITIONING.md](POSITIONING.md) | Two-site positioning |
 | [SESSION_HANDOFF.md](SESSION_HANDOFF.md) | Resume point for next agent session |
 | [AGENT_ENV.md](AGENT_ENV.md) | Local vs Cloud Agent capability matrix |
-| [INFRA_SETUP.md](INFRA_SETUP.md) | DNS, Zeabur, email |
+| [EMAIL_NEWSLETTER.md](EMAIL_NEWSLETTER.md) | ZSend send + Cloudflare inbound replies |
+| [INFRA_SETUP.md](INFRA_SETUP.md) | DNS, Zeabur, email routing |
 
 ## Agent instructions
 

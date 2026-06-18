@@ -28,7 +28,8 @@
 | `POST /api/assessment/score` | L4 | 3 |
 | `GET/POST /api/assessment/session` | L4 | 4 |
 | `GET/POST /api/auth/*` | L3 | 4 |
-| `POST /api/webhooks/inbound-email` | L6 | 6 (stub) |
+| `POST /api/webhooks/inbound-email` | L6 | 6 stub · 8 live (CF Worker) |
+| `POST /api/webhooks/zsend` | L6 | 6 (delivery/bounce) |
 | `POST /api/agent/compile-draft` | L10 | 6 (admin) |
 
 ## Cross-references
@@ -36,3 +37,4 @@
 - Product IA: [product-architecture.md](./product-architecture.md)
 - Wave schedule: [project-progress.md](./project-progress.md)
 - Harvest + newsletter: [usr/10-harvest-hub-newsletter-infrastructure.md](../usr/10-harvest-hub-newsletter-infrastructure.md)
+- Email send/reply: [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md)

@@ -76,7 +76,7 @@ Cross-subscribe: optional checkbox at signup — not required v1.
 | **`source` enum** | `web_story`, `web_inquiry`, `web_prompt_reply`, `assessment_reflection`, `newsletter_reply`, `linkedin_manual` |
 | **`issues` table (stub)** | Schema only; optional admin seed rows; no public archive yet |
 | **`subscribers` table (stub)** | Schema only; no signup API exposed in UI |
-| **`NewsletterProvider` interface** | `NoopProvider` in v1; swap for Buttondown/Resend later |
+| **`NewsletterProvider` interface** | `NoopProvider` v1 → `ZeaburZSendProvider` Wave 6/8 |
 | **Webhook route stub** | `POST /api/webhooks/inbound-email` — 501 or log-only until provider wired |
 | **Agent job types** | Define `compile_issue_draft`, `cluster_replies` as queued job names; implement later |
 | **Footer placeholder** | “Newsletter coming soon” or omit CTA entirely |
@@ -165,16 +165,22 @@ Public API can keep friendly names; they write to `contributions`:
 
 ---
 
-## Inbound reply flow (Phase 2)
+## Inbound reply flow
 
-**Preferred:** Provider with reply tracking (Buttondown, ConvertKit, Resend Inbound).
+**Send:** Zeabur Email (ZSend) from backend — see [docs/EMAIL_NEWSLETTER.md](../docs/EMAIL_NEWSLETTER.md).
 
-1. Issue sent with `Reply-To: replies+{reply_to_token}@mail.ai-transformation.org` (or provider alias).
-2. Webhook receives reply → parse body → insert `contributions` with `source=newsletter_reply`, link `metadata.issue_id`.
-3. Notification to founder; agent job `cluster_replies` runs weekly.
-4. Human picks quotes for next issue (with permission) or synthesizes .io article.
+**Receive:** ZSend webhooks are **outbound-only** (delivery, bounce, etc.). Reader **Reply** uses:
 
-**v1 fallback:** Manually forward interesting replies to `info@` → copy into admin UI as contribution. No automation required to **validate** the loop.
+1. **Production:** Cloudflare Email Worker on `replies+{issueToken}@ai-transformation.io` → `POST /api/webhooks/inbound-email`
+2. **Pilot fallback:** `Reply-To: info@` → Gmail forward → manual copy to contributions
+
+Steps (automated path):
+
+1. Issue sent with `Reply-To: replies+{reply_to_token}@ai-transformation.io`
+2. Worker parses MIME → backend webhook → `contributions` (`source=newsletter_reply`, `metadata.issue_id`)
+3. Agent `cluster_replies`; human approves quotes for next issue / .io article
+
+**Early pilot:** Manual forward to `info@` is acceptable — no Worker required to validate the loop.
 
 ---
 
@@ -197,21 +203,28 @@ interface NewsletterProvider {
   subscribe(email: string, list: ListId): Promise<SubscriberRef>
   unsubscribe(ref: SubscriberRef): Promise<void>
   send(issue: Issue, list: ListId): Promise<SendResult>
-  // Phase 2:
-  parseInboundWebhook(req: Request): Promise<InboundReply[]>
 }
 
 // v1
 class NoopNewsletterProvider implements NewsletterProvider { ... }
+
+// Wave 6+
+class ZeaburZSendProvider implements NewsletterProvider {
+  // POST https://api.zeabur.com/api/v1/zsend/emails
+}
+
+// Inbound replies: NOT via NewsletterProvider — separate InboundEmailHandler
+// Cloudflare Email Worker → POST /api/webhooks/inbound-email
 ```
 
-Env vars (reserved, empty in v1):
+Env vars (Zeabur service — never commit):
 
 ```env
-NEWSLETTER_PROVIDER=noop          # noop | buttondown | resend
-BUTTONDOWN_API_KEY=
-RESEND_API_KEY=
+NEWSLETTER_PROVIDER=noop          # noop | zeabur_zsend
+ZSend_API_KEY=
 INBOUND_EMAIL_WEBHOOK_SECRET=
+NEWSLETTER_FROM_IO=pulse@ai-transformation.io
+NEWSLETTER_FROM_ORG=learn@ai-transformation.org
 ```
 
 ---
@@ -261,7 +274,8 @@ Do **not** wait for large list — pilot to invite list first.
 | Infra in v1 | **`contributions` + stub `issues`/`subscribers` + provider interface** |
 | Model | **Curated switchboard** — Harvest → issue → replies → next Harvest cycle |
 | Two lists | **Yes** — io Pulse + org Learn Together |
-| Reply handling v1 | Manual forward OK; webhook when provider chosen |
+| Reply handling | CF Email Worker → backend webhook; pilot manual via info@ OK |
+| Send provider | **Zeabur ZSend** (not Buttondown/Resend) |
 
 ---
 

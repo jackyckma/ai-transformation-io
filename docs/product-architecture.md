@@ -206,8 +206,8 @@ Browser (.io / .org)
 | L4 Assessment | — | Question bank + scoring (Wave 3) |
 | L5 Harvest | — | contributions API (Wave 2 inquiries, Wave 5 full) |
 | L6 Newsletter | — | Schema stub + NoopProvider (Wave 6) |
-| L7 Content | Static page registry stub | MDX loader + knowledge-base (Wave 1) |
-| L8 Web IO | Shell, home, placeholder IA pages | MDX content (Wave 1) |
+| L7 Content | Markdown loader from `knowledge-base/` | More cornerstone pages (Wave 7) |
+| L8 Web IO | Home + 3 framework SSG pages + sitemap | Function pages (Wave 7) |
 | L9 Web ORG | Harvest Hub home + shell pages | Story/prompt forms (Wave 5) |
 | L10 Agent | — | Job types stub (Wave 6) |
 

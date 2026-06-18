@@ -14,7 +14,7 @@ Customize this file for **ai-transformation.io**. Shared methodologies live in `
 | Name | AI Transformation (ai-transformation.io) |
 | Purpose | Website about enterprise AI transformation — frameworks, roadmaps, governance, value measurement |
 | Content sources | `knowledge-base/` (public content), `usr/` (internal strategy) |
-| Phase | Wave 0 shipped — monorepo scaffold; Wave 1 content MVP next |
+| Phase | Wave 1 in progress — .io content MVP |
 | Architecture | See `docs/ARCHITECTURE.md` |
 
 ## Stack
@@ -39,7 +39,13 @@ Customize this file for **ai-transformation.io**. Shared methodologies live in `
 | `main` | Production / deploy branch |
 | `feat/*` | Feature branches |
 
-Workflow: branch from `main` → PR → `main`.
+Workflow: branch from `main` → PR → `main`. **Default: commit and push to `main` for deploy** until production stage (no extra approval needed).
+
+## Email / newsletter (planned)
+
+- **Send:** Zeabur Email (ZSend) via backend `ZeaburZSendProvider` — see `docs/EMAIL_NEWSLETTER.md`
+- **Inbound replies:** Cloudflare Email Worker → `POST /api/webhooks/inbound-email` (not ZSend)
+- **Defer public newsletter** until Wave 8 pilot; infra stubs in Wave 6
 
 ## Deploy
 

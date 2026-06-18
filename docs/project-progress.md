@@ -8,9 +8,9 @@
 | Milestone | Target | Status |
 |-----------|--------|--------|
 | M0 — Plan & lane architecture | 2026-06-18 | ✅ |
-| M1 — Deploy loop (Wave 0) | 2026-06-18 | ✅ Local build; Zeabur root update pending |
-| M2 — .io content MVP (Wave 1) | TBD | ⏳ |
-| M3 — First Harvest loop (Wave 2) | TBD | ⏳ |
+| M1 — Deploy loop (Wave 0) | 2026-06-18 | ✅ |
+| M2 — .io content MVP (Wave 1) | 2026-06-18 | ✅ |
+| M3 — First Harvest loop (Wave 2) | TBD | ⏳ Next |
 | M4 — Assessment live (Wave 3) | TBD | ⏳ |
 | M5 — Auth + save (Wave 4) | TBD | ⏳ |
 | M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ |
@@ -40,7 +40,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 **Exit criteria:**
 - [x] `pnpm build` succeeds at repo root
 - [x] `pnpm start` (combined) routes `.io` / `.org` / `/api`
-- [ ] Zeabur Root Directory = `apps/combined`
+- [x] Zeabur deploy via `zbpack.ai-transformation-io.json` + git push (repo root build)
 - [x] Remove root `index.html` placeholder after deploy verified
 - [x] `./scripts/agent-verify.sh` runs typecheck
 
@@ -60,9 +60,10 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L8 | SEO metadata, sitemap stub |
 
 **Exit criteria:**
-- [ ] 3 content pages live on .io
-- [ ] Light/dark mode toggle works
-- [ ] Mobile-responsive layout
+- [x] 3+ content pages live on .io (home + 3 framework pages)
+- [x] Light/dark mode toggle works
+- [x] Mobile-responsive layout
+- [x] Sitemap at `/sitemap.xml`
 
 ---
 
@@ -149,7 +150,8 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 
 | Lane | Deliverables |
 |------|--------------|
-| L6 | `issues`, `subscribers` tables; `NoopNewsletterProvider` |
+| L6 | `issues`, `subscribers` tables; `NoopNewsletterProvider` + `ZeaburZSendProvider` stub |
+| L6 | `POST /api/webhooks/zsend`; inbound stub per [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) |
 | L10 | Job type definitions: `compile_issue_draft`, `cluster_replies` |
 | L10 | CLI or admin route to trigger draft from contributions |
 | L5 | `source=newsletter_reply` enum ready |
@@ -157,7 +159,9 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 **Exit criteria:**
 - [ ] Agent can generate draft MD from fixture contributions
 - [ ] No subscribe UI exposed (or footer "coming soon" only)
-- [ ] Webhook route stub returns 501
+- [ ] Webhook route stubs return 501 until Wave 8
+
+See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Worker inbound replies.
 
 ---
 
@@ -189,10 +193,10 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 
 | Lane | Deliverables |
 |------|--------------|
-| L6 | Buttondown or Resend provider |
+| L6 | Verify `ai-transformation.io` on ZSend; `ZeaburZSendProvider` live send |
 | L6 | Subscribe API + footer CTA (per-site lists) |
+| L6 | Cloudflare Email Worker → `/api/webhooks/inbound-email` (or manual pilot) |
 | L10 | `compile_issue_draft` production job |
-| L6 | Inbound reply webhook or manual forward workflow |
 
 **Exit criteria:**
 - [ ] One issue sent to pilot list
@@ -249,7 +253,10 @@ Waves 1 and 2 can partially overlap after Wave 0; Wave 3 requires Wave 2 DB.
 | 2026-06-18 | Newsletter model | Broadcast vs switchboard | **Curated switchboard** — replies feed next issue |
 | 2026-06-18 | Consultancy CTA | Book call vs question box | **Question box only** v1 |
 | 2026-06-18 | .io IA | Function vs framework first | **Function-primary** nav |
+| 2026-06-18 | Dev workflow | Ask before commit | **Default commit+push to main** until production |
+| 2026-06-18 | Newsletter send | Buttondown/Resend vs ZSend | **Zeabur ZSend** |
 | 2026-06-18 | Dev methodology | Ad hoc vs lane-based | **Lane-based + waves** |
+| 2026-06-18 | Newsletter replies | Third-party inbound | **Cloudflare Email Worker → backend webhook** |
 
 ---
 

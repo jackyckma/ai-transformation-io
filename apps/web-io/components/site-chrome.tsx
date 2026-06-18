@@ -3,7 +3,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 const nav = [
   { href: '/functions/executive', label: 'Functions' },
-  { href: '/frameworks/roadmap', label: 'Frameworks' },
+  { href: '/frameworks', label: 'Frameworks' },
   { href: '/assessment', label: 'Assessment' },
   { href: '/ask', label: 'Ask' },
 ];
