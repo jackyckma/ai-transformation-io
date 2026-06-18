@@ -4,7 +4,9 @@
 
 ## Summary
 
-Wave 0 ✅ · **Wave 1 ✅** — .io serves real content from `knowledge-base/`. **Wave 2 next** — question box + DB.
+Wave 0 ✅ · Wave 1 ✅ · **Wave 2 🔄** — cloud orchestrate running (question box + DB).
+
+Root planner: https://cursor.com/agents/bc-fc0166d6-bf77-4f7c-b540-9219d6b89a4c
 
 ## What works
 
