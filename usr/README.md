@@ -16,6 +16,7 @@
 | 08 | [Forum: Discourse vs Built](08-forum-discourse-vs-built.md) | Discussion forum technical comparison |
 | 09 | [Community Strategy & Alternatives](09-community-strategy-alternatives.md) | Headless options, forum viability, Harvest Hub model |
 | 10 | [Harvest Hub × Newsletter Infrastructure](10-harvest-hub-newsletter-infrastructure.md) | Curated switchboard model, contributions schema, defer send |
+| 11 | [Agent-first API v1](11-agent-first-api-v1.md) | Read/write protocol, credits, token auth, capabilities & versioning |
 
 ## How These Relate to knowledge-base/
 
