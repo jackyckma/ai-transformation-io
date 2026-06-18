@@ -11,11 +11,15 @@
 | M1 — Deploy loop (Wave 0) | 2026-06-18 | ✅ |
 | M2 — .io content MVP (Wave 1) | 2026-06-18 | ✅ |
 | M3 — First Harvest loop (Wave 2) | 2026-06-18 | ✅ |
-| M4 — Assessment live (Wave 3) | TBD | ⏳ Next |
+| M3b — Content + editorial refresh | 2026-06-18 | ✅ |
+| M4 — Assessment live (Wave 3) | TBD | ⏳ **Next** |
 | M5 — Auth + save (Wave 4) | TBD | ⏳ |
 | M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ |
-| M7 — Agent + newsletter infra (Wave 6) | TBD | ⏳ |
-| M8 — Content expansion (Wave 7+) | TBD | ⏳ |
+| M7 — Curation + agent discovery (Wave 6) | TBD | ⏳ |
+| M8 — Agent protocol v1 (Wave 7) | TBD | ⏳ |
+| M9 — Newsletter + internal agent jobs (Wave 8) | TBD | ⏳ |
+| M10 — IA expansion (Wave 9) | TBD | ⏳ |
+| M11 — Newsletter pilot (Wave 10) | TBD | ⏳ |
 
 Legend: ✅ Done · 🔄 In progress · ⏳ Planned · ❌ Blocked
 
@@ -88,6 +92,27 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 
 ---
 
+### Interim — Content + editorial refresh (post-Wave 2)
+
+**Goal:** Align shipped UX with **content-first, agent-native** product direction — not a numbered wave, but a closed milestone before Wave 3.
+
+| Lane | Deliverables |
+|------|--------------|
+| L7 | Full `knowledge-base/` registry (10 articles); `/playbook/*` + `/learn/*` routes |
+| L8 | Editorial blog-index home; frameworks + playbook; serif titles |
+| L9 | Learn hub home; Harvest Hub branding (not "Learn Together") |
+| — | Product spec: [usr/11-agent-first-api-v1.md](../usr/11-agent-first-api-v1.md) |
+
+**Exit criteria:**
+- [x] 10 KB articles on .io; 5 learn pages on .org
+- [x] Editorial layout (narrow column, Lora + Geist)
+- [x] Agent-first v1 parameters locked in usr/11
+- [x] Lane map updated: **L11 Agent protocol** split from L10 internal jobs
+
+**Commits:** `f91f3d3` (content routes), `05f202e` (editorial UI), `aae15d9` (agent spec).
+
+---
+
 ### Wave 3 — Assessment (36 questions)
 
 **Goal:** Full Three Gaps assessment — client UX + scoring API.
@@ -98,7 +123,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L4 | Question bank JSON (~36 questions) |
 | L4 | `POST /api/assessment/score` — returns gap radar + weakest gap |
 | L8 | `/assessment` multi-step UI, results page |
-| L8 | Results link to function playbooks + .org reflection CTA |
+| L8 | Results link to playbook articles + .org reflection CTA |
 
 **Exit criteria:**
 - [ ] Complete assessment without login
@@ -135,7 +160,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 |------|--------------|
 | L5 | `POST /api/stories`, prompt replies, moderation status |
 | L5 | `GET /api/stories`, `GET /api/prompts/current` |
-| L9 | Home, `/stories`, `/stories/submit`, `/prompts/[slug]` |
+| L9 | `/stories`, `/stories/submit`, `/prompts/[slug]` |
 | L9 | Weekly prompt seed content |
 | L8 | `/insights` — featured stories (read from API) |
 
@@ -146,45 +171,92 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 
 ---
 
-### Wave 6 — Agent & newsletter infrastructure
+### Wave 6 — Curation & agent discovery
 
-**Goal:** Future-ready pipeline — no public newsletter yet.
+**Goal:** Human-facing **curation** layer + machine-readable discovery — no full agent write API yet.
+
+| Lane | Deliverables |
+|------|--------------|
+| L7 | Curated topics feed (`GET /api/v1/curated` or static JSON v0) |
+| L8/L9 | Home shows founder-curated topics (not full article index as primary) |
+| L8/L9 | `/for-agents` page — protocol summary, links to usr/11 |
+| L2 | `GET /api/v1/capabilities` stub (version, endpoints, quotas) |
+| L2 | Read rate-limit middleware skeleton (anonymous vs registered tiers) |
+
+**Exit criteria:**
+- [ ] Both homes lead with ≤5 curated topics
+- [ ] `/for-agents` live on .io and .org
+- [ ] Capabilities JSON returns stable v1 shape (may 501 on unimplemented routes)
+
+**Depends on:** Wave 2 DB; benefits from Wave 5 contributions for future curation sources.
+
+---
+
+### Wave 7 — Agent protocol v1 (L11)
+
+**Goal:** First-class agent API — read, authorize, write — per [usr/11-agent-first-api-v1.md](../usr/11-agent-first-api-v1.md).
+
+| Lane | Deliverables |
+|------|--------------|
+| L0 | Agent protocol Zod schemas (token, contribution write, capabilities) |
+| L3 | Email magic link for `POST /api/v1/agent/authorize` (one email per human→agent) |
+| L11 | `GET /api/v1/content/*` — read from L7 registry |
+| L11 | Write token issuance (180-day TTL, shared .io+.org, single token all scopes) |
+| L11 | `POST /api/v1/contributions` — agent write path |
+| L2 | Anonymous 3/day + registered 10/day read quotas |
+| L11 | Changelog + versioned paths documented |
+
+**Exit criteria:**
+- [ ] Agent can list + fetch content within quota
+- [ ] Human completes one email authorize → agent receives write token
+- [ ] Agent submission lands in `contributions` with `source=agent`
+- [ ] Credits ledger stub (Phase B — no PayPal per-read in v1)
+
+**Not in v1:** Per-post email confirm, author-set pricing, read-once consensus (Phase B).
+
+---
+
+### Wave 8 — Newsletter & internal agent jobs
+
+**Goal:** Future-ready pipeline — internal digest/compile jobs; no public newsletter yet.
 
 | Lane | Deliverables |
 |------|--------------|
 | L6 | `issues`, `subscribers` tables; `NoopNewsletterProvider` + `ZeaburZSendProvider` stub |
 | L6 | `POST /api/webhooks/zsend`; inbound stub per [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) |
-| L10 | Job type definitions: `compile_issue_draft`, `cluster_replies` |
+| L10 | Job types: `compile_issue_draft`, `cluster_replies` |
 | L10 | CLI or admin route to trigger draft from contributions |
 | L5 | `source=newsletter_reply` enum ready |
 
 **Exit criteria:**
-- [ ] Agent can generate draft MD from fixture contributions
+- [ ] Internal job can generate draft MD from fixture contributions
 - [ ] No subscribe UI exposed (or footer "coming soon" only)
-- [ ] Webhook route stubs return 501 until Wave 8
+- [ ] Webhook route stubs return 501 until Wave 10
 
 See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Worker inbound replies.
 
 ---
 
-### Wave 7 — Content expansion
+### Wave 9 — IA expansion (function pages)
 
-**Goal:** Fill .io IA; remaining function + framework pages.
+**Goal:** Remaining .io IA — function templates, glossary, use cases — **secondary** to curation + agent API.
 
 | Lane | Deliverables |
 |------|--------------|
-| L7 | All cornerstone pages from `knowledge-base/` |
-| L8 | Remaining function pages (template-driven) |
-| L8 | Glossary, FAQ, use cases, pitfalls |
+| L7 | Any remaining cornerstone pages from `knowledge-base/` |
+| L8 | Function page template (`/functions/*`) — at least Executive + CIO |
+| L8 | Glossary, FAQ, use cases stubs |
 | L8 | Assessment → function playbook deep links |
 
 **Exit criteria:**
-- [ ] ≥8 published .io content pages
+- [ ] ≥2 function pages using shared template
 - [ ] Sitemap complete
+
+**Note:** Function-primary nav is **deferred**; article index + curation remain default home.
 
 ---
 
-### Wave 8 — Newsletter pilot (optional trigger)
+### Wave 10 — Newsletter pilot (optional trigger)
 
 **Goal:** Curated switchboard newsletter — small pilot list only.
 
@@ -206,13 +278,14 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 
 ---
 
-### Wave 9+ — Future (not scheduled)
+### Wave 11+ — Future (not scheduled)
 
 - Full forum (Foru.ms / Discourse) when trigger metrics met
-- Magic link auth for corporate email constraints
 - Consultation brief internal dashboard
 - LinkedIn harvest automation
 - Newsletter public archive pages
+- Low-key AI guide on human pages (post–agent API v1)
+- Agent credits top-up ($5 minimum, Phase B)
 
 ---
 
@@ -221,24 +294,30 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 ```
 Wave 0 (scaffold)
     ↓
-Wave 1 (.io content) ──────────────────────────┐
-    ↓                                          │
-Wave 2 (question box)                          │
-    ↓                                          │
-Wave 3 (assessment)                            │
-    ↓                                          │
-Wave 4 (auth + save)                           │
-    ↓                                          │
-Wave 5 (.org harvest) ←────────────────────────┘
+Wave 1 (.io content)
     ↓
-Wave 6 (agent + newsletter stub)
+Wave 2 (question box)
     ↓
-Wave 7 (content expansion)
+Interim (content + editorial + agent spec) ✅
     ↓
-Wave 8 (newsletter pilot) — optional trigger
+Wave 3 (assessment)                    ← NEXT
+    ↓
+Wave 4 (auth + save)
+    ↓
+Wave 5 (.org harvest)
+    ↓
+Wave 6 (curation + /for-agents)
+    ↓
+Wave 7 (agent protocol v1 — L11)
+    ↓
+Wave 8 (newsletter + L10 jobs)
+    ↓
+Wave 9 (function pages / IA expansion)
+    ↓
+Wave 10 (newsletter pilot) — optional trigger
 ```
 
-Waves 1 and 2 can partially overlap after Wave 0; Wave 3 requires Wave 2 DB.
+Waves 3 requires Wave 2 DB. Wave 7 requires Wave 6 capabilities stub + L7 content registry. Wave 8 can start after Wave 5 contributions exist.
 
 ---
 
@@ -248,18 +327,23 @@ Waves 1 and 2 can partially overlap after Wave 0; Wave 3 requires Wave 2 DB.
 |------|-------|---------|----------|
 | 2026-06-18 | Monorepo layout | Single Next vs dual + Hono | Dual Next + Hono + combined proxy |
 | 2026-06-18 | .org community | Forum vs Harvest Hub | **Harvest Hub** Phase 1 |
-| 2026-06-18 | Auth v1 | Magic link vs Google | **Google OAuth only** |
+| 2026-06-18 | Auth v1 | Magic link vs Google | **Google OAuth only** (humans); **email magic link** for agent authorize (L11) |
 | 2026-06-18 | Assessment depth | 15 vs 36 questions | **~36 questions** (Three Gaps × 12) |
 | 2026-06-18 | .org access | Public vs members-only | **Public read**; login for attributed submit |
-| 2026-06-18 | Newsletter | Launch now vs defer | **Defer send**; infra in Wave 6 |
+| 2026-06-18 | Newsletter | Launch now vs defer | **Defer send**; infra in Wave 8 |
 | 2026-06-18 | Newsletter model | Broadcast vs switchboard | **Curated switchboard** — replies feed next issue |
 | 2026-06-18 | Consultancy CTA | Book call vs question box | **Question box only** v1 |
-| 2026-06-18 | .io IA | Function vs framework first | **Function-primary** nav |
+| 2026-06-18 | .io IA | Function vs framework first | **Curation + articles first**; function pages Wave 9 |
 | 2026-06-18 | Dev workflow | Ask before commit | **Default commit+push to main** until production |
 | 2026-06-18 | Newsletter send | Buttondown/Resend vs ZSend | **Zeabur ZSend** |
 | 2026-06-18 | Dev methodology | Ad hoc vs lane-based | **Lane-based + waves** |
 | 2026-06-18 | Newsletter replies | Third-party inbound | **Cloudflare Email Worker → backend webhook** |
-| 2026-06-18 | Methodology sync | Stay on 1.0.0 vs sync 1.1.0 | **Synced ai-dev-methodologies 1.0.0 → 1.1.0** (framework-owned + bundled skills) |
+| 2026-06-18 | Methodology sync | Stay on 1.0.0 vs sync 1.1.0 | **Synced ai-dev-methodologies 1.0.0 → 1.1.0** |
+| 2026-06-18 | Human UI | Marketing hero vs editorial | **Blog/article index**, serif titles, narrow column |
+| 2026-06-18 | Product direction | Article portal vs AI-native | **Agent-first protocol** — humans curate, agents read/write via API |
+| 2026-06-18 | Agent lane split | Single L10 vs split | **L10** internal jobs; **L11** external agent protocol |
+| 2026-06-18 | Agent read quotas | Unlimited vs capped | **3/day anonymous, 10/day registered** (v1) |
+| 2026-06-18 | Agent write auth | Per-post vs one-time | **One email authorize → 180-day write token** (v1) |
 
 ---
 

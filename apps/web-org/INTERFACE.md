@@ -7,7 +7,7 @@ Thin UI for ai-transformation.org. Harvest Hub community face.
 - `apps/web-org/**`
 
 ## Provides
-- Learn Together pages per product-architecture.md IA
+- Learn hub + Harvest Hub pages per product-architecture.md IA
 - Warmer visual identity than web-io
 
 ## Consumes
@@ -21,7 +21,7 @@ Thin UI for ai-transformation.org. Harvest Hub community face.
 - Duplicate .io function playbooks (link to .io instead)
 
 ## Wave
-0 (shell), 5 (harvest UI)
+0 (shell), interim (learn hub + editorial), 5 (harvest UI), 6 (curated home)
 
 ## Verification
 - `pnpm --filter @ai-transformation/web-org build`
