@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AssessmentGapId,
   AssessmentQuestion,
@@ -14,6 +14,37 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
 
 type Phase = 'intro' | 'questions' | 'results';
 type Answers = Record<string, number>;
+type SaveStatus = 'idle' | 'saving' | 'saved';
+
+type AuthUser = {
+  id: string;
+  email: string;
+  name?: string | null;
+  picture?: string | null;
+  createdAt: string;
+};
+
+type AuthMeResponse = {
+  ok: true;
+  user: AuthUser | null;
+};
+
+type AssessmentSessionPayload = {
+  answers: Record<string, number>;
+  stepIndex: number;
+  lastScore?: Record<string, unknown> | null;
+  updatedAt: string;
+};
+
+type AssessmentSessionResponse = {
+  ok: true;
+  session: AssessmentSessionPayload | null;
+};
+
+type AssessmentSessionSaveResponse = {
+  ok: true;
+  updatedAt: string;
+};
 
 type GapCta = { label: string; href: string; internal: boolean };
 
@@ -54,6 +85,10 @@ async function readJsonSafe(response: Response): Promise<unknown> {
   }
 }
 
+function apiUrl(path: string): string {
+  return `${API_BASE}${path}`;
+}
+
 export function AssessmentWizard() {
   const [phase, setPhase] = useState<Phase>('intro');
   const [bank, setBank] = useState<AssessmentQuestionBank | null>(null);
@@ -67,8 +102,18 @@ export function AssessmentWizard() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [result, setResult] = useState<AssessmentScoreResponse | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [resumedFromSave, setResumedFromSave] = useState(false);
+  const [loadingSavedSession, setLoadingSavedSession] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
   const liveRef = useRef<HTMLDivElement>(null);
+  const hasInteractedRef = useRef(false);
+  const saveTimeoutRef = useRef<number | null>(null);
+
+  const isSignedIn = authUser != null;
 
   const questionsByGap = useMemo(() => {
     const map = new Map<string, AssessmentQuestion[]>();
@@ -91,14 +136,22 @@ export function AssessmentWizard() {
     setLoadingBank(true);
     setBankError('');
     try {
-      const response = await fetch(`${API_BASE}/api/assessment/questions`);
+      const response = await fetch(apiUrl('/api/assessment/questions'), {
+        credentials: 'include',
+      });
       if (!response.ok) {
         throw new Error(`status ${response.status}`);
       }
       const payload = (await response.json()) as AssessmentQuestionBank;
       setBank(payload);
       setPhase('questions');
+      setAnswers({});
       setStepIndex(0);
+      setResumedFromSave(false);
+      setLoadingSavedSession(false);
+      setSessionLoaded(false);
+      setSaveStatus('idle');
+      hasInteractedRef.current = false;
     } catch {
       setBankError('We could not load the assessment. Please try again in a moment.');
     } finally {
@@ -106,8 +159,159 @@ export function AssessmentWizard() {
     }
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAuth() {
+      try {
+        const response = await fetch(apiUrl('/api/auth/me'), {
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          if (!cancelled) {
+            setAuthUser(null);
+          }
+          return;
+        }
+        const payload = (await response.json()) as AuthMeResponse;
+        if (!cancelled) {
+          setAuthUser(payload.user ?? null);
+        }
+      } catch {
+        if (!cancelled) {
+          setAuthUser(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setAuthChecked(true);
+        }
+      }
+    }
+
+    void loadAuth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const persistProgress = useCallback(
+    async (nextAnswers: Answers, nextStepIndex: number, lastScore: Record<string, unknown> | null) => {
+      if (!isSignedIn || phase !== 'questions') {
+        return;
+      }
+
+      setSaveStatus('saving');
+      try {
+        const response = await fetch(apiUrl('/api/assessment/session'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            answers: nextAnswers,
+            stepIndex: nextStepIndex,
+            lastScore,
+          }),
+        });
+
+        if (!response.ok) {
+          setSaveStatus('idle');
+          return;
+        }
+
+        const payload = (await readJsonSafe(response)) as AssessmentSessionSaveResponse | null;
+        if (payload?.ok) {
+          setSaveStatus('saved');
+          return;
+        }
+
+        setSaveStatus('idle');
+      } catch {
+        setSaveStatus('idle');
+      }
+    },
+    [isSignedIn, phase],
+  );
+
+  useEffect(() => {
+    if (saveTimeoutRef.current != null) {
+      window.clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (phase !== 'questions' || !bank || !authChecked || !isSignedIn || sessionLoaded) {
+      return;
+    }
+    const currentBank = bank;
+
+    async function loadSavedSession() {
+      setSessionLoaded(true);
+      setLoadingSavedSession(true);
+
+      try {
+        const response = await fetch(apiUrl('/api/assessment/session'), {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = (await readJsonSafe(response)) as AssessmentSessionResponse | null;
+        const savedSession = payload?.ok ? payload.session : null;
+        if (!savedSession || cancelled || hasInteractedRef.current) {
+          return;
+        }
+
+        const validQuestionIds = new Set(currentBank.questions.map((question) => question.id));
+        const restoredAnswers: Answers = {};
+        for (const [questionId, value] of Object.entries(savedSession.answers)) {
+          if (validQuestionIds.has(questionId) && Number.isFinite(value)) {
+            restoredAnswers[questionId] = value;
+          }
+        }
+
+        const maxStepIndex = Math.max(0, currentBank.gaps.length - 1);
+        const restoredStepIndex = Math.min(Math.max(savedSession.stepIndex, 0), maxStepIndex);
+
+        setAnswers(restoredAnswers);
+        setStepIndex(restoredStepIndex);
+        setResumedFromSave(true);
+        setSaveStatus('saved');
+      } catch {
+        // Ignore resume errors and keep anonymous behavior.
+      } finally {
+        if (!cancelled) {
+          setLoadingSavedSession(false);
+        }
+      }
+    }
+
+    void loadSavedSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authChecked, bank, isSignedIn, phase, sessionLoaded]);
+
   function setAnswer(questionId: string, value: number) {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    hasInteractedRef.current = true;
+    setAnswers((prev) => {
+      const nextAnswers = { ...prev, [questionId]: value };
+      if (isSignedIn && phase === 'questions') {
+        if (saveTimeoutRef.current != null) {
+          window.clearTimeout(saveTimeoutRef.current);
+        }
+        saveTimeoutRef.current = window.setTimeout(() => {
+          void persistProgress(nextAnswers, stepIndex, null);
+        }, 700);
+      }
+      return nextAnswers;
+    });
     setShowStepError(false);
   }
 
@@ -122,16 +326,22 @@ export function AssessmentWizard() {
       setShowStepError(true);
       return;
     }
+    hasInteractedRef.current = true;
     setShowStepError(false);
     if (!isLastStep) {
-      setStepIndex((i) => i + 1);
+      const nextStepIndex = stepIndex + 1;
+      setStepIndex(nextStepIndex);
+      void persistProgress(answers, nextStepIndex, null);
       liveRef.current?.focus();
     }
   }
 
   function handleBack() {
+    hasInteractedRef.current = true;
     setShowStepError(false);
-    setStepIndex((i) => Math.max(0, i - 1));
+    const nextStepIndex = Math.max(0, stepIndex - 1);
+    setStepIndex(nextStepIndex);
+    void persistProgress(answers, nextStepIndex, null);
     liveRef.current?.focus();
   }
 
@@ -143,9 +353,11 @@ export function AssessmentWizard() {
     }
     setSubmitting(true);
     setSubmitError('');
+    void persistProgress(answers, stepIndex, null);
     try {
-      const response = await fetch(`${API_BASE}/api/assessment/score`, {
+      const response = await fetch(apiUrl('/api/assessment/score'), {
         method: 'POST',
+        credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           answers: bank.questions.map((q) => ({ questionId: q.id, value: answers[q.id] })),
@@ -156,6 +368,7 @@ export function AssessmentWizard() {
         | { ok?: false; error?: string }
         | null;
       if (response.ok && payload && 'ok' in payload && payload.ok) {
+        void persistProgress(answers, stepIndex, payload as unknown as Record<string, unknown>);
         setResult(payload as AssessmentScoreResponse);
         setPhase('results');
         return;
@@ -173,12 +386,21 @@ export function AssessmentWizard() {
   }
 
   function restart() {
+    if (saveTimeoutRef.current != null) {
+      window.clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
     setPhase('intro');
     setAnswers({});
     setStepIndex(0);
     setResult(null);
     setSubmitError('');
     setShowStepError(false);
+    setResumedFromSave(false);
+    setLoadingSavedSession(false);
+    setSessionLoaded(false);
+    setSaveStatus('idle');
+    hasInteractedRef.current = false;
   }
 
   if (phase === 'intro') {
@@ -186,13 +408,14 @@ export function AssessmentWizard() {
       <IntroView
         loading={loadingBank}
         error={bankError}
+        signedIn={isSignedIn}
         onStart={loadBank}
       />
     );
   }
 
   if (phase === 'results' && result && bank) {
-    return <ResultsView result={result} onRestart={restart} />;
+    return <ResultsView result={result} onRestart={restart} signedIn={isSignedIn} />;
   }
 
   const progressPct = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
@@ -208,6 +431,21 @@ export function AssessmentWizard() {
             {answeredCount} / {totalQuestions} answered ({progressPct}%)
           </span>
         </div>
+        {isSignedIn ? (
+          <p className="mt-3 text-xs text-[var(--muted)]">
+            {saveStatus === 'saving'
+              ? 'Saving progress…'
+              : saveStatus === 'saved'
+                ? 'Progress saved'
+                : 'Signed in — progress will be saved.'}
+          </p>
+        ) : null}
+        {loadingSavedSession ? (
+          <p className="mt-2 text-xs text-[var(--muted)]">Checking for saved progress…</p>
+        ) : null}
+        {resumedFromSave ? (
+          <p className="mt-2 text-xs text-[var(--muted)]">Resumed your saved progress.</p>
+        ) : null}
         <div
           className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]"
           role="progressbar"
@@ -300,10 +538,12 @@ export function AssessmentWizard() {
 function IntroView({
   loading,
   error,
+  signedIn,
   onStart,
 }: {
   loading: boolean;
   error: string;
+  signedIn: boolean;
   onStart: () => void;
 }) {
   return (
@@ -320,7 +560,10 @@ function IntroView({
       <ul className="mt-6 space-y-2 text-sm text-[var(--muted)]">
         <li>· 36 questions, grouped into three short sections.</li>
         <li>· Each rated 1 (ad hoc) to 5 (systematic) maturity.</li>
-        <li>· Takes a few minutes. Anonymous — nothing is saved.</li>
+        <li>
+          · Takes a few minutes.{' '}
+          {signedIn ? 'Signed in — your progress can be saved and resumed.' : 'Anonymous — nothing is saved.'}
+        </li>
       </ul>
 
       <button
@@ -409,9 +652,11 @@ function LikertRow({
 function ResultsView({
   result,
   onRestart,
+  signedIn,
 }: {
   result: AssessmentScoreResponse;
   onRestart: () => void;
+  signedIn: boolean;
 }) {
   const weakestCtas = WEAKEST_GAP_CTAS[result.weakestGap.id] ?? [];
 
@@ -424,7 +669,8 @@ function ResultsView({
         <p className="mt-3 text-[var(--muted)]">
           Overall maturity{' '}
           <strong className="font-medium text-[var(--foreground)]">{result.overall.toFixed(1)} / 5</strong>{' '}
-          ({scoreTone(result.overall)}). Anonymous — these results are not saved.
+          ({scoreTone(result.overall)}).{' '}
+          {signedIn ? 'Signed in — your progress was saved.' : 'Anonymous — these results are not saved.'}
         </p>
       </div>
 

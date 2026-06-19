@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "user": {
+    "id": "user_demo_001",
+    "email": "demo@ai-transformation.io",
+    "name": "Demo User",
+    "picture": "https://example.com/avatar.png",
+    "createdAt": "2026-06-19T00:00:00.000Z"
+  }
+}
