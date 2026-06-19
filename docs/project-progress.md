@@ -1,6 +1,6 @@
 # Project progress — waves & decisions
 
-**Last updated:** 2026-06-18  
+**Last updated:** 2026-06-19  
 **Methodology:** [lane-based-development.md](../.agents/instructions/lane-based-development.md)
 
 ## Milestone summary
@@ -12,8 +12,8 @@
 | M2 — .io content MVP (Wave 1) | 2026-06-18 | ✅ |
 | M3 — First Harvest loop (Wave 2) | 2026-06-18 | ✅ |
 | M3b — Content + editorial refresh | 2026-06-18 | ✅ |
-| M4 — Assessment live (Wave 3) | TBD | ⏳ **Next** |
-| M5 — Auth + save (Wave 4) | TBD | ⏳ |
+| M4 — Assessment live (Wave 3) | 2026-06-19 | ✅ |
+| M5 — Auth + save (Wave 4) | TBD | ⏳ **Next** |
 | M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ |
 | M7 — Curation + agent discovery (Wave 6) | TBD | ⏳ |
 | M8 — Agent protocol v1 (Wave 7) | TBD | ⏳ |
@@ -138,13 +138,15 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L8 | Results page with provisional CTAs to frameworks/playbook/ask/.org |
 
 **Exit criteria:**
-- [ ] Complete 36-question assessment without login
-- [ ] Results show Three Gaps radar + weakest gap
-- [ ] Unit tests for scoring logic
-- [ ] Question bank fixture committed under `data/simulators/assessment/`
-- [ ] Assessment UI uses site fonts/theme but purpose-built layout (wider than `max-w-2xl` article column if needed for radar)
+- [x] Complete 36-question assessment without login
+- [x] Results show Three Gaps radar + weakest gap
+- [x] Unit tests for scoring logic
+- [x] Question bank fixture committed under `data/simulators/assessment/`
+- [x] Assessment UI uses site fonts/theme but purpose-built layout (wider than `max-w-2xl` article column if needed for radar)
 
-**Note:** Progress **not** saved until Wave 4. Post-results CTA copy/links may need founder pass after first visual review.
+**Merged:** PR #2 (`78b5817`) — assessment schemas, 36-question bank, scoring API, functional wizard + radar on `.io`.
+
+**Note:** Progress **not** saved until Wave 4. Results CTAs approved as provisional (founder review 2026-06-19).
 
 ---
 
@@ -314,9 +316,9 @@ Wave 2 (question box)
     ↓
 Interim (content + editorial + agent spec) ✅
     ↓
-Wave 3 (assessment)                    ← NEXT
+Wave 3 (assessment) ✅
     ↓
-Wave 4 (auth + save)
+Wave 4 (auth + save)                    ← NEXT
     ↓
 Wave 5 (.org harvest)
     ↓

@@ -1,6 +1,6 @@
 # Traceability index — lanes → packages → skills
 
-**Last updated:** 2026-06-18
+**Last updated:** 2026-06-19
 
 | Lane | Name | Package / path | INTERFACE | Agent skill | Simulator fixtures |
 |------|------|----------------|-----------|-------------|-------------------|
@@ -26,7 +26,8 @@
 | `POST /api/stories` | L5 | 5 |
 | `GET /api/stories` | L5 | 5 |
 | `GET /api/prompts/current` | L5 | 5 |
-| `POST /api/assessment/score` | L4 | 3 |
+| `GET /api/assessment/questions` | L4 | 3 ✅ |
+| `POST /api/assessment/score` | L4 | 3 ✅ |
 | `GET/POST /api/assessment/session` | L4 | 4 |
 | `GET/POST /api/auth/*` | L3 | 4 |
 | `GET /api/v1/curated` | L7 | 6 |
