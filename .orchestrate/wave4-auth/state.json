@@ -64,16 +64,16 @@
       "finishedAt": "2026-06-19T10:08:30.306Z",
       "lastUpdate": "2026-06-19T10:08:31.639Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 3,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-wave4-auth",
       "type": "verifier",
-      "branch": "orch/wave4-auth/verify-wave4-auth",
+      "branch": "`orch/wave4-auth/wave4-auth` (no source files modified; verification ran read-only against the merged branch)",
       "startingRef": "orch/wave4-auth/wave4-auth",
       "dependsOn": [
         "merge-wave4-auth"
@@ -81,18 +81,18 @@
       "agentId": "bc-d79ffef8-e8b2-4c64-b287-f758c02cb34a",
       "runId": "run-6b5e6c39-3c13-4b45-bcac-0a88d3a675b8",
       "parentAgentId": "bc-ce43f847-d2a0-4a1c-877e-7d6757c66777",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-wave4-auth.md",
       "startedAt": "2026-06-19T10:08:38.866Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-19T10:08:41.787Z",
+      "finishedAt": "2026-06-19T10:39:52.336Z",
+      "lastUpdate": "2026-06-19T10:39:52.337Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
