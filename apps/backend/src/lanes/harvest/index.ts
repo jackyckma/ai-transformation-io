@@ -2,8 +2,9 @@ import { inquiryPayloadSchema } from '@ai-transformation/shared';
 import { Hono } from 'hono';
 
 import { insertContribution } from '../../db/index.js';
+import type { SessionVariables } from '../../types/session.js';
 
-const harvestRouter = new Hono();
+const harvestRouter = new Hono<{ Variables: SessionVariables }>();
 
 function getValidationErrorMessage(error: {
   issues: Array<{ message: string }>;
@@ -33,10 +34,12 @@ harvestRouter.post('/inquiries', async (c) => {
   }
 
   const id = crypto.randomUUID();
+  const user = c.get('user');
   insertContribution({
     id,
     source: 'web_inquiry',
     site: parsed.data.site ?? null,
+    userId: user?.id,
     email: parsed.data.email,
     name: parsed.data.name ?? null,
     body: parsed.data.question,

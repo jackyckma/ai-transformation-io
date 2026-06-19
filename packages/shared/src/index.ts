@@ -136,6 +136,52 @@ export const assessmentScoreResponseSchema = z.object({
 
 export type AssessmentScoreResponse = z.infer<typeof assessmentScoreResponseSchema>;
 
+export const authUserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string().nullable().optional(),
+  picture: z.string().nullable().optional(),
+  createdAt: z.string(),
+});
+
+export type AuthUser = z.infer<typeof authUserSchema>;
+
+export const authMeResponseSchema = z.object({
+  ok: z.literal(true),
+  user: authUserSchema.nullable(),
+});
+
+export type AuthMeResponse = z.infer<typeof authMeResponseSchema>;
+
+export const assessmentSessionStateSchema = z.object({
+  answers: z.record(z.string(), z.number().int().min(1).max(5)),
+  stepIndex: z.number().int().min(0),
+  lastScore: assessmentScoreResponseSchema.nullable().optional(),
+});
+
+export type AssessmentSessionState = z.infer<typeof assessmentSessionStateSchema>;
+
+export const assessmentSessionResponseSchema = z.object({
+  ok: z.literal(true),
+  session: assessmentSessionStateSchema.extend({
+    updatedAt: z.string(),
+  }).nullable(),
+});
+
+export type AssessmentSessionResponse = z.infer<typeof assessmentSessionResponseSchema>;
+
+export const assessmentSessionSaveRequestSchema = assessmentSessionStateSchema;
+export type AssessmentSessionSaveRequest = z.infer<typeof assessmentSessionSaveRequestSchema>;
+
+const logoutResponseSchema = z.object({
+  ok: z.literal(true),
+});
+
+const assessmentSessionSaveResponseSchema = z.object({
+  ok: z.literal(true),
+  updatedAt: z.string(),
+});
+
 export function createApiClient(baseUrl: string) {
   const base = baseUrl.replace(/\/$/, '');
 
@@ -167,6 +213,40 @@ export function createApiClient(baseUrl: string) {
       });
       if (!res.ok) throw new Error(`Assessment score request failed: ${res.status}`);
       return assessmentScoreResponseSchema.parse(await res.json());
+    },
+    async getAuthMe(): Promise<AuthMeResponse> {
+      const res = await fetch(`${base}/api/auth/me`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(`Auth me request failed: ${res.status}`);
+      return authMeResponseSchema.parse(await res.json());
+    },
+    async logout(): Promise<{ ok: true }> {
+      const res = await fetch(`${base}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(`Logout request failed: ${res.status}`);
+      return logoutResponseSchema.parse(await res.json());
+    },
+    async getAssessmentSession(): Promise<AssessmentSessionResponse> {
+      const res = await fetch(`${base}/api/assessment/session`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(`Assessment session request failed: ${res.status}`);
+      return assessmentSessionResponseSchema.parse(await res.json());
+    },
+    async saveAssessmentSession(
+      state: AssessmentSessionSaveRequest,
+    ): Promise<{ ok: true; updatedAt: string }> {
+      const res = await fetch(`${base}/api/assessment/session`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(state),
+      });
+      if (!res.ok) throw new Error(`Assessment session save failed: ${res.status}`);
+      return assessmentSessionSaveResponseSchema.parse(await res.json());
     },
   };
 }
