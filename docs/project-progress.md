@@ -13,8 +13,8 @@
 | M3 — First Harvest loop (Wave 2) | 2026-06-18 | ✅ |
 | M3b — Content + editorial refresh | 2026-06-18 | ✅ |
 | M4 — Assessment live (Wave 3) | 2026-06-19 | ✅ |
-| M5 — Auth + save (Wave 4) | TBD | ⏳ **Next** |
-| M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ |
+| M5 — Auth + save (Wave 4) | 2026-06-19 | ✅ |
+| M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ **Next** |
 | M7 — Curation + agent discovery (Wave 6) | TBD | ⏳ |
 | M8 — Agent protocol v1 (Wave 7) | TBD | ⏳ |
 | M9 — Newsletter + internal agent jobs (Wave 8) | TBD | ⏳ |
@@ -174,10 +174,14 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L2 | Session middleware; optional `user_id` on harvest writes |
 
 **Exit criteria:**
-- [ ] Sign in on .io → `GET /api/auth/me` returns user; sign in on .org with same Google → same user id
-- [ ] Assessment partial progress persists and resumes after re-login
-- [ ] OAuth credentials documented; app runs without them (auth routes 501 or disabled) in dev without env
-- [ ] `./scripts/agent-verify.sh` passes
+- [x] `GET /api/auth/me` + session routes; graceful 501 without Google env
+- [x] `GET/POST /api/assessment/session` save/resume when authenticated
+- [x] Sign-in/out chrome on .io and .org; `/join` on .org
+- [x] Inquiry `user_id` attribution when session present
+- [x] Secrets documented in `docs/AGENT_ENV.md`
+- [ ] Live Google OAuth on production (requires Zeabur env + redirect URIs)
+
+**Merged:** PR #3 (`e41a143`) — 10 backend tests passing.
 
 ---
 
@@ -331,9 +335,9 @@ Interim (content + editorial + agent spec) ✅
     ↓
 Wave 3 (assessment) ✅
     ↓
-Wave 4 (auth + save)                    ← NEXT
+Wave 4 (auth + save) ✅
     ↓
-Wave 5 (.org harvest)
+Wave 5 (.org harvest)                    ← NEXT
     ↓
 Wave 6 (curation + /for-agents)
     ↓

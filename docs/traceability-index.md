@@ -28,8 +28,8 @@
 | `GET /api/prompts/current` | L5 | 5 |
 | `GET /api/assessment/questions` | L4 | 3 ✅ |
 | `POST /api/assessment/score` | L4 | 3 ✅ |
-| `GET/POST /api/assessment/session` | L4 | 4 |
-| `GET/POST /api/auth/*` | L3 | 4 |
+| `GET/POST /api/auth/*` | L3 | 4 ✅ |
+| `GET/POST /api/assessment/session` | L4 | 4 ✅ |
 | `GET /api/v1/curated` | L7 | 6 |
 | `GET /api/v1/capabilities` | L11 | 6 stub · 7 live |
 | `GET /api/v1/content` | L11 | 7 |

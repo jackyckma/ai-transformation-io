@@ -197,13 +197,13 @@ Browser (.io / .org)
 | L0 Shared | Assessment + inquiry schemas, API client | Agent protocol schemas (L11) |
 | L1 Platform | Combined proxy + Zeabur deploy | — |
 | L2 Backend core | Health, DB, inquiries, assessment routes | Rate limits, capabilities route (L11) |
-| L3 Auth | — | Email magic link (agent authorize); Google OAuth (Wave 4) |
-| L4 Assessment | 36-question bank, scoring API, vitest | Saved sessions (Wave 4) |
+| L3 Auth | Google OAuth, sessions, users, `/api/auth/*` | — (configure Zeabur env for live OAuth) |
+| L4 Assessment | Scoring API + session save/resume | — |
 | L5 Harvest | `POST /api/inquiries`, contributions table | Stories, moderation (Wave 5) |
 | L6 Newsletter | — | Schema stub + NoopProvider (Wave 8 area) |
 | L7 Content | 10 KB articles, content registry | Curated topics feed (Wave 6) |
-| L8 Web IO | Editorial home, frameworks, playbook, `/assessment`, `/ask` | Curated home + `/for-agents` (Wave 6) |
-| L9 Web ORG | Learn hub, editorial home, /ask | Curated home parity (Wave 6) |
+| L8 Web IO | Editorial home, assessment, auth chrome, `/ask` | Curated home + `/for-agents` (Wave 6) |
+| L9 Web ORG | Learn hub, `/join`, auth chrome, `/ask` | Curated home parity (Wave 6) |
 | L10 Agent jobs | — | compile_issue_draft stub (Wave 8 area) |
 | L11 Agent protocol | Spec in usr/11 | API v1 MVP (Wave 7) |
 
