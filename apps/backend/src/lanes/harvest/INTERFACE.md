@@ -8,8 +8,12 @@ Unified contributions pipeline: stories, inquiries, prompt replies. Core of Harv
 
 ## Provides
 - `POST /api/inquiries` — question box
-- `POST /api/stories`, `GET /api/stories`, `PATCH /api/stories/:id` (moderation)
-- `GET /api/prompts/current`, `POST /api/prompts/:id/replies`
+- `POST /api/stories` — requires authenticated session
+- `GET /api/stories` — public published/featured stories
+- `GET /api/stories/moderation` — admin-only moderation list
+- `PATCH /api/stories/:id` — admin-only moderation update
+- `GET /api/prompts/current` — public active prompt
+- `POST /api/prompts/:id/replies` — requires authenticated session
 
 ## Consumes
 | Lane | Contract |
@@ -20,8 +24,13 @@ Unified contributions pipeline: stories, inquiries, prompt replies. Core of Harv
 ## Data
 All inputs → `contributions` table with `source` enum.
 
+## Access control
+- Session auth source: `atx_session` cookie via `sessionMiddleware`
+- Admin gate for moderation: `ADMIN_EMAILS` env (comma-separated, case-insensitive)
+- If `ADMIN_EMAILS` is empty/unset, no admin access is granted
+
 ## Wave
 2 (inquiries), 5 (full harvest)
 
 ## Verification
-- Fixtures: `data/simulators/harvest/inquiry.json`, `story.json`
+- Fixtures: `data/simulators/harvest/inquiry.json`, `story.json`, `prompt-reply.json`

@@ -34,6 +34,99 @@ export const inquiryResponseSchema = z.object({
 
 export type InquiryResponse = z.infer<typeof inquiryResponseSchema>;
 
+export const storyPayloadSchema = z.object({
+  title: z.string().min(4).max(160),
+  body: z.string().min(50).max(8000),
+  name: z.string().max(120).optional(),
+});
+
+export type StoryPayload = z.infer<typeof storyPayloadSchema>;
+
+export const storyStatusSchema = z.enum([
+  'new',
+  'reviewed',
+  'published',
+  'featured',
+  'archived',
+  'spam',
+]);
+
+export type StoryStatus = z.infer<typeof storyStatusSchema>;
+
+export const storySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  body: z.string(),
+  name: z.string().nullable(),
+  publishedSlug: z.string().nullable(),
+  createdAt: z.string(),
+  featured: z.boolean(),
+});
+
+export type Story = z.infer<typeof storySchema>;
+
+export const storyModerationSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  body: z.string(),
+  name: z.string().nullable(),
+  email: z.string().email(),
+  status: storyStatusSchema,
+  publishedSlug: z.string().nullable(),
+  createdAt: z.string(),
+});
+
+export type StoryModeration = z.infer<typeof storyModerationSchema>;
+
+export const storiesResponseSchema = z.object({
+  ok: z.literal(true),
+  stories: z.array(storySchema),
+});
+
+export type StoriesResponse = z.infer<typeof storiesResponseSchema>;
+
+export const storyModerationListResponseSchema = z.object({
+  ok: z.literal(true),
+  stories: z.array(storyModerationSchema),
+});
+
+export type StoryModerationListResponse = z.infer<typeof storyModerationListResponseSchema>;
+
+export const storyModerationResponseSchema = z.object({
+  ok: z.literal(true),
+  story: storyModerationSchema,
+});
+
+export type StoryModerationResponse = z.infer<typeof storyModerationResponseSchema>;
+
+export const promptSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  weekOf: z.string().nullable(),
+});
+
+export type Prompt = z.infer<typeof promptSchema>;
+
+export const currentPromptResponseSchema = z.object({
+  ok: z.literal(true),
+  prompt: promptSchema.nullable(),
+});
+
+export type CurrentPromptResponse = z.infer<typeof currentPromptResponseSchema>;
+
+export const promptReplyPayloadSchema = z.object({
+  body: z.string().min(10).max(5000),
+});
+
+export type PromptReplyPayload = z.infer<typeof promptReplyPayloadSchema>;
+
+const storyModerationRequestSchema = z.object({
+  status: z.enum(['reviewed', 'published', 'featured', 'archived', 'spam']),
+  publishedSlug: z.string().min(1).max(200).optional(),
+});
+
+export type StoryModerationRequest = z.infer<typeof storyModerationRequestSchema>;
+
 export const assessmentGapIdSchema = z.enum([
   'work_redesign',
   'governance',
@@ -199,6 +292,54 @@ export function createApiClient(baseUrl: string) {
       });
       if (!res.ok) throw new Error(`Inquiry submission failed: ${res.status}`);
       return inquiryResponseSchema.parse(await res.json());
+    },
+    async submitStory(payload: StoryPayload): Promise<InquiryResponse> {
+      const res = await fetch(`${base}/api/stories`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Story submission failed: ${res.status}`);
+      return inquiryResponseSchema.parse(await res.json());
+    },
+    async getStories(): Promise<StoriesResponse> {
+      const res = await fetch(`${base}/api/stories`);
+      if (!res.ok) throw new Error(`Stories request failed: ${res.status}`);
+      return storiesResponseSchema.parse(await res.json());
+    },
+    async getCurrentPrompt(): Promise<CurrentPromptResponse> {
+      const res = await fetch(`${base}/api/prompts/current`);
+      if (!res.ok) throw new Error(`Current prompt request failed: ${res.status}`);
+      return currentPromptResponseSchema.parse(await res.json());
+    },
+    async submitPromptReply(promptId: string, payload: PromptReplyPayload): Promise<InquiryResponse> {
+      const res = await fetch(`${base}/api/prompts/${encodeURIComponent(promptId)}/replies`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Prompt reply submission failed: ${res.status}`);
+      return inquiryResponseSchema.parse(await res.json());
+    },
+    async getStoriesForModeration(): Promise<StoryModerationListResponse> {
+      const res = await fetch(`${base}/api/stories/moderation`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(`Stories moderation request failed: ${res.status}`);
+      return storyModerationListResponseSchema.parse(await res.json());
+    },
+    async moderateStory(id: string, body: StoryModerationRequest): Promise<StoryModerationResponse> {
+      const payload = storyModerationRequestSchema.parse(body);
+      const res = await fetch(`${base}/api/stories/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Story moderation update failed: ${res.status}`);
+      return storyModerationResponseSchema.parse(await res.json());
     },
     async getAssessmentQuestions(): Promise<AssessmentQuestionBank> {
       const res = await fetch(`${base}/api/assessment/questions`);
