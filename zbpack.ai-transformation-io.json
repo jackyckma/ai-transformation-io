@@ -1,4 +1,4 @@
 {
-  "build_command": "pnpm install && pnpm build",
+  "build_command": "pnpm install && pnpm exec turbo run build --force",
   "start_command": "pnpm --filter @ai-transformation/combined start"
 }
