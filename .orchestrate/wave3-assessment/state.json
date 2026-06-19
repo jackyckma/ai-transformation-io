@@ -1,0 +1,97 @@
+{
+  "rootSlug": "wave3-assessment",
+  "tasks": [
+    {
+      "name": "backend-foundation",
+      "type": "worker",
+      "branch": "orch/wave3-assessment/backend-foundation",
+      "startingRef": "main",
+      "dependsOn": [],
+      "agentId": "bc-37f35cea-b63c-495c-b336-02d2b48ef9f5",
+      "runId": "run-e7479049-0596-432a-a4aa-8ae073ef186b",
+      "parentAgentId": "bc-0ee80e15-a7ce-4b7b-a000-6c2ed0e8eb7c",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/backend-foundation.md",
+      "startedAt": "2026-06-19T00:02:20.614Z",
+      "finishedAt": "2026-06-19T00:06:45.143Z",
+      "lastUpdate": "2026-06-19T00:06:45.262Z",
+      "note": "respawned by self-planner (was error; attempts=1)",
+      "attempts": 2,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "unit-test-verified"
+    },
+    {
+      "name": "frontend-assessment",
+      "type": "worker",
+      "branch": "orch/wave3-assessment/frontend-assessment",
+      "startingRef": "orch/wave3-assessment/backend-foundation",
+      "dependsOn": [
+        "backend-foundation"
+      ],
+      "agentId": "bc-83228c4a-f58a-4f74-a753-e135fb79cd3f",
+      "runId": "run-ae0c6e8b-8ece-46cb-8bee-ea52814208b9",
+      "parentAgentId": "bc-0ee80e15-a7ce-4b7b-a000-6c2ed0e8eb7c",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/frontend-assessment.md",
+      "startedAt": "2026-06-19T00:06:53.341Z",
+      "finishedAt": "2026-06-19T00:16:46.437Z",
+      "lastUpdate": "2026-06-19T00:16:48.445Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": 2,
+      "failureMode": null,
+      "verification": "live-ui-verified"
+    },
+    {
+      "name": "verify-assessment",
+      "type": "verifier",
+      "branch": "`orch/wave3-assessment/frontend-assessment` (verifier artifacts left untracked at `.orchestrate-verify/` + `/opt/cursor/artifacts/wave3-verify/`; intentionally NOT pushed to avoid polluting the worker's draft PR diff)",
+      "startingRef": "orch/wave3-assessment/frontend-assessment",
+      "dependsOn": [
+        "frontend-assessment"
+      ],
+      "agentId": "bc-1b8dbe69-a2aa-4570-be01-9ea423982590",
+      "runId": "run-4fe681fb-c054-4ee3-be9a-052877515814",
+      "parentAgentId": "bc-0ee80e15-a7ce-4b7b-a000-6c2ed0e8eb7c",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-assessment.md",
+      "startedAt": "2026-06-19T00:16:55.194Z",
+      "finishedAt": "2026-06-19T00:25:44.159Z",
+      "lastUpdate": "2026-06-19T00:25:44.160Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    }
+  ],
+  "attention": [
+    {
+      "at": "2026-06-19T00:00:36.774Z",
+      "message": "backend-foundation: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents."
+    },
+    {
+      "at": "2026-06-19T00:01:38.569Z",
+      "message": "frontend-assessment: unreachable — blocked on backend-foundation (error). Fix the upstream and rerun, or `kill frontend-assessment` to abandon."
+    },
+    {
+      "at": "2026-06-19T00:02:11.680Z",
+      "message": "backend-foundation: respawned by self-planner (was error)"
+    },
+    {
+      "at": "2026-06-19T00:06:45.262Z",
+      "message": "backend-foundation: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-19T00:16:48.445Z",
+      "message": "frontend-assessment: verification self-reported (live-ui-verified)"
+    }
+  ]
+}
