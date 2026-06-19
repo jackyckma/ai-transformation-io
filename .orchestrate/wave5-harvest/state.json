@@ -10,12 +10,12 @@
       "agentId": "bc-d100c1ac-614d-487f-8d95-1371bbf2f008",
       "runId": "run-2455f85f-3e1b-4f07-8255-d02f6f9b9aed",
       "parentAgentId": "bc-9e5a0c48-649e-4133-b393-0e8494b2fb16",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/backend-harvest.md",
       "startedAt": "2026-06-19T16:53:05.776Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-19T16:53:08.820Z",
+      "finishedAt": "2026-06-19T17:53:07.752Z",
+      "lastUpdate": "2026-06-19T17:53:07.753Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
@@ -37,13 +37,13 @@
       "handoffPath": "handoffs/web-org-harvest.md",
       "startedAt": "2026-06-19T16:53:09.275Z",
       "finishedAt": "2026-06-19T17:52:17.598Z",
-      "lastUpdate": "2026-06-19T17:52:17.599Z",
+      "lastUpdate": "2026-06-19T17:52:18.937Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "merge-harvest",
@@ -109,6 +109,10 @@
     {
       "at": "2026-06-19T16:52:55.936Z",
       "message": "web-org-harvest: respawned by self-planner (was error)"
+    },
+    {
+      "at": "2026-06-19T17:52:18.937Z",
+      "message": "web-org-harvest: verification self-reported (live-ui-verified)"
     }
   ]
 }
