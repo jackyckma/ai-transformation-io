@@ -32,17 +32,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-19T16:51:25.490Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-19T16:51:25.490Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     },
     {
       "name": "merge-harvest",
@@ -92,5 +93,10 @@
       "verification": null
     }
   ],
-  "attention": []
+  "attention": [
+    {
+      "at": "2026-06-19T16:51:25.343Z",
+      "message": "backend-harvest: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents."
+    }
+  ]
 }
