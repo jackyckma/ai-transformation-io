@@ -10,14 +10,14 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-19T16:53:05.776Z",
       "finishedAt": null,
-      "lastUpdate": "2026-06-19T16:52:53.427Z",
+      "lastUpdate": "2026-06-19T16:53:05.776Z",
       "note": "respawned by self-planner (was error; attempts=1)",
-      "attempts": 1,
+      "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
@@ -105,6 +105,10 @@
     {
       "at": "2026-06-19T16:52:54.573Z",
       "message": "backend-harvest: respawned by self-planner (was error)"
+    },
+    {
+      "at": "2026-06-19T16:52:55.936Z",
+      "message": "web-org-harvest: respawned by self-planner (was error)"
     }
   ]
 }
