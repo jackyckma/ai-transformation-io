@@ -1,0 +1,291 @@
+{
+  "version": "wave3-v1",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "labels": {
+      "1": "Ad hoc",
+      "2": "Emerging",
+      "3": "Defined",
+      "4": "Managed",
+      "5": "Systematic"
+    }
+  },
+  "gaps": [
+    {
+      "id": "work_redesign",
+      "label": "Work redesign",
+      "description": "How deeply AI is embedded into end-to-end workflow redesign, ownership, and scaling discipline.",
+      "subDimensions": [
+        {
+          "id": "workflow_ownership",
+          "label": "Workflow ownership"
+        },
+        {
+          "id": "metrics",
+          "label": "Metrics"
+        },
+        {
+          "id": "end_to_end_pilots",
+          "label": "End-to-end pilots"
+        }
+      ]
+    },
+    {
+      "id": "governance",
+      "label": "Governance",
+      "description": "How clearly autonomy boundaries, accountability, and operational controls are defined and enforced.",
+      "subDimensions": [
+        {
+          "id": "autonomy_level",
+          "label": "Autonomy level"
+        },
+        {
+          "id": "accountability",
+          "label": "Accountability"
+        },
+        {
+          "id": "monitoring",
+          "label": "Monitoring"
+        }
+      ]
+    },
+    {
+      "id": "value_measurement",
+      "label": "Value measurement",
+      "description": "How consistently AI initiatives are linked to measurable outcomes, multi-dimensional value, and executive reporting.",
+      "subDimensions": [
+        {
+          "id": "outcome_hypotheses",
+          "label": "Outcome hypotheses"
+        },
+        {
+          "id": "multidimensional_roi",
+          "label": "Multidimensional ROI"
+        },
+        {
+          "id": "board_reporting",
+          "label": "Board reporting"
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "wr_workflow_owner_defined",
+      "gap": "work_redesign",
+      "subDimension": "workflow_ownership",
+      "prompt": "Each priority AI workflow has a named business owner accountable for end-to-end outcomes."
+    },
+    {
+      "id": "wr_workflow_decision_rights_clear",
+      "gap": "work_redesign",
+      "subDimension": "workflow_ownership",
+      "prompt": "Decision rights between frontline teams, functional leaders, and central AI support are explicit for redesigned workflows."
+    },
+    {
+      "id": "wr_workflow_cross_function_operating_model",
+      "gap": "work_redesign",
+      "subDimension": "workflow_ownership",
+      "prompt": "Cross-functional workflows using AI are governed by a shared operating model instead of siloed local practices."
+    },
+    {
+      "id": "wr_workflow_role_redesign_adopted",
+      "gap": "work_redesign",
+      "subDimension": "workflow_ownership",
+      "prompt": "Role definitions and handoffs are formally redesigned when AI changes how work is executed."
+    },
+    {
+      "id": "wr_metrics_baseline_before_ai",
+      "gap": "work_redesign",
+      "subDimension": "metrics",
+      "prompt": "Baseline metrics are captured before AI deployment for each target workflow."
+    },
+    {
+      "id": "wr_metrics_track_cycle_time_quality",
+      "gap": "work_redesign",
+      "subDimension": "metrics",
+      "prompt": "Workflow performance is measured using end-to-end cycle time and quality metrics, not only activity or usage counts."
+    },
+    {
+      "id": "wr_metrics_exception_patterns_reviewed",
+      "gap": "work_redesign",
+      "subDimension": "metrics",
+      "prompt": "Exception and rework patterns are reviewed regularly to improve redesigned workflows."
+    },
+    {
+      "id": "wr_metrics_linked_to_adoption_actions",
+      "gap": "work_redesign",
+      "subDimension": "metrics",
+      "prompt": "Performance metrics trigger concrete workflow or adoption actions when targets are missed."
+    },
+    {
+      "id": "wr_pilot_real_workflow_scope",
+      "gap": "work_redesign",
+      "subDimension": "end_to_end_pilots",
+      "prompt": "AI pilots are scoped to complete business workflows rather than isolated task demonstrations."
+    },
+    {
+      "id": "wr_pilot_go_nogo_predefined",
+      "gap": "work_redesign",
+      "subDimension": "end_to_end_pilots",
+      "prompt": "Go/no-go criteria for pilots are defined before execution and used in final decisions."
+    },
+    {
+      "id": "wr_pilot_production_path_owned",
+      "gap": "work_redesign",
+      "subDimension": "end_to_end_pilots",
+      "prompt": "Each pilot has an assigned owner and plan for production transition if outcomes are proven."
+    },
+    {
+      "id": "wr_pilot_lessons_reused",
+      "gap": "work_redesign",
+      "subDimension": "end_to_end_pilots",
+      "prompt": "Pilot lessons are codified and reused to accelerate adjacent workflow redesign."
+    },
+    {
+      "id": "gov_autonomy_levels_defined",
+      "gap": "governance",
+      "subDimension": "autonomy_level",
+      "prompt": "Autonomy levels are explicitly defined (for example, assisted, supervised, audited) for AI-enabled workflows."
+    },
+    {
+      "id": "gov_autonomy_risk_tier_mapping",
+      "gap": "governance",
+      "subDimension": "autonomy_level",
+      "prompt": "Allowed AI actions are mapped to risk tiers with clear boundaries for autonomous execution."
+    },
+    {
+      "id": "gov_autonomy_exception_escalation",
+      "gap": "governance",
+      "subDimension": "autonomy_level",
+      "prompt": "Escalation rules are consistently applied when AI outputs fall outside approved autonomy boundaries."
+    },
+    {
+      "id": "gov_autonomy_progression_evidence_based",
+      "gap": "governance",
+      "subDimension": "autonomy_level",
+      "prompt": "Autonomy is expanded only after evidence demonstrates reliability, reversibility, and control."
+    },
+    {
+      "id": "gov_accountability_outcome_owner_named",
+      "gap": "governance",
+      "subDimension": "accountability",
+      "prompt": "A named owner is accountable for outcomes when AI-assisted decisions impact customers, operations, or compliance."
+    },
+    {
+      "id": "gov_accountability_raci_documented",
+      "gap": "governance",
+      "subDimension": "accountability",
+      "prompt": "RACI-style accountability is documented across business, data, and technology roles for each high-impact AI workflow."
+    },
+    {
+      "id": "gov_accountability_policy_enforced",
+      "gap": "governance",
+      "subDimension": "accountability",
+      "prompt": "Governance policies are operationally enforced through approvals, controls, and audit evidence rather than documentation alone."
+    },
+    {
+      "id": "gov_accountability_incident_playbooks_ready",
+      "gap": "governance",
+      "subDimension": "accountability",
+      "prompt": "Incident response playbooks define accountability, rollback, and communication for AI failures."
+    },
+    {
+      "id": "gov_monitoring_decision_logs_complete",
+      "gap": "governance",
+      "subDimension": "monitoring",
+      "prompt": "Decision logs capture key model outputs, human overrides, and rationale for high-impact AI actions."
+    },
+    {
+      "id": "gov_monitoring_drift_alerting_active",
+      "gap": "governance",
+      "subDimension": "monitoring",
+      "prompt": "Monitoring covers model performance drift, data quality, and operational anomalies with active alerts."
+    },
+    {
+      "id": "gov_monitoring_feedback_loop_closed",
+      "gap": "governance",
+      "subDimension": "monitoring",
+      "prompt": "User and stakeholder feedback is integrated into a closed-loop process for model and workflow improvement."
+    },
+    {
+      "id": "gov_monitoring_guardrail_review_cadence",
+      "gap": "governance",
+      "subDimension": "monitoring",
+      "prompt": "Guardrails and governance controls are reviewed on a defined cadence using monitoring evidence."
+    },
+    {
+      "id": "vm_hypothesis_defined_before_deploy",
+      "gap": "value_measurement",
+      "subDimension": "outcome_hypotheses",
+      "prompt": "Outcome hypotheses are defined before deployment for each AI initiative."
+    },
+    {
+      "id": "vm_hypothesis_measures_workflow_outcomes",
+      "gap": "value_measurement",
+      "subDimension": "outcome_hypotheses",
+      "prompt": "Hypotheses focus on workflow outcomes (such as cycle time, quality, and decision speed) rather than tool adoption alone."
+    },
+    {
+      "id": "vm_hypothesis_owner_and_timeframe_set",
+      "gap": "value_measurement",
+      "subDimension": "outcome_hypotheses",
+      "prompt": "Each hypothesis includes an accountable owner, target timeframe, and measurable success threshold."
+    },
+    {
+      "id": "vm_hypothesis_recalibrated_with_evidence",
+      "gap": "value_measurement",
+      "subDimension": "outcome_hypotheses",
+      "prompt": "Hypotheses are recalibrated based on pilot and production evidence rather than remaining static."
+    },
+    {
+      "id": "vm_roi_tracks_efficiency_quality_capacity",
+      "gap": "value_measurement",
+      "subDimension": "multidimensional_roi",
+      "prompt": "Value tracking combines efficiency, quality, and capacity recovery metrics for major AI workflows."
+    },
+    {
+      "id": "vm_roi_captures_new_capabilities",
+      "gap": "value_measurement",
+      "subDimension": "multidimensional_roi",
+      "prompt": "Measurement captures new capabilities enabled by AI, not only cost reduction."
+    },
+    {
+      "id": "vm_roi_portfolio_view_standardized",
+      "gap": "value_measurement",
+      "subDimension": "multidimensional_roi",
+      "prompt": "A standardized portfolio view compares AI initiatives using consistent value dimensions."
+    },
+    {
+      "id": "vm_roi_tradeoffs_visible",
+      "gap": "value_measurement",
+      "subDimension": "multidimensional_roi",
+      "prompt": "Tradeoffs between speed, quality, risk, and cost are made explicit in value reporting."
+    },
+    {
+      "id": "vm_board_reporting_regular_cadence",
+      "gap": "value_measurement",
+      "subDimension": "board_reporting",
+      "prompt": "AI value is reported to executive or board stakeholders on a regular cadence."
+    },
+    {
+      "id": "vm_board_reporting_links_investment_to_outcomes",
+      "gap": "value_measurement",
+      "subDimension": "board_reporting",
+      "prompt": "Board-level reporting links AI investment to measured outcomes and strategic priorities."
+    },
+    {
+      "id": "vm_board_reporting_includes_governance_signal",
+      "gap": "value_measurement",
+      "subDimension": "board_reporting",
+      "prompt": "Executive reporting includes governance maturity and risk signal alongside value performance."
+    },
+    {
+      "id": "vm_board_reporting_drives_next_priorities",
+      "gap": "value_measurement",
+      "subDimension": "board_reporting",
+      "prompt": "Board and executive discussions directly inform next-quarter AI investment and scaling priorities."
+    }
+  ]
+}

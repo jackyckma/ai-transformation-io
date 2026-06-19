@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
+import assessmentRouter from './lanes/assessment/index.js';
 import harvestRouter from './lanes/harvest/index.js';
 
 const app = new Hono();
@@ -30,6 +31,7 @@ app.get('/api/health', (c) =>
 );
 
 app.route('/api', harvestRouter);
+app.route('/api/assessment', assessmentRouter);
 
 const port = Number(process.env.PORT ?? 3001);
 
