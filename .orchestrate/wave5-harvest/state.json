@@ -62,36 +62,37 @@
       "handoffPath": "handoffs/merge-harvest.md",
       "startedAt": "2026-06-19T17:53:12.844Z",
       "finishedAt": "2026-06-19T17:57:17.652Z",
-      "lastUpdate": "2026-06-19T17:57:17.653Z",
+      "lastUpdate": "2026-06-19T17:57:18.837Z",
       "note": null,
       "slackTs": null,
       "prNumber": 4,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
       "name": "verify-harvest",
       "type": "verifier",
       "branch": "orch/wave5-harvest/verify-harvest",
-      "startingRef": "orch/wave5-harvest/merge-harvest",
+      "startingRef": "orch/wave5-harvest/harvest",
       "dependsOn": [
         "merge-harvest"
       ],
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-19T17:57:26.517Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-19T17:57:26.517Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     }
   ],
   "attention": [
@@ -118,6 +119,14 @@
     {
       "at": "2026-06-19T17:53:08.790Z",
       "message": "backend-harvest: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-19T17:57:18.836Z",
+      "message": "verify-harvest: startingRef reconciled orch/wave5-harvest/merge-harvest -> orch/wave5-harvest/harvest (target merge-harvest handed off on actual branch)"
+    },
+    {
+      "at": "2026-06-19T17:57:18.837Z",
+      "message": "merge-harvest: verification self-reported (unit-test-verified)"
     }
   ]
 }
