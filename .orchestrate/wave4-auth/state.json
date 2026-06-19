@@ -14,14 +14,14 @@
       "resultStatus": "finished",
       "handoffPath": "handoffs/backend-auth.md",
       "startedAt": "2026-06-19T09:03:42.978Z",
-      "finishedAt": "2026-06-19T09:33:30.123Z",
-      "lastUpdate": "2026-06-19T09:33:31.473Z",
+      "finishedAt": "2026-06-19T09:45:02.450Z",
+      "lastUpdate": "2026-06-19T09:45:02.450Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "unit-test-verified"
+      "verification": null
     },
     {
       "name": "frontend-auth",
@@ -32,18 +32,18 @@
       "agentId": "bc-fb5dfe38-519d-4bc9-b540-36f33979b4ef",
       "runId": "run-4225babf-8cfc-4150-b070-735b59f1d168",
       "parentAgentId": "bc-ce43f847-d2a0-4a1c-877e-7d6757c66777",
-      "status": "handed-off",
-      "resultStatus": "finished",
-      "handoffPath": "handoffs/frontend-auth.md",
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
       "startedAt": "2026-06-19T09:03:46.964Z",
-      "finishedAt": "2026-06-19T09:33:31.487Z",
-      "lastUpdate": "2026-06-19T09:33:32.587Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-19T09:03:49.866Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "live-ui-verified"
+      "verification": null
     },
     {
       "name": "merge-wave4-auth",
@@ -57,18 +57,17 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "running",
+      "status": "pending",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": "2026-06-19T09:33:37.426Z",
+      "startedAt": null,
       "finishedAt": null,
-      "lastUpdate": "2026-06-19T09:33:37.426Z",
+      "lastUpdate": null,
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     },
     {
       "name": "verify-wave4-auth",
@@ -110,14 +109,6 @@
     {
       "at": "2026-06-19T09:03:33.847Z",
       "message": "frontend-auth: respawned by self-planner (was error)"
-    },
-    {
-      "at": "2026-06-19T09:33:31.474Z",
-      "message": "backend-auth: verification self-reported (unit-test-verified)"
-    },
-    {
-      "at": "2026-06-19T09:33:32.587Z",
-      "message": "frontend-auth: verification self-reported (live-ui-verified)"
     }
   ]
 }
