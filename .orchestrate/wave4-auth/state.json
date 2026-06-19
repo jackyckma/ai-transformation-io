@@ -62,36 +62,37 @@
       "handoffPath": "handoffs/merge-wave4-auth.md",
       "startedAt": "2026-06-19T09:33:37.426Z",
       "finishedAt": "2026-06-19T10:08:30.306Z",
-      "lastUpdate": "2026-06-19T10:08:30.306Z",
+      "lastUpdate": "2026-06-19T10:08:31.639Z",
       "note": null,
       "slackTs": null,
       "prNumber": 3,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
       "name": "verify-wave4-auth",
       "type": "verifier",
       "branch": "orch/wave4-auth/verify-wave4-auth",
-      "startingRef": "orch/wave4-auth/merge-wave4-auth",
+      "startingRef": "orch/wave4-auth/wave4-auth",
       "dependsOn": [
         "merge-wave4-auth"
       ],
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-19T10:08:38.866Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-19T10:08:38.866Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     }
   ],
   "attention": [
@@ -118,6 +119,14 @@
     {
       "at": "2026-06-19T09:33:32.587Z",
       "message": "frontend-auth: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-19T10:08:31.638Z",
+      "message": "verify-wave4-auth: startingRef reconciled orch/wave4-auth/merge-wave4-auth -> orch/wave4-auth/wave4-auth (target merge-wave4-auth handed off on actual branch)"
+    },
+    {
+      "at": "2026-06-19T10:08:31.639Z",
+      "message": "merge-wave4-auth: verification self-reported (unit-test-verified)"
     }
   ]
 }
