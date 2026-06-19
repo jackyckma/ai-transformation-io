@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { AuthNav } from '@/components/auth-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 const nav = [
   { href: '/learn', label: 'Learn' },
   { href: '/stories', label: 'Stories' },
   { href: '/prompts', label: 'Prompts' },
+  { href: '/join', label: 'Join' },
   { href: '/ask', label: 'Ask' },
 ];
 
@@ -27,7 +29,10 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <ThemeToggle />
+        <div className="flex items-center gap-3">
+          <AuthNav />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
