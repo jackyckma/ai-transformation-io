@@ -14,8 +14,8 @@
       "resultStatus": "finished",
       "handoffPath": "handoffs/backend-auth.md",
       "startedAt": "2026-06-19T09:03:42.978Z",
-      "finishedAt": "2026-06-19T09:45:02.450Z",
-      "lastUpdate": "2026-06-19T09:45:03.820Z",
+      "finishedAt": "2026-06-19T09:33:30.123Z",
+      "lastUpdate": "2026-06-19T09:33:31.473Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
@@ -36,8 +36,8 @@
       "resultStatus": "finished",
       "handoffPath": "handoffs/frontend-auth.md",
       "startedAt": "2026-06-19T09:03:46.964Z",
-      "finishedAt": "2026-06-19T09:54:38.378Z",
-      "lastUpdate": "2026-06-19T09:54:41.492Z",
+      "finishedAt": "2026-06-19T09:33:31.487Z",
+      "lastUpdate": "2026-06-19T09:33:32.587Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
@@ -54,18 +54,18 @@
         "backend-auth",
         "frontend-auth"
       ],
-      "agentId": "bc-bb57b2e4-f24c-42f6-95c0-5f8454c767b0",
-      "runId": "run-efba31ee-87ac-46b0-b7d1-4d00a75b9620",
+      "agentId": "bc-4cfd20c4-22dc-4960-8ad0-f21fb4f7511e",
+      "runId": "run-6e08bea8-88ea-48ab-b176-6a55529e2ec2",
       "parentAgentId": "bc-ce43f847-d2a0-4a1c-877e-7d6757c66777",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
-      "startedAt": "2026-06-19T09:54:44.656Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-19T09:54:48.975Z",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/merge-wave4-auth.md",
+      "startedAt": "2026-06-19T09:33:37.426Z",
+      "finishedAt": "2026-06-19T10:08:30.306Z",
+      "lastUpdate": "2026-06-19T10:08:30.306Z",
       "note": null,
       "slackTs": null,
-      "prNumber": null,
+      "prNumber": 3,
       "failureMode": null,
       "verification": null,
       "attempts": 1
@@ -112,11 +112,11 @@
       "message": "frontend-auth: respawned by self-planner (was error)"
     },
     {
-      "at": "2026-06-19T09:45:03.821Z",
+      "at": "2026-06-19T09:33:31.474Z",
       "message": "backend-auth: verification self-reported (unit-test-verified)"
     },
     {
-      "at": "2026-06-19T09:54:41.493Z",
+      "at": "2026-06-19T09:33:32.587Z",
       "message": "frontend-auth: verification self-reported (live-ui-verified)"
     }
   ]
