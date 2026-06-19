@@ -10,14 +10,14 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-19T09:03:42.978Z",
       "finishedAt": null,
-      "lastUpdate": "2026-06-19T09:03:31.258Z",
+      "lastUpdate": "2026-06-19T09:03:42.978Z",
       "note": "respawned by self-planner (was error; attempts=1)",
-      "attempts": 1,
+      "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
@@ -105,6 +105,10 @@
     {
       "at": "2026-06-19T09:03:32.394Z",
       "message": "backend-auth: respawned by self-planner (was error)"
+    },
+    {
+      "at": "2026-06-19T09:03:33.847Z",
+      "message": "frontend-auth: respawned by self-planner (was error)"
     }
   ]
 }
