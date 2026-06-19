@@ -107,11 +107,12 @@ export function AssessmentWizard() {
   const [resumedFromSave, setResumedFromSave] = useState(false);
   const [loadingSavedSession, setLoadingSavedSession] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-  const [sessionLoaded, setSessionLoaded] = useState(false);
+  const [hasSavedProgress, setHasSavedProgress] = useState(false);
 
   const liveRef = useRef<HTMLDivElement>(null);
   const hasInteractedRef = useRef(false);
   const saveTimeoutRef = useRef<number | null>(null);
+  const sessionLoadAttemptedRef = useRef(false);
 
   const isSignedIn = authUser != null;
 
@@ -149,9 +150,9 @@ export function AssessmentWizard() {
       setStepIndex(0);
       setResumedFromSave(false);
       setLoadingSavedSession(false);
-      setSessionLoaded(false);
       setSaveStatus('idle');
       hasInteractedRef.current = false;
+      sessionLoadAttemptedRef.current = false;
     } catch {
       setBankError('We could not load the assessment. Please try again in a moment.');
     } finally {
@@ -194,6 +195,41 @@ export function AssessmentWizard() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!authChecked || !isSignedIn || phase !== 'intro') {
+      return;
+    }
+
+    async function checkSavedProgress() {
+      try {
+        const response = await fetch(apiUrl('/api/assessment/session'), {
+          credentials: 'include',
+        });
+        if (!response.ok || cancelled) {
+          return;
+        }
+        const payload = (await readJsonSafe(response)) as AssessmentSessionResponse | null;
+        const savedSession = payload?.ok ? payload.session : null;
+        const answerCount = savedSession
+          ? Object.keys(savedSession.answers).length
+          : 0;
+        if (!cancelled && answerCount > 0) {
+          setHasSavedProgress(true);
+        }
+      } catch {
+        // Ignore — intro still works without resume hint.
+      }
+    }
+
+    void checkSavedProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authChecked, isSignedIn, phase]);
 
   const persistProgress = useCallback(
     async (nextAnswers: Answers, nextStepIndex: number, lastScore: Record<string, unknown> | null) => {
@@ -243,13 +279,13 @@ export function AssessmentWizard() {
   useEffect(() => {
     let cancelled = false;
 
-    if (phase !== 'questions' || !bank || !authChecked || !isSignedIn || sessionLoaded) {
+    if (phase !== 'questions' || !bank || !authChecked || !isSignedIn || sessionLoadAttemptedRef.current) {
       return;
     }
+    sessionLoadAttemptedRef.current = true;
     const currentBank = bank;
 
     async function loadSavedSession() {
-      setSessionLoaded(true);
       setLoadingSavedSession(true);
 
       try {
@@ -257,7 +293,7 @@ export function AssessmentWizard() {
           credentials: 'include',
         });
 
-        if (!response.ok) {
+        if (!response.ok || cancelled) {
           return;
         }
 
@@ -278,10 +314,15 @@ export function AssessmentWizard() {
         const maxStepIndex = Math.max(0, currentBank.gaps.length - 1);
         const restoredStepIndex = Math.min(Math.max(savedSession.stepIndex, 0), maxStepIndex);
 
+        if (cancelled) {
+          return;
+        }
+
         setAnswers(restoredAnswers);
         setStepIndex(restoredStepIndex);
         setResumedFromSave(true);
         setSaveStatus('saved');
+        setHasSavedProgress(Object.keys(restoredAnswers).length > 0);
       } catch {
         // Ignore resume errors and keep anonymous behavior.
       } finally {
@@ -296,7 +337,7 @@ export function AssessmentWizard() {
     return () => {
       cancelled = true;
     };
-  }, [authChecked, bank, isSignedIn, phase, sessionLoaded]);
+  }, [authChecked, bank, isSignedIn, phase]);
 
   function setAnswer(questionId: string, value: number) {
     hasInteractedRef.current = true;
@@ -398,9 +439,10 @@ export function AssessmentWizard() {
     setShowStepError(false);
     setResumedFromSave(false);
     setLoadingSavedSession(false);
-    setSessionLoaded(false);
     setSaveStatus('idle');
+    setHasSavedProgress(false);
     hasInteractedRef.current = false;
+    sessionLoadAttemptedRef.current = false;
   }
 
   if (phase === 'intro') {
@@ -409,6 +451,7 @@ export function AssessmentWizard() {
         loading={loadingBank}
         error={bankError}
         signedIn={isSignedIn}
+        hasSavedProgress={hasSavedProgress}
         onStart={loadBank}
       />
     );
@@ -539,11 +582,13 @@ function IntroView({
   loading,
   error,
   signedIn,
+  hasSavedProgress,
   onStart,
 }: {
   loading: boolean;
   error: string;
   signedIn: boolean;
+  hasSavedProgress: boolean;
   onStart: () => void;
 }) {
   return (
@@ -562,9 +607,19 @@ function IntroView({
         <li>· Each rated 1 (ad hoc) to 5 (systematic) maturity.</li>
         <li>
           · Takes a few minutes.{' '}
-          {signedIn ? 'Signed in — your progress can be saved and resumed.' : 'Anonymous — nothing is saved.'}
+          {signedIn
+            ? hasSavedProgress
+              ? 'Signed in — you have saved progress to resume.'
+              : 'Signed in — your progress can be saved and resumed.'
+            : 'Anonymous — nothing is saved.'}
         </li>
       </ul>
+
+      {signedIn && hasSavedProgress ? (
+        <p className="mt-6 text-sm text-[var(--muted)]">
+          After a page refresh, choose Continue below to pick up where you left off.
+        </p>
+      ) : null}
 
       <button
         type="button"
@@ -572,7 +627,7 @@ function IntroView({
         disabled={loading}
         className="mt-8 inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {loading ? 'Loading…' : 'Start assessment'}
+        {loading ? 'Loading…' : signedIn && hasSavedProgress ? 'Continue assessment' : 'Start assessment'}
       </button>
 
       {error ? (
