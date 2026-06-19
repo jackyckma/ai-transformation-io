@@ -37,13 +37,13 @@
       "handoffPath": "handoffs/frontend-auth.md",
       "startedAt": "2026-06-19T09:03:46.964Z",
       "finishedAt": "2026-06-19T09:33:31.487Z",
-      "lastUpdate": "2026-06-19T09:33:31.488Z",
+      "lastUpdate": "2026-06-19T09:33:32.587Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "merge-wave4-auth",
@@ -57,17 +57,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-19T09:33:37.426Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-19T09:33:37.426Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     },
     {
       "name": "verify-wave4-auth",
@@ -113,6 +114,10 @@
     {
       "at": "2026-06-19T09:33:31.474Z",
       "message": "backend-auth: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-19T09:33:32.587Z",
+      "message": "frontend-auth: verification self-reported (live-ui-verified)"
     }
   ]
 }
