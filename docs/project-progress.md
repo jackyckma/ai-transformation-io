@@ -154,17 +154,30 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 
 **Goal:** Unified identity across both sites; assessment resume.
 
+**Locked decisions (2026-06-19):**
+
+| Topic | Decision |
+|-------|----------|
+| Auth provider | **Google OAuth only** (humans); no magic link this wave |
+| Cross-domain (.io / .org) | **Same `users` row** when Google account matches; **per-host** HttpOnly session cookie on first-party `/api` (combined proxy). Second domain needs one-click Google sign-in — **not** a shared cookie across TLDs |
+| Assessment save | Persist **partial answers + step index**; resume wizard; optional last score snapshot |
+| DB | **SQLite** remains for Wave 4 prod; add env-driven DB module hook for future Postgres (`DATABASE_URL`) without requiring Zeabur Postgres deploy now |
+| Sign-in UI | Header sign-in/out on **both** sites; `/join` on .org; assessment shows “save progress” when logged in |
+| Attribution | Logged-in `POST /api/inquiries` attaches `user_id` when session present |
+| Secrets | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET` in Zeabur env only — document in `docs/AGENT_ENV.md` |
+
 | Lane | Deliverables |
 |------|--------------|
-| L3 | Google OAuth, session cookies, users table |
-| L4 | Save/resume assessment sessions when logged in |
-| L8/L9 | Sign in/out UI, protected submit attribution |
-| L2 | Postgres migration path for prod |
+| L3 | Google OAuth routes, `users` + `sessions` tables, `GET /api/auth/me`, logout |
+| L4 | `GET/POST /api/assessment/session` — save/resume when authenticated |
+| L8/L9 | Sign-in/out chrome, assessment wizard resume, `/join` shell on .org |
+| L2 | Session middleware; optional `user_id` on harvest writes |
 
 **Exit criteria:**
-- [ ] Login on .io → same session on .org (shared backend cookie domain strategy)
-- [ ] Assessment progress persists across visits
-- [ ] OAuth credentials in Zeabur env (not committed)
+- [ ] Sign in on .io → `GET /api/auth/me` returns user; sign in on .org with same Google → same user id
+- [ ] Assessment partial progress persists and resumes after re-login
+- [ ] OAuth credentials documented; app runs without them (auth routes 501 or disabled) in dev without env
+- [ ] `./scripts/agent-verify.sh` passes
 
 ---
 
