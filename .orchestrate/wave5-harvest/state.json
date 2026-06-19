@@ -64,11 +64,11 @@
       "finishedAt": "2026-06-19T17:57:17.652Z",
       "lastUpdate": "2026-06-19T17:57:18.837Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 4,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-harvest",
@@ -88,11 +88,11 @@
       "finishedAt": "2026-06-19T18:02:16.778Z",
       "lastUpdate": "2026-06-19T18:02:16.778Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [

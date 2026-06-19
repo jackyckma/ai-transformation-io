@@ -1,0 +1,8 @@
+[2026-06-19T16:51:25.343Z] backend-harvest: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents.
+[2026-06-19T16:51:34.569Z] web-org-harvest: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents.
+[2026-06-19T16:52:54.573Z] backend-harvest: respawned by self-planner (was error)
+[2026-06-19T16:52:55.936Z] web-org-harvest: respawned by self-planner (was error)
+[2026-06-19T17:52:18.937Z] web-org-harvest: verification self-reported (live-ui-verified)
+[2026-06-19T17:53:08.790Z] backend-harvest: verification self-reported (unit-test-verified)
+[2026-06-19T17:57:18.836Z] verify-harvest: startingRef reconciled orch/wave5-harvest/merge-harvest -> orch/wave5-harvest/harvest (target merge-harvest handed off on actual branch)
+[2026-06-19T17:57:18.837Z] merge-harvest: verification self-reported (unit-test-verified)
