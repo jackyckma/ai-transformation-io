@@ -29,6 +29,9 @@ importers:
       hono:
         specifier: ^4.8.3
         version: 4.12.26
+      tsx:
+        specifier: ^4.19.4
+        version: 4.22.4
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.13
@@ -36,9 +39,6 @@ importers:
       '@types/node':
         specifier: ^22.15.30
         version: 22.19.21
-      tsx:
-        specifier: ^4.19.4
-        version: 4.22.4
       typescript:
         specifier: ^5.8.3
         version: 5.9.3

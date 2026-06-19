@@ -14,12 +14,12 @@
     "@ai-transformation/shared": "workspace:*",
     "@hono/node-server": "^1.14.4",
     "better-sqlite3": "^12.4.1",
-    "hono": "^4.8.3"
+    "hono": "^4.8.3",
+    "tsx": "^4.19.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.15.30",
-    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vitest": "^4.1.9"
   }
