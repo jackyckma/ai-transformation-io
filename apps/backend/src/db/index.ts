@@ -62,6 +62,52 @@ export type AssessmentSessionRow = {
   updatedAt: string;
 };
 
+export type ContributionRow = {
+  id: string;
+  source: string;
+  site: string | null;
+  userId: string | null;
+  email: string;
+  name: string | null;
+  title: string | null;
+  body: string;
+  status: string;
+  metadata: string;
+  publishedSlug: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+};
+
+export type PublishedStoryRow = {
+  id: string;
+  title: string;
+  body: string;
+  name: string | null;
+  publishedSlug: string | null;
+  createdAt: string;
+  featured: boolean;
+};
+
+export type StoryModerationRow = {
+  id: string;
+  title: string;
+  body: string;
+  name: string | null;
+  email: string;
+  status: string;
+  publishedSlug: string | null;
+  createdAt: string;
+};
+
+export type PromptRow = {
+  id: string;
+  question: string;
+  weekOf: string | null;
+  status: string;
+  createdAt: string;
+};
+
 let dbInstance: Database.Database | null = null;
 
 function resolveRepoRoot(): string {
@@ -148,6 +194,59 @@ function runMigrations(db: Database.Database): void {
       updated_at TEXT NOT NULL
     );
   `);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS prompts (
+      id TEXT PRIMARY KEY,
+      question TEXT NOT NULL,
+      week_of TEXT,
+      status TEXT NOT NULL DEFAULT 'active',
+      created_at TEXT NOT NULL
+    );
+  `);
+  db.prepare(
+    `INSERT OR IGNORE INTO prompts (
+      id,
+      question,
+      week_of,
+      status,
+      created_at
+    ) VALUES (
+      @id,
+      @question,
+      @weekOf,
+      @status,
+      @createdAt
+    )`,
+  ).run({
+    id: 'prompt-2026-w24',
+    question:
+      'What is the hardest blocker in your organization when moving one AI pilot into a repeatable operating model?',
+    weekOf: '2026-06-08',
+    status: 'active',
+    createdAt: '2026-06-08T00:00:00.000Z',
+  });
+  db.prepare(
+    `INSERT OR IGNORE INTO prompts (
+      id,
+      question,
+      week_of,
+      status,
+      created_at
+    ) VALUES (
+      @id,
+      @question,
+      @weekOf,
+      @status,
+      @createdAt
+    )`,
+  ).run({
+    id: 'prompt-2026-w25',
+    question:
+      'If you had 90 days to improve AI governance without slowing delivery, which one policy or ritual would you start first and why?',
+    weekOf: '2026-06-15',
+    status: 'active',
+    createdAt: '2026-06-15T00:00:00.000Z',
+  });
 }
 
 export function getDb(): Database.Database {
@@ -492,6 +591,156 @@ export function insertContribution(input: InsertContributionInput): void {
     reviewedAt: input.reviewedAt ?? null,
     reviewedBy: input.reviewedBy ?? null,
   });
+}
+
+export function listPublishedStories(): PublishedStoryRow[] {
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT
+        id,
+        COALESCE(subject, '') AS title,
+        body,
+        name,
+        published_slug AS publishedSlug,
+        created_at AS createdAt,
+        status
+      FROM contributions
+      WHERE source = @source
+        AND status IN ('published', 'featured')
+      ORDER BY created_at DESC`,
+    )
+    .all({
+      source: 'web_story',
+    }) as Array<{
+    id: string;
+    title: string;
+    body: string;
+    name: string | null;
+    publishedSlug: string | null;
+    createdAt: string;
+    status: string;
+  }>;
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    name: row.name,
+    publishedSlug: row.publishedSlug,
+    createdAt: row.createdAt,
+    featured: row.status === 'featured',
+  }));
+}
+
+export function listStoriesForModeration(): StoryModerationRow[] {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT
+        id,
+        COALESCE(subject, '') AS title,
+        body,
+        name,
+        email,
+        status,
+        published_slug AS publishedSlug,
+        created_at AS createdAt
+      FROM contributions
+      WHERE source = @source
+      ORDER BY created_at DESC`,
+    )
+    .all({
+      source: 'web_story',
+    }) as StoryModerationRow[];
+}
+
+export function getContributionById(id: string): ContributionRow | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        source,
+        site,
+        user_id AS userId,
+        email,
+        name,
+        subject AS title,
+        body,
+        status,
+        metadata,
+        published_slug AS publishedSlug,
+        created_at AS createdAt,
+        reviewed_at AS reviewedAt,
+        reviewed_by AS reviewedBy
+      FROM contributions
+      WHERE id = @id`,
+    )
+    .get({ id }) as ContributionRow | undefined;
+  return row ?? null;
+}
+
+export function updateContributionModeration(input: {
+  id: string;
+  status: string;
+  publishedSlug: string | null;
+  reviewedBy: string;
+  reviewedAt: string;
+}): void {
+  const db = getDb();
+  db.prepare(
+    `UPDATE contributions
+    SET status = @status,
+        published_slug = @publishedSlug,
+        reviewed_at = @reviewedAt,
+        reviewed_by = @reviewedBy
+    WHERE id = @id`,
+  ).run({
+    id: input.id,
+    status: input.status,
+    publishedSlug: input.publishedSlug,
+    reviewedAt: input.reviewedAt,
+    reviewedBy: input.reviewedBy,
+  });
+}
+
+export function getCurrentPrompt(): PromptRow | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        question,
+        week_of AS weekOf,
+        status,
+        created_at AS createdAt
+      FROM prompts
+      WHERE status = @status
+      ORDER BY week_of DESC, created_at DESC
+      LIMIT 1`,
+    )
+    .get({
+      status: 'active',
+    }) as PromptRow | undefined;
+  return row ?? null;
+}
+
+export function getPromptById(id: string): PromptRow | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        question,
+        week_of AS weekOf,
+        status,
+        created_at AS createdAt
+      FROM prompts
+      WHERE id = @id`,
+    )
+    .get({ id }) as PromptRow | undefined;
+  return row ?? null;
 }
 
 export function closeDbForTests(): void {

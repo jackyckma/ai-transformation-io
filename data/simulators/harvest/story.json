@@ -1,0 +1,5 @@
+{
+  "title": "How we redesigned procurement reviews for AI tooling",
+  "body": "We moved from ad-hoc approvals to a two-stage review that combines risk tiering and value hypotheses, so teams can start small pilots quickly while still documenting governance decisions for audit and scaling.",
+  "name": "Jordan"
+}
