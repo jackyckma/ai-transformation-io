@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'server-only';
 
+import { getCuratedHomeFeed, type CuratedTopic } from './curated';
+
 export type ContentPageMeta = {
   slug: string;
   title: string;
@@ -172,3 +174,87 @@ export function getPageByPathname(pathname: string): ContentDocument | null {
   const slug = Object.entries(CONTENT_REGISTRY).find(([, e]) => e.pathname === pathname)?.[0];
   return slug ? getPage(slug) : null;
 }
+
+export type ResolvedCuratedArticle = {
+  slug: string;
+  title: string;
+  description: string;
+  pathname: string;
+};
+
+function resolveCuratedSlug(
+  slug: string,
+  useOrgLearnPaths: boolean | undefined,
+): ResolvedCuratedArticle | null {
+  if (useOrgLearnPaths) {
+    const page = getOrgLearnPages().find((entry) => entry.slug === slug);
+    if (!page) return null;
+    return {
+      slug: page.slug,
+      title: page.title,
+      description: page.description,
+      pathname: page.pathname,
+    };
+  }
+
+  const page = getAllPages().find((entry) => entry.slug === slug);
+  if (!page) return null;
+  return {
+    slug: page.slug,
+    title: page.title,
+    description: page.description,
+    pathname: page.pathname,
+  };
+}
+
+export function resolveCuratedArticles(
+  slugs: string[],
+  useOrgLearnPaths?: boolean,
+): ResolvedCuratedArticle[] {
+  return slugs.flatMap((slug) => {
+    const resolved = resolveCuratedSlug(slug, useOrgLearnPaths);
+    return resolved ? [resolved] : [];
+  });
+}
+
+export function getCuratedApiPayload(site: 'io' | 'org') {
+  const feed = getCuratedHomeFeed(site);
+  const resolveTopic = (topic: CuratedTopic) => {
+    const anchor = topic.anchorSlug
+      ? resolveCuratedSlug(topic.anchorSlug, topic.useOrgLearnPaths)
+      : null;
+    const related = resolveCuratedArticles(topic.relatedSlugs ?? [], topic.useOrgLearnPaths);
+    return {
+      id: topic.id,
+      title: topic.title,
+      summary: topic.summary,
+      href: topic.externalHref ?? anchor?.pathname ?? null,
+      anchor,
+      related,
+    };
+  };
+
+  return {
+    ok: true as const,
+    site: feed.site,
+    updatedAt: feed.updatedAt,
+    readerEntry: feed.readerEntry,
+    readerPaths: feed.readerPaths.map((pathEntry) => ({
+      ...pathEntry,
+      articles: resolveCuratedArticles(pathEntry.articleSlugs ?? [], pathEntry.useOrgLearnPaths),
+    })),
+    spotlight: feed.spotlight.map((item) => ({
+      ...item,
+      article: resolveCuratedSlug(item.slug, item.useOrgLearnPaths),
+    })),
+    topics: feed.topics.map(resolveTopic),
+    secondaryLinks: feed.secondaryLinks,
+  };
+}
+
+export {
+  getCuratedHomeFeed,
+  type CuratedHomeFeed,
+  type CuratedReaderPath,
+  type CuratedTopic,
+} from './curated';

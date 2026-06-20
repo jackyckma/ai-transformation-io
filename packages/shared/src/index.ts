@@ -13,6 +13,7 @@ export const contributionSourceSchema = z.enum([
   'web_inquiry',
   'web_prompt_reply',
   'assessment_reflection',
+  'apprenticeship_interest',
   'newsletter_reply',
   'linkedin_manual',
 ]);
@@ -33,6 +34,21 @@ export const inquiryResponseSchema = z.object({
 });
 
 export type InquiryResponse = z.infer<typeof inquiryResponseSchema>;
+
+export const apprenticeshipInterestPayloadSchema = z.object({
+  email: z.string().email(),
+  name: z.string().max(120).optional(),
+  note: z.string().max(1000).optional(),
+});
+
+export type ApprenticeshipInterestPayload = z.infer<typeof apprenticeshipInterestPayloadSchema>;
+
+export const apprenticeshipInterestResponseSchema = z.object({
+  ok: z.literal(true),
+  id: z.string(),
+});
+
+export type ApprenticeshipInterestResponse = z.infer<typeof apprenticeshipInterestResponseSchema>;
 
 export const storyPayloadSchema = z.object({
   title: z.string().min(4).max(160),
@@ -394,3 +410,11 @@ export function createApiClient(baseUrl: string) {
 
 export const SITE_IO = 'ai-transformation.io' as const;
 export const SITE_ORG = 'ai-transformation.org' as const;
+
+export {
+  AGENT_PANEL_HEADLINE,
+  AGENT_PANEL_SUMMARY,
+  buildAgentQuickStart,
+  getSiteOrigin,
+  type AgentSite,
+} from './agent-discovery';

@@ -37,10 +37,10 @@ One monorepo, two public faces, one backend:
 ### Information architecture (current + target)
 
 ```
-/                               Home — article index + curated topics (not marketing hero)
+/                               Home — reader entry + curated topics + agent-friendly panel
 /frameworks/*                   Cornerstone explainers (5 live)
 /playbook/*                     Reference guides (5 live)
-/for-agents                     Agent protocol + capabilities (planned)
+/for-agents                     Agent protocol + copy-paste quick start
 /assessment                     36-question Three Gaps assessment (Wave 3)
 /ask                            Question box
 /functions/*                    By role (template — later waves)
@@ -201,11 +201,11 @@ Browser (.io / .org)
 | L4 Assessment | Scoring API + session save/resume | — |
 | L5 Harvest | `POST /api/inquiries`, contributions table | Stories, moderation (Wave 5) |
 | L6 Newsletter | — | Schema stub + NoopProvider (Wave 8 area) |
-| L7 Content | 10 KB articles, content registry | Curated topics feed (Wave 6) |
-| L8 Web IO | Editorial home, assessment, auth chrome, `/ask` | Curated home + `/for-agents` (Wave 6) |
-| L9 Web ORG | Learn hub, `/join`, auth chrome, `/ask` | Curated home parity (Wave 6) |
+| L7 Content | 10 KB articles, content registry, `data/curated/` feeds | Curated topics on home (Wave 6 ✅) |
+| L8 Web IO | Reader entry home, assessment, `/for-agents`, `/ask` | Chatbot hook (Wave 6 partial) |
+| L9 Web ORG | Learn hub, Harvest, apprenticeship, `/for-agents` | Curated home parity (Wave 6 ✅) |
 | L10 Agent jobs | — | compile_issue_draft stub (Wave 8 area) |
-| L11 Agent protocol | Spec in usr/11 | API v1 MVP (Wave 7) |
+| L11 Agent protocol | Spec in usr/11; Wave 6 stub routes | API v1 MVP (Wave 7) |
 
 *Updated at end of each wave — see [project-progress.md](./project-progress.md)*
 

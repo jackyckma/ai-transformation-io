@@ -35,20 +35,20 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 
 - Human v1 auth: Google OAuth only (no magic link for humans). External consent screen (not Internal); owner uses personal Gmail — Testing mode + test users until Publish; one dedicated GCP project per product. Agent write authorize (L11): email confirmation → reusable bearer token (180-day TTL, refresh without re-email).
 - Assessment: 30+ questions using the Three Gaps framework (36 Likert 1–5, agent-drafted from knowledge-base); functional wizard UX with radar results—not article layout; results CTAs provisionally approved pending founder review.
-- Defer newsletter on both sites until agent automation can reduce manual curation; design infrastructure for separate per-domain newsletters and switchboard before launch.
-- Defer prominent consultancy CTAs until assessment is mature; use low-key contact or comment forms first; no schedule-call booking in early versions.
+- Defer newsletter on both sites until agent automation can reduce manual curation; design infrastructure for separate per-domain newsletters and switchboard before launch. Defer prominent consultancy CTAs until assessment is mature; use low-key contact or comment forms first; no schedule-call booking in early versions.
+- .org Apprenticeship program: separate product line from enterprise .io consulting (AI-era judgment/formation training); public pages use "we" voice (`apprenticeship-overview-EN.md`); founder first-person thesis stays in `usr/13` as internal source.
 - Prefer Harvest Hub contribution model over a self-hosted discussion forum for .org.
 - .org community: public read, login required to post.
 - Site UI language: English-only; light theme default with dark mode toggle. User may converse in Cantonese/Traditional Chinese; agents respond in Traditional Chinese per project-guidelines; docs and code stay English.
-- .io IA: curation and articles first; function-by-role pages deferred to Wave 9, not function-primary nav. .org content is community-oriented and not necessarily by function.
+- .io IA: layered home curation with reader reflection paths (Option A) as primary entry; Assessment secondary for org-level diagnostic; function-by-role pages deferred to Wave 9. .org home: Read / Harvest Hub activities / Agent participation pillars—not a flat article index.
 - Research output: internal strategy in `usr/`, public website ideas in `knowledge-base/`; prioritize enriching both sites from knowledge-base before interaction features.
-- Site design: content-first editorial with human-curated topics (few, high-signal) on home; not product-marketing (no oversized bold sans titles, pill CTAs, or subscribe funnels); refined elegant typography — serif titles with light sans body; interactive flows (e.g. assessment) may use purpose-built wider layouts.
+- Site design: content-first editorial with layered home curation (spotlight + few high-signal topics + secondary full index); not product-marketing (no oversized bold sans titles, pill CTAs, or subscribe funnels); refined elegant typography — serif titles with light sans body; interactive flows (e.g. assessment) may use purpose-built wider layouts. Make agent-first participation visible via `/for-agents` and embedded hints—not shouty product marketing.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
 - Default to commit and push to `main` for deploy until production stage; no extra approval needed for commit/push.
 
 ## Learned Workspace Facts
 
-- ai-transformation.io is a corporate-facing executive info portal; ai-transformation.org is community Harvest Hub (brand as AI Transformation · Harvest Hub, not "Learn Together").
+- ai-transformation.io is a corporate-facing executive info portal; ai-transformation.org is community Harvest Hub plus AI-era Apprenticeship (`/apprenticeship`, `/apprenticeship/rationale`, `POST /api/apprenticeship/interest`; brand as AI Transformation · Harvest Hub, not "Learn Together"). Apprenticeship is formation/judgment training, not enterprise consulting.
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
 - Lane-based waves: 0–4 production-verified (assessment, Google OAuth, cross-domain, save/resume); Wave 5 Harvest Hub next; Wave 6 curation + `/for-agents`; Wave 7 agent protocol v1; Wave 9 function IA; L11 Agent protocol split from L10 internal jobs.

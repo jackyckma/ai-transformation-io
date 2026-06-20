@@ -1,4 +1,9 @@
-import { inquiryPayloadSchema, promptReplyPayloadSchema, storyPayloadSchema } from '@ai-transformation/shared';
+import {
+  apprenticeshipInterestPayloadSchema,
+  inquiryPayloadSchema,
+  promptReplyPayloadSchema,
+  storyPayloadSchema,
+} from '@ai-transformation/shared';
 import { Hono } from 'hono';
 
 import {
@@ -126,6 +131,34 @@ harvestRouter.post('/inquiries', async (c) => {
     email: parsed.data.email,
     name: parsed.data.name ?? null,
     body: parsed.data.question,
+    status: 'new',
+    metadata: '{}',
+    createdAt: new Date().toISOString(),
+  });
+
+  return c.json({ ok: true, id }, 201);
+});
+
+harvestRouter.post('/apprenticeship/interest', async (c) => {
+  const body = await c.req.json();
+  const parsed = apprenticeshipInterestPayloadSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+
+  const note = parsed.data.note?.trim();
+  const id = crypto.randomUUID();
+  const user = c.get('user');
+  insertContribution({
+    id,
+    source: 'apprenticeship_interest',
+    site: 'org',
+    userId: user?.id,
+    email: parsed.data.email,
+    name: parsed.data.name ?? null,
+    subject: 'Apprenticeship interest',
+    body: note && note.length > 0 ? note : 'Express interest in apprenticeship program',
     status: 'new',
     metadata: '{}',
     createdAt: new Date().toISOString(),

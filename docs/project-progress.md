@@ -14,8 +14,8 @@
 | M3b — Content + editorial refresh | 2026-06-18 | ✅ |
 | M4 — Assessment live (Wave 3) | 2026-06-19 | ✅ |
 | M5 — Auth + save (Wave 4) | 2026-06-19 | ✅ |
-| M6 — .org Harvest Hub (Wave 5) | TBD | ⏳ **Next** |
-| M7 — Curation + agent discovery (Wave 6) | TBD | ⏳ |
+| M6 — .org Harvest Hub (Wave 5) | 2026-06-20 | ✅ |
+| M7 — Curation + agent discovery (Wave 6) | 2026-06-20 | 🔄 Partial (home + stubs; rate limits + chatbot hook TBD) |
 | M8 — Agent protocol v1 (Wave 7) | TBD | ⏳ |
 | M9 — Newsletter + internal agent jobs (Wave 8) | TBD | ⏳ |
 | M10 — IA expansion (Wave 9) | TBD | ⏳ |
@@ -217,9 +217,17 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L2 | Read rate-limit middleware skeleton (anonymous vs registered tiers) |
 
 **Exit criteria:**
-- [ ] Both homes lead with ≤5 curated topics
-- [ ] `/for-agents` live on .io and .org
-- [ ] Capabilities JSON returns stable v1 shape (may 501 on unimplemented routes)
+- [x] Both homes lead with ≤5 curated topics (via `data/curated/` + reader entry paths)
+- [x] `/for-agents` live on .io and .org
+- [x] Capabilities JSON returns stable v1 stub shape
+- [ ] Read rate-limit middleware skeleton (anonymous vs registered tiers)
+- [ ] Experimental content chatbot hook (register funnel) — deferred within Wave 6/7
+
+**Locked decisions (2026-06-20):**
+- Home primary entry: **reader reflection paths (Option A)**, not Assessment CTA
+- Assessment remains secondary link for org-level diagnostic
+- Agent-friendly block visible on both homes + `llms.txt`
+- Curation: founder hand-edits `data/curated/*.json`
 
 **Depends on:** Wave 2 DB; benefits from Wave 5 contributions for future curation sources.
 

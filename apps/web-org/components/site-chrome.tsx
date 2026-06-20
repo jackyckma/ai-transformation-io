@@ -4,9 +4,10 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 const nav = [
   { href: '/learn', label: 'Learn' },
+  { href: '/apprenticeship', label: 'Apprenticeship' },
   { href: '/stories', label: 'Stories' },
   { href: '/prompts', label: 'Prompts' },
-  { href: '/moderation', label: 'Moderation' },
+  { href: '/for-agents', label: 'For agents' },
   { href: '/join', label: 'Join' },
   { href: '/ask', label: 'Ask' },
 ];
@@ -44,6 +45,10 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-[var(--border)] py-10 text-center text-sm font-light text-[var(--muted)]">
       <p>
         Harvest Hub — share experiences, not hype.{' '}
+        <Link href="/for-agents" className="underline hover:text-[var(--foreground)]">
+          Agent-friendly API
+        </Link>
+        {' · '}
         <a href="https://ai-transformation.io" className="underline hover:text-[var(--foreground)]">
           Frameworks on .io
         </a>

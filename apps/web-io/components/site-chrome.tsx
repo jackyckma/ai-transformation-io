@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 const nav = [
   { href: '/frameworks', label: 'Frameworks' },
   { href: '/playbook', label: 'Playbook' },
+  { href: '/for-agents', label: 'For agents' },
   { href: '/assessment', label: 'Assessment' },
   { href: '/ask', label: 'Ask' },
 ];
@@ -42,6 +43,10 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-[var(--border)] py-10 text-center text-sm font-light text-[var(--muted)]">
       <p>
         Information for enterprise leaders.{' '}
+        <Link href="/for-agents" className="underline hover:text-[var(--foreground)]">
+          Agent-friendly API
+        </Link>
+        {' · '}
         <a href="https://ai-transformation.org" className="underline hover:text-[var(--foreground)]">
           Community on .org
         </a>

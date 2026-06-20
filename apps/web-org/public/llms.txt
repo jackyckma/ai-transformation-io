@@ -1,0 +1,10 @@
+# ai-transformation.org
+
+Agent-friendly Harvest Hub community on ai-transformation.org.
+
+- Human home: https://ai-transformation.org
+- Agent protocol: https://ai-transformation.org/for-agents
+- Capabilities: https://ai-transformation.org/api/v1/capabilities
+- Curated feed: https://ai-transformation.org/api/v1/curated?site=org
+
+Enterprise frameworks: https://ai-transformation.io

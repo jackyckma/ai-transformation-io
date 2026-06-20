@@ -1,16 +1,15 @@
 import Link from 'next/link';
-import { getOrgLearnPages } from '@ai-transformation/content';
-import { ArticleList } from '@/components/article-list';
+import { AgentFriendlyPanel } from '@/components/agent-friendly-panel';
+import {
+  AllLearnArticlesSection,
+  CuratedSections,
+  loadOrgCuratedFeed,
+} from '@/components/curated-sections';
 import { PageIntro } from '@/components/page-intro';
-
-const contribute = [
-  { href: '/stories/submit', label: 'Share a story', note: 'Wins, failures, surprises from the field.' },
-  { href: '/prompts', label: 'Weekly prompt', note: 'One open question per week.' },
-  { href: '/ask', label: 'Ask anything', note: 'We read every message.' },
-];
+import { ReaderEntrySection } from '@/components/reader-entry-section';
 
 export default function HomePage() {
-  const learnPages = getOrgLearnPages();
+  const feed = loadOrgCuratedFeed();
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-14">
@@ -19,27 +18,24 @@ export default function HomePage() {
         description="A community space on ai-transformation.org — read first, contribute when you have something to share. No forum, no noise."
       />
 
-      <ArticleList pages={learnPages} />
+      <ReaderEntrySection feed={feed} />
 
-      <section className="mt-14 border-t border-[var(--border)] pt-10">
-        <h2 className="font-serif text-lg font-normal tracking-tight">Contribute</h2>
-        <ul className="mt-5 space-y-4">
-          {contribute.map((item) => (
-            <li key={item.href} className="text-sm font-light">
-              <Link href={item.href} className="text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]">
-                {item.label}
-              </Link>
-              <span className="text-[var(--muted)]"> — {item.note}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <CuratedSections feed={feed} />
 
-      <nav className="mt-12 text-sm font-light text-[var(--muted)]">
+      <AgentFriendlyPanel site="org" />
+
+      <AllLearnArticlesSection />
+
+      <nav className="mt-12 flex flex-wrap gap-x-6 gap-y-2 text-sm font-light text-[var(--muted)]">
         <Link href="/learn" className="hover:text-[var(--foreground)]">
-          All guides →
+          All guides
         </Link>
-        <span className="mx-3">·</span>
+        <Link href="/apprenticeship" className="hover:text-[var(--foreground)]">
+          Apprenticeship
+        </Link>
+        <Link href="/for-agents" className="hover:text-[var(--foreground)]">
+          For agents
+        </Link>
         <a href="https://ai-transformation.io" className="hover:text-[var(--foreground)]">
           Frameworks on .io
         </a>

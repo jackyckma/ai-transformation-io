@@ -1,0 +1,10 @@
+# ai-transformation.io
+
+Agent-friendly information portal for enterprise AI transformation.
+
+- Human home: https://ai-transformation.io
+- Agent protocol: https://ai-transformation.io/for-agents
+- Capabilities: https://ai-transformation.io/api/v1/capabilities
+- Curated feed: https://ai-transformation.io/api/v1/curated?site=io
+
+Community site: https://ai-transformation.org

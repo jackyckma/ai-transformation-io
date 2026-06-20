@@ -298,6 +298,28 @@ describe('Wave 5 harvest backend', () => {
     expect(unknownPromptResponse.status).toBe(404);
   });
 
+  it('stores apprenticeship interest for anonymous POST /api/apprenticeship/interest', async () => {
+    const { app, db } = await loadBackend();
+    const response = await app.request('http://localhost/api/apprenticeship/interest', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        email: 'apprentice@example.com',
+        name: 'Future Apprentice',
+        note: 'I lead transformation in a mid-size logistics company and want structured practice.',
+      }),
+    });
+
+    expect(response.status).toBe(201);
+    const payload = (await response.json()) as { ok: boolean; id: string };
+    expect(payload.ok).toBe(true);
+
+    const row = db.getContributionById(payload.id);
+    expect(row?.source).toBe('apprenticeship_interest');
+    expect(row?.email).toBe('apprentice@example.com');
+    expect(row?.site).toBe('org');
+  });
+
   it('returns 400 for invalid bodies on story and prompt reply endpoints', async () => {
     const { app, db } = await loadBackend();
     const user = db.upsertUserByGoogle({

@@ -1,0 +1,63 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import 'server-only';
+
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(moduleDir, '../../..');
+const curatedDir = path.join(repoRoot, 'data/curated');
+
+export type CuratedExternalLink = {
+  label: string;
+  href: string;
+};
+
+export type CuratedReaderPath = {
+  id: string;
+  label: string;
+  description: string;
+  articleSlugs?: string[];
+  externalLinks?: CuratedExternalLink[];
+  useOrgLearnPaths?: boolean;
+};
+
+export type CuratedSpotlight = {
+  slug: string;
+  editorNote: string;
+  useOrgLearnPaths?: boolean;
+};
+
+export type CuratedTopic = {
+  id: string;
+  title: string;
+  summary: string;
+  anchorSlug?: string;
+  relatedSlugs?: string[];
+  externalHref?: string;
+  useOrgLearnPaths?: boolean;
+};
+
+export type CuratedSecondaryLink = {
+  label: string;
+  description: string;
+  href: string;
+};
+
+export type CuratedHomeFeed = {
+  site: 'io' | 'org';
+  updatedAt: string;
+  readerEntry: {
+    headline: string;
+    description: string;
+  };
+  readerPaths: CuratedReaderPath[];
+  spotlight: CuratedSpotlight[];
+  topics: CuratedTopic[];
+  secondaryLinks: CuratedSecondaryLink[];
+};
+
+export function getCuratedHomeFeed(site: 'io' | 'org'): CuratedHomeFeed {
+  const filePath = path.join(curatedDir, `${site}-home.json`);
+  const raw = fs.readFileSync(filePath, 'utf-8');
+  return JSON.parse(raw) as CuratedHomeFeed;
+}

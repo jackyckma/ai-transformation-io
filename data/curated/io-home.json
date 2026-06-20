@@ -1,0 +1,71 @@
+{
+  "site": "io",
+  "updatedAt": "2026-06-20",
+  "readerEntry": {
+    "headline": "What does AI transformation mean in your context?",
+    "description": "Not a vendor checklist — how work, judgment, and value actually change where you sit."
+  },
+  "readerPaths": [
+    {
+      "id": "lead",
+      "label": "I lead or sponsor change",
+      "description": "Governance, roadmap, and measuring value at organizational scale.",
+      "articleSlugs": [
+        "governance-and-operating-model",
+        "transformation-roadmap",
+        "measuring-ai-value"
+      ]
+    },
+    {
+      "id": "implement",
+      "label": "I implement or enable",
+      "description": "Patterns, pitfalls, and practical playbook moves.",
+      "articleSlugs": [
+        "ai-patterns-copilots-agents-automation",
+        "common-pitfalls",
+        "use-cases-by-industry"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "I'm exploring what this means for me",
+      "description": "Start with the cornerstone, then hear from practitioners on .org.",
+      "articleSlugs": ["what-is-ai-transformation"],
+      "externalLinks": [
+        {
+          "label": "Harvest Hub on .org",
+          "href": "https://ai-transformation.org"
+        }
+      ]
+    }
+  ],
+  "spotlight": [
+    {
+      "slug": "what-is-ai-transformation",
+      "editorNote": "The cornerstone — deployment vs operating-model change."
+    }
+  ],
+  "topics": [
+    {
+      "id": "three-gaps",
+      "title": "Close the Three Gaps",
+      "summary": "Work redesign, governance, and value measurement — the structure behind everything here.",
+      "anchorSlug": "what-is-ai-transformation",
+      "relatedSlugs": ["governance-and-operating-model", "measuring-ai-value"]
+    },
+    {
+      "id": "roadmap",
+      "title": "Seven stages, not a pilot",
+      "summary": "From business alignment to governed scaling — a practical transformation roadmap.",
+      "anchorSlug": "transformation-roadmap",
+      "relatedSlugs": ["common-pitfalls", "ai-patterns-copilots-agents-automation"]
+    }
+  ],
+  "secondaryLinks": [
+    {
+      "label": "Organizational diagnostic (36 questions)",
+      "description": "For teams leading AI transformation — Three Gaps radar, not a personal quiz.",
+      "href": "/assessment"
+    }
+  ]
+}

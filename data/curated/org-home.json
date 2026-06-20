@@ -1,0 +1,67 @@
+{
+  "site": "org",
+  "updatedAt": "2026-06-20",
+  "readerEntry": {
+    "headline": "What brings you to Harvest Hub?",
+    "description": "Read first, contribute when you have something real to share — experiences, not hype."
+  },
+  "readerPaths": [
+    {
+      "id": "learn",
+      "label": "I want to learn the basics",
+      "description": "Intro guides on transformation, patterns, and common pitfalls.",
+      "articleSlugs": [
+        "what-is-ai-transformation",
+        "transformation-roadmap",
+        "common-pitfalls"
+      ],
+      "useOrgLearnPaths": true
+    },
+    {
+      "id": "share",
+      "label": "I have an experience to share",
+      "description": "Stories, weekly prompts, or a direct question to the community.",
+      "externalLinks": [
+        { "label": "Share a story", "href": "/stories/submit" },
+        { "label": "Weekly prompt", "href": "/prompts" },
+        { "label": "Ask anything", "href": "/ask" }
+      ]
+    },
+    {
+      "id": "apprenticeship",
+      "label": "I'm interested in the apprenticeship",
+      "description": "AI-era judgment training — real projects, short mentorship chains.",
+      "externalLinks": [{ "label": "Apprenticeship program", "href": "/apprenticeship" }]
+    }
+  ],
+  "spotlight": [
+    {
+      "slug": "what-is-ai-transformation",
+      "editorNote": "Start here if transformation language is still fuzzy.",
+      "useOrgLearnPaths": true
+    }
+  ],
+  "topics": [
+    {
+      "id": "harvest-stories",
+      "title": "Field experiences",
+      "summary": "Wins, failures, and surprises from people doing the work.",
+      "externalHref": "/stories",
+      "relatedSlugs": ["common-pitfalls"],
+      "useOrgLearnPaths": true
+    },
+    {
+      "id": "apprenticeship",
+      "title": "Apprenticeship (preparing to launch)",
+      "summary": "Rebuilding judgment training when the entry-level rung thins out.",
+      "externalHref": "/apprenticeship"
+    }
+  ],
+  "secondaryLinks": [
+    {
+      "label": "Frameworks on .io",
+      "description": "Enterprise playbooks and assessment for leaders.",
+      "href": "https://ai-transformation.io"
+    }
+  ]
+}
