@@ -7,6 +7,8 @@ const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(moduleDir, '../../..');
 const curatedDir = path.join(repoRoot, 'data/curated');
 
+export type CuratedLayout = 'feature' | 'compact' | 'topic-row';
+
 export type CuratedExternalLink = {
   label: string;
   href: string;
@@ -16,6 +18,8 @@ export type CuratedReaderPath = {
   id: string;
   label: string;
   description: string;
+  layout?: CuratedLayout;
+  image?: string;
   articleSlugs?: string[];
   externalLinks?: CuratedExternalLink[];
   useOrgLearnPaths?: boolean;
@@ -24,6 +28,8 @@ export type CuratedReaderPath = {
 export type CuratedSpotlight = {
   slug: string;
   editorNote: string;
+  layout?: CuratedLayout;
+  image?: string;
   useOrgLearnPaths?: boolean;
 };
 
@@ -31,6 +37,8 @@ export type CuratedTopic = {
   id: string;
   title: string;
   summary: string;
+  layout?: CuratedLayout;
+  image?: string;
   anchorSlug?: string;
   relatedSlugs?: string[];
   externalHref?: string;

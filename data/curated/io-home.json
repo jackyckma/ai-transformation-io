@@ -1,6 +1,6 @@
 {
   "site": "io",
-  "updatedAt": "2026-06-20",
+  "updatedAt": "2026-06-21",
   "readerEntry": {
     "headline": "What does AI transformation mean in your context?",
     "description": "Not a vendor checklist — how work, judgment, and value actually change where you sit."
@@ -8,6 +8,7 @@
   "readerPaths": [
     {
       "id": "lead",
+      "layout": "compact",
       "label": "I lead or sponsor change",
       "description": "Governance, roadmap, and measuring value at organizational scale.",
       "articleSlugs": [
@@ -18,6 +19,7 @@
     },
     {
       "id": "implement",
+      "layout": "compact",
       "label": "I implement or enable",
       "description": "Patterns, pitfalls, and practical playbook moves.",
       "articleSlugs": [
@@ -28,6 +30,7 @@
     },
     {
       "id": "explore",
+      "layout": "compact",
       "label": "I'm exploring what this means for me",
       "description": "Start with the cornerstone, then hear from practitioners on .org.",
       "articleSlugs": ["what-is-ai-transformation"],
@@ -42,12 +45,14 @@
   "spotlight": [
     {
       "slug": "what-is-ai-transformation",
+      "layout": "feature",
       "editorNote": "The cornerstone — deployment vs operating-model change."
     }
   ],
   "topics": [
     {
       "id": "three-gaps",
+      "layout": "topic-row",
       "title": "Close the Three Gaps",
       "summary": "Work redesign, governance, and value measurement — the structure behind everything here.",
       "anchorSlug": "what-is-ai-transformation",
@@ -55,6 +60,7 @@
     },
     {
       "id": "roadmap",
+      "layout": "topic-row",
       "title": "Seven stages, not a pilot",
       "summary": "From business alignment to governed scaling — a practical transformation roadmap.",
       "anchorSlug": "transformation-roadmap",

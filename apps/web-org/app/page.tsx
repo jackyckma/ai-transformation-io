@@ -12,7 +12,7 @@ export default function HomePage() {
   const feed = loadOrgCuratedFeed();
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-14">
+    <div className="mx-auto max-w-3xl px-6 py-14">
       <PageIntro
         title="Harvest Hub"
         description="A community space on ai-transformation.org — read first, contribute when you have something to share. No forum, no noise."
