@@ -8,6 +8,9 @@
   --muted: #6b7f72;
   --card: #ffffff;
   --border: #dce8e0;
+  --layout-shell: 72rem;
+  --layout-read: 48rem;
+  --layout-prose: 42rem;
 }
 
 .dark {
@@ -25,6 +28,27 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-weight: 300;
+}
+
+.layout-shell {
+  width: 100%;
+  max-width: var(--layout-shell);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.layout-read {
+  width: 100%;
+  max-width: var(--layout-read);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.layout-prose {
+  width: 100%;
+  max-width: var(--layout-prose);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
 }
 
 .font-serif {

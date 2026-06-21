@@ -14,7 +14,7 @@ export default function HomePage() {
   const allArticles = getAllPages();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-14">
+    <div className="layout-read py-14">
       <PageIntro
         title="AI Transformation"
         description="An information portal for enterprise leaders — frameworks, playbook articles, and practical guides on operating model change, not tool deployment alone."

@@ -13,26 +13,29 @@ const nav = [
 export function SiteHeader() {
   return (
     <header className="border-b border-[var(--border)]">
-      <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-5">
-        <Link href="/" className="font-serif text-base font-normal tracking-tight">
+      <div className="layout-shell grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-4 py-4 sm:py-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-x-8">
+        <Link href="/" className="col-start-1 row-start-1 shrink-0 font-serif text-base font-normal tracking-tight">
           AI Transformation
           <span className="ml-1 font-sans text-sm font-light text-[var(--muted)]">.io</span>
         </Link>
-        <nav className="hidden items-center gap-5 text-sm font-light md:flex">
+        <div className="col-start-2 row-start-1 flex shrink-0 items-center gap-3">
+          <AuthNav />
+          <ThemeToggle />
+        </div>
+        <nav
+          aria-label="Primary"
+          className="col-span-2 row-start-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-light lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:justify-center"
+        >
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-[var(--muted)] transition hover:text-[var(--foreground)]"
+              className="whitespace-nowrap text-[var(--muted)] transition hover:text-[var(--foreground)]"
             >
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
-          <AuthNav />
-          <ThemeToggle />
-        </div>
       </div>
     </header>
   );
