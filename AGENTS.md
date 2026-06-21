@@ -40,18 +40,18 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - Prefer Harvest Hub contribution model over a self-hosted discussion forum for .org.
 - .org community: public read, login required to post.
 - Site UI language: English-only; light theme default with dark mode toggle. User may converse in Cantonese/Traditional Chinese; agents respond in Traditional Chinese per project-guidelines; docs and code stay English.
-- .io IA: layered home curation with reader reflection paths (Option A) as primary entry; Assessment secondary for org-level diagnostic; function-by-role pages deferred to Wave 9. .org home: Read / Harvest Hub activities / Agent participation pillars—not a flat article index.
+- .io IA: layered home curation with reader reflection paths (Option A) as primary entry; Assessment secondary for org-level diagnostic; pre-login chatbot as experimental registration hook (rate-limited), not a product promise; function-by-role pages deferred to Wave 9. .org home: Read / Harvest Hub activities / Agent participation pillars—not a flat article index.
 - Research output: internal strategy in `usr/`, public website ideas in `knowledge-base/`; prioritize enriching both sites from knowledge-base before interaction features.
-- Site design: content-first editorial with layered home curation (spotlight + few high-signal topics + secondary full index); not product-marketing (no oversized bold sans titles, pill CTAs, or subscribe funnels); refined elegant typography — serif titles with light sans body; interactive flows (e.g. assessment) may use purpose-built wider layouts. Make agent-first participation visible via `/for-agents` and embedded hints—not shouty product marketing.
+- Site design: content-first editorial with layered home curation (spotlight + few high-signal topics + secondary full index); founder-edited `data/curated/*.json`, slow cadence—fits brand; visual curation needs layout placement and cover imagery, not text-only lists (layout variants before imagery pipeline). Not product-marketing (no oversized bold sans titles, pill CTAs, or subscribe funnels); refined elegant typography — serif titles with light sans body; interactive flows (e.g. assessment) may use purpose-built wider layouts. Make agent-first visible via landing Agent-friendly block (copy-paste API quick start), `/for-agents`, and embedded hints—not shouty product marketing.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
-- Default to commit and push to `main` for deploy until production stage; no extra approval needed for commit/push.
+- After completing shippable work (content, UI, fixes, docs tied to production), default to commit and push to `main` without asking for approval — unless the user says otherwise or the change is explicitly exploratory. Zeabur deploys from `main`.
 
 ## Learned Workspace Facts
 
 - ai-transformation.io is a corporate-facing executive info portal; ai-transformation.org is community Harvest Hub plus AI-era Apprenticeship (`/apprenticeship`, `/apprenticeship/rationale`, `POST /api/apprenticeship/interest`; brand as AI Transformation · Harvest Hub, not "Learn Together"). Apprenticeship is formation/judgment training, not enterprise consulting.
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–5 production-verified; Wave 6 partial (curated homes, `/for-agents`, API stubs); Wave 7 agent protocol v1; Wave 9 function IA; L11 Agent protocol split from L10 internal jobs.
+- Lane-based waves: 0–5 production-verified; Wave 6 partial (curated homes via `data/curated/`, reader entry Option A, agent-friendly panels, `/for-agents`, curated/capabilities API stubs; visual curation layout Phase A); Wave 7 agent protocol v1; Wave 9 function IA; L11 Agent protocol split from L10 internal jobs.
 - Product direction: agent-first site — humans and agents are first-class participants; `/for-agents` plus embedded machine-readable hints on human pages.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token.
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie).

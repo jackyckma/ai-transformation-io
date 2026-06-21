@@ -70,14 +70,25 @@ export default function ApprenticeshipPage() {
         <h2 className="font-serif text-lg font-normal tracking-tight">Why we&apos;re writing this down</h2>
         <div className="markdown-body mt-4">
           <p>
-            We&apos;re not trying to publish a polished argument and move on. We&apos;re starting a small project, and
-            this is the thinking behind it — written down so it&apos;s clear what we&apos;re actually trying to train,
-            why it matters now specifically, and so that if this works, the reasoning is legible enough for someone
-            else to pick up and adapt.
+            There is a small, real project behind this page. We&apos;re writing the thinking down so it&apos;s clear
+            what we&apos;re actually trying to train, why now specifically, and whether the reasoning is legible enough
+            for someone else to pick up, adapt it, and run with it.
           </p>
           <p>
-            If you&apos;re a parent feeling the same unease we described at the start, or someone early in a technical
-            career wondering what&apos;s actually worth practicing right now, we&apos;d be glad to hear from you.
+            If you&apos;re a parent feeling the same quiet unease we described at the start, or someone early in a
+            technical career wondering what&apos;s actually worth practicing right now, we&apos;d be glad to hear from
+            you.
+          </p>
+          <p className="text-sm text-[var(--muted)]">
+            A related essay on{' '}
+            <a
+              href="https://jackyma.info/blog/ai-era-apprenticeship-en/"
+              className="text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
+            >
+              jackyma.info
+            </a>{' '}
+            explores the same reasoning in the founder&apos;s voice; this page is the public &quot;we&quot; overview for
+            .org.
           </p>
         </div>
       </section>
