@@ -9,6 +9,7 @@
     {
       "id": "lead",
       "layout": "compact",
+      "image": "/curation/path-governance.jpg",
       "label": "I lead or sponsor change",
       "description": "Governance, roadmap, and measuring value at organizational scale.",
       "articleSlugs": [
@@ -20,6 +21,7 @@
     {
       "id": "implement",
       "layout": "compact",
+      "image": "/curation/path-playbook.jpg",
       "label": "I implement or enable",
       "description": "Patterns, pitfalls, and practical playbook moves.",
       "articleSlugs": [
@@ -31,6 +33,7 @@
     {
       "id": "explore",
       "layout": "compact",
+      "image": "/curation/path-explore.jpg",
       "label": "I'm exploring what this means for me",
       "description": "Start with the cornerstone, then hear from practitioners on .org.",
       "articleSlugs": ["what-is-ai-transformation"],
@@ -46,6 +49,7 @@
     {
       "slug": "what-is-ai-transformation",
       "layout": "feature",
+      "image": "/curation/cornerstone.jpg",
       "editorNote": "The cornerstone — deployment vs operating-model change."
     }
   ],
@@ -53,6 +57,7 @@
     {
       "id": "three-gaps",
       "layout": "topic-row",
+      "image": "/curation/three-gaps.jpg",
       "title": "Close the Three Gaps",
       "summary": "Work redesign, governance, and value measurement — the structure behind everything here.",
       "anchorSlug": "what-is-ai-transformation",
@@ -61,6 +66,7 @@
     {
       "id": "roadmap",
       "layout": "topic-row",
+      "image": "/curation/roadmap.jpg",
       "title": "Seven stages, not a pilot",
       "summary": "From business alignment to governed scaling — a practical transformation roadmap.",
       "anchorSlug": "transformation-roadmap",
