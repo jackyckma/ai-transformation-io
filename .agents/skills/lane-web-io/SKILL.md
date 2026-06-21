@@ -1,6 +1,6 @@
 ---
 name: lane-web-io
-description: L8 Web IO — ai-transformation.io thin UI. Load before editing apps/web-io.
+description: L8 Web IO — ai-transformation.io thin UI. Load before editing apps/web-io. For UX/layout or microcopy changes, also load editorial-ui and/or ux-copy.
 ---
 
 # L8 — Web IO
@@ -10,7 +10,8 @@ description: L8 Web IO — ai-transformation.io thin UI. Load before editing app
 ## Rules
 1. UI stays thin — fetch from `/api/*` via shared client.
 2. No host-based routing. Corporate editorial voice.
-3. Function-primary IA — see docs/product-architecture.md.
+3. Home IA: reader paths + curation first; Assessment secondary — see `AGENTS.md`.
+4. UX work: load `.agents/skills/editorial-ui/SKILL.md` (visual) and `.agents/skills/ux-copy/SKILL.md` (strings).
 
 ## Verify
 `pnpm --filter @ai-transformation/web-io build`
