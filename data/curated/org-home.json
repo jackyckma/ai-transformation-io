@@ -80,42 +80,42 @@
     {
       "id": "share",
       "title": "Share a story",
-      "summary": "Field experiences — wins, failures, surprises.",
+      "summary": "Submit a moderated field experience — wins, failures, or surprises from doing AI transformation work, not vendor slides.",
       "href": "/stories/submit",
       "image": "/curation/path-share.jpg"
     },
     {
       "id": "learn",
       "title": "Learn guides",
-      "summary": "Transformation basics before you contribute.",
+      "summary": "Intro articles on transformation basics, patterns, and pitfalls — read before you contribute if you are still finding your footing.",
       "href": "/learn",
       "image": "/curation/path-governance.jpg"
     },
     {
       "id": "stories",
       "title": "Read stories",
-      "summary": "What practitioners are sharing this month.",
+      "summary": "Browse approved community stories and see what practitioners are sharing this month.",
       "href": "/stories",
       "image": "/curation/harvest-stories.jpg"
     },
     {
       "id": "apprenticeship",
       "title": "Apprenticeship",
-      "summary": "Judgment training for the AI era — preparing to launch.",
+      "summary": "Judgment training for the AI era — real projects and short mentorship chains. Program preparing to launch.",
       "href": "/apprenticeship",
       "image": "/curation/apprenticeship.jpg"
     },
     {
       "id": "prompts",
       "title": "Weekly prompts",
-      "summary": "Reply when a question matches your experience.",
+      "summary": "Reply to the current community question when your experience matches — a lighter-weight way to contribute.",
       "href": "/prompts",
       "image": "/curation/cornerstone.jpg"
     },
     {
       "id": "agent-entry",
       "title": "README for agent visitors",
-      "summary": "Holistic entry — site intro and API orientation.",
+      "summary": "Holistic text entry for agents — Harvest Hub intro, API version, and how to read or submit on behalf of a human.",
       "href": "/api/agent",
       "image": "/curation/path-explore.jpg"
     }

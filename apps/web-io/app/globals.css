@@ -33,31 +33,35 @@ body {
   font-weight: 300;
 }
 
+.site-panel-x {
+  padding-inline: 1.5rem;
+}
+
 .layout-shell {
   width: 100%;
   max-width: var(--layout-shell);
-  margin-inline: auto;
+  margin-inline: 0;
   padding-inline: 1.5rem;
 }
 
 .layout-read {
   width: 100%;
   max-width: var(--layout-read);
-  margin-inline: auto;
+  margin-inline: 0;
   padding-inline: 1.5rem;
 }
 
 .layout-prose {
   width: 100%;
   max-width: var(--layout-prose);
-  margin-inline: auto;
+  margin-inline: 0;
   padding-inline: 1.5rem;
 }
 
 .layout-wide {
   width: 100%;
   max-width: var(--layout-wide);
-  margin-inline: auto;
+  margin-inline: 0;
   padding-inline: 1.5rem;
 }
 

@@ -23,5 +23,5 @@ export function PageShell({
   className = '',
 }: PageShellProps) {
   const widthClass = WIDTH_CLASS[width];
-  return <Tag className={`${widthClass} py-10 md:py-14 ${className}`.trim()}>{children}</Tag>;
+  return <Tag className={`site-panel-x ${widthClass} py-10 md:py-14 ${className}`.trim()}>{children}</Tag>;
 }

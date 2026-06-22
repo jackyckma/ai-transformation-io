@@ -5,7 +5,7 @@ import {
   type CuratedHomeFeed,
   type CuratedHomeTile,
 } from '@ai-transformation/content';
-import { FeatureSpotlightCard, CuratedVisual } from '@/components/curated-cards';
+import { FeatureSpotlightCard, CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
 
 function resolveTileHref(tile: CuratedHomeTile): string | null {
   if (tile.href) {
@@ -66,15 +66,15 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
                   <CuratedVisual
                     seed={tile.id}
                     image={tile.image}
-                    aspectClass="aspect-[5/3] w-full"
-                    compact={false}
+                    aspectClass={`${DECORATIVE_ASPECT.tile} w-full`}
+                    flush
                   />
-                  <div className="p-4">
+                  <div className="p-4 pb-5">
                     <h3 className="font-serif text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
                       {tile.title}
                     </h3>
                     {tile.summary ? (
-                      <p className="mt-1.5 text-sm font-light leading-relaxed text-[var(--muted)]">
+                      <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">
                         {tile.summary}
                       </p>
                     ) : null}

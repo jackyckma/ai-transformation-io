@@ -8,6 +8,7 @@ type CuratedVisualProps = {
   image?: string;
   aspectClass?: string;
   compact?: boolean;
+  flush?: boolean;
 };
 
 const PLACEHOLDER_TONES = [
@@ -31,15 +32,26 @@ function initialForSeed(seed: string): string {
   return trimmed.charAt(0).toUpperCase();
 }
 
+export const DECORATIVE_ASPECT = {
+  spotlight: 'aspect-[3/1]',
+  tile: 'aspect-[4/1]',
+  pageBand: 'aspect-[5/1]',
+} as const;
+
 export function CuratedVisual({
   seed,
   image,
   aspectClass = 'aspect-[2/1]',
   compact = false,
+  flush = false,
 }: CuratedVisualProps) {
+  const frameClass = flush
+    ? `relative overflow-hidden ${aspectClass}`
+    : `relative overflow-hidden rounded-lg border border-[var(--border)] ${aspectClass}`;
+
   if (image) {
     return (
-      <div className={`relative overflow-hidden rounded-lg border border-[var(--border)] ${aspectClass}`}>
+      <div className={frameClass}>
         <Image src={image} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
       </div>
     );
@@ -58,7 +70,7 @@ export function CuratedVisual({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border border-[var(--border)] bg-gradient-to-br ${aspectClass} ${toneForSeed(seed)}`}
+      className={`${frameClass} bg-gradient-to-br ${toneForSeed(seed)}`}
       aria-hidden
     >
       <span className="absolute inset-0 flex items-center justify-center font-serif text-4xl font-normal text-[var(--foreground)]/20 md:text-5xl">
@@ -84,7 +96,12 @@ export function FeatureSpotlightCard({
   return (
     <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
       <Link href={article.pathname} className="group block">
-        <CuratedVisual seed={article.slug} image={image} aspectClass="aspect-[2/1] w-full" />
+        <CuratedVisual
+          seed={article.slug}
+          image={image}
+          aspectClass={`${DECORATIVE_ASPECT.spotlight} w-full`}
+          flush
+        />
         <div className="p-5 md:p-6">
           <p className="text-xs font-light tracking-wide text-[var(--muted)]">{category}</p>
           <h3 className="font-serif mt-2 text-xl font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)] md:text-2xl">

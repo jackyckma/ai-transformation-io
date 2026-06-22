@@ -368,7 +368,7 @@ export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
     return (
       <aside
         id="site-companion-panel"
-        className="flex h-[min(28rem,50vh)] flex-col bg-[var(--background)] lg:sticky lg:top-[var(--site-header-h)] lg:h-[calc(100vh-var(--site-header-h))] lg:min-h-0"
+        className="flex h-[min(28rem,50vh)] flex-col bg-[var(--background)] lg:sticky lg:top-0 lg:h-screen lg:min-h-0"
       >
         {panel}
       </aside>

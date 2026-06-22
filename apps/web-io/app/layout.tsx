@@ -46,18 +46,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${lora.variable} flex min-h-screen flex-col font-light antialiased`}
+        className={`${geistSans.variable} ${lora.variable} flex min-h-screen flex-col font-light antialiased lg:flex-row`}
       >
         <SiteJsonLd />
         <AuthErrorBanner />
-        <SiteHeader />
-        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-          <main className="min-w-0 flex-1">{children}</main>
-          <div className="border-t border-[var(--border)] lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:border-t-0 lg:border-l">
-            <SiteCompanion />
-          </div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
         </div>
-        <SiteFooter />
+        <div className="border-t border-[var(--border)] lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:border-t-0 lg:border-l">
+          <SiteCompanion />
+        </div>
       </body>
     </html>
   );
