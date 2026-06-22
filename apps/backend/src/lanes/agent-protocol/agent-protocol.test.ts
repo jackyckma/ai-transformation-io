@@ -53,13 +53,35 @@ describe('Wave 7 agent protocol', () => {
     const payload = (await response.json()) as {
       ok: boolean;
       api_version: string;
+      site: string;
       implementation_status: string;
+      content_index_example: string;
+      client_id: { header: string };
+      errors: { shape: { ok: boolean } };
       endpoints: { read_content: { status: string } };
     };
     expect(payload.ok).toBe(true);
     expect(payload.api_version).toBe('1.0.0');
+    expect(payload.site).toBe('ai-transformation.io');
     expect(payload.implementation_status).toBe('wave7_v1');
     expect(payload.endpoints.read_content.status).toBe('available');
+    expect(payload.content_index_example).toContain('site=io');
+    expect(payload.client_id.header).toBe('X-Agent-Client-Id');
+    expect(payload.errors.shape.ok).toBe(false);
+  });
+
+  it('resolves org site from x-forwarded-host when host is internal', async () => {
+    const app = await loadBackend();
+    const response = await app.request('http://localhost/api/v1/capabilities', {
+      headers: {
+        host: '127.0.0.1:3001',
+        'x-forwarded-host': 'ai-transformation.org',
+      },
+    });
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { site: string; content_index_example: string };
+    expect(payload.site).toBe('ai-transformation.org');
+    expect(payload.content_index_example).toContain('site=org');
   });
 
   it('lists and fetches content with read quota headers', async () => {
@@ -136,5 +158,11 @@ describe('Wave 7 agent protocol', () => {
     const orgResponse = await app.request('http://localhost/api/v1/curated?site=org');
     const orgPayload = (await orgResponse.json()) as { ok: boolean; site: string };
     expect(orgPayload.site).toBe('org');
+
+    const orgHostResponse = await app.request('http://localhost/api/v1/curated', {
+      headers: { host: 'ai-transformation.org' },
+    });
+    const orgHostPayload = (await orgHostResponse.json()) as { ok: boolean; site: string };
+    expect(orgHostPayload.site).toBe('org');
   });
 });

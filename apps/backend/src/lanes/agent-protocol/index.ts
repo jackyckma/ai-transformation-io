@@ -22,6 +22,7 @@ import {
 import { getCurrentPrompt, insertContribution } from '../../db/index.js';
 import { getContent, listContent } from './content-loader.js';
 import { sendAuthorizeEmail } from './email.js';
+import { resolveRequestSite } from './request-site.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(moduleDir, '../../../../../');
@@ -35,8 +36,12 @@ function loadCuratedFeed(site: 'io' | 'org') {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-function resolveSite(host: string | undefined): 'io' | 'org' {
-  return host?.includes('ai-transformation.org') ? 'org' : 'io';
+function resolveSite(c: { req: { header: (name: string) => string | undefined; query: (name: string) => string | undefined } }): 'io' | 'org' {
+  return resolveRequestSite(
+    c.req.header('host'),
+    c.req.header('x-forwarded-host'),
+    c.req.query('site'),
+  );
 }
 
 function resolveOrigin(site: 'io' | 'org'): string {
@@ -133,14 +138,56 @@ function buildCapabilities(site: 'io' | 'org') {
       token_ttl_days: 180,
       token_sites: ['io', 'org'],
     },
-    changelog_url: '/api/v1/agent/changelog',
+    changelog_url: `${origin}/api/v1/agent/changelog`,
+    content_index_example: `${origin}/api/v1/content?site=${site}`,
+    client_id: {
+      header: 'X-Agent-Client-Id',
+      required: false,
+      format: 'Stable string, 1–120 characters — e.g. "your-agent-name/1.0" or a UUID you reuse per deployment.',
+      purpose:
+        'Anonymous read quota is tracked per client_id (3/day). Reuse the same value across calls in one session.',
+      verified_reads:
+        'After POST /api/v1/agent/authorize and human email confirm, reads tied to that email get 10/day.',
+    },
+    errors: {
+      shape: { ok: false, error: 'machine_code', message: 'optional human-readable detail' },
+      codes: {
+        not_found: { status: 404, when: 'Unknown slug or missing resource' },
+        read_quota_exceeded: { status: 429, when: 'Daily content read limit reached' },
+        missing_token: { status: 401, when: 'POST /contributions without Bearer token' },
+        invalid_token: { status: 401, when: 'Expired or unknown write token' },
+        validation_error: { status: 400, when: 'Request body failed schema validation' },
+        invalid_body: { status: 400, when: 'Malformed JSON body' },
+        site_restriction: { status: 403, when: 'Story or prompt reply submitted on .io' },
+        missing_code: { status: 400, when: 'Authorize confirm without code query param' },
+        invalid_or_expired_code: { status: 400, when: 'Authorize confirm link invalid or expired' },
+        no_active_prompt: { status: 400, when: 'Prompt reply when no active community prompt' },
+      },
+      rate_limit_headers: ['X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
+    },
+    changelog: {
+      path: '/api/v1/agent/changelog',
+      response_shape: {
+        ok: true,
+        api_version: 'semver string',
+        entries: [{ version: 'semver', date: 'ISO date', summary: 'string', agent_action: 'string' }],
+      },
+    },
+    quick_start: [
+      `GET ${origin}/api/v1/capabilities`,
+      `GET ${origin}/api/v1/content?site=${site}`,
+      `GET ${origin}/api/v1/curated?site=${site}`,
+      `GET ${origin}/api/v1/content/{slug}?site=${site}`,
+      `POST ${origin}/api/v1/agent/authorize → human confirms → Bearer write token`,
+      `POST ${origin}/api/v1/contributions`,
+    ],
   };
 }
 
 const agentProtocolRouter = new Hono();
 
 agentProtocolRouter.get('/capabilities', (c) => {
-  const site = resolveSite(c.req.header('host'));
+  const site = resolveSite(c);
   return c.json(buildCapabilities(site));
 });
 
@@ -160,23 +207,20 @@ agentProtocolRouter.get('/agent/changelog', (c) =>
 );
 
 agentProtocolRouter.get('/curated', (c) => {
-  const siteParam = c.req.query('site');
-  const site = siteParam === 'org' ? 'org' : 'io';
+  const site = resolveSite(c);
   const feed = loadCuratedFeed(site);
   return c.json({ ok: true, ...feed });
 });
 
 agentProtocolRouter.get('/content', (c) => {
-  const siteParam = c.req.query('site');
-  const site = siteParam === 'org' ? 'org' : resolveSite(c.req.header('host'));
+  const site = resolveSite(c);
   const articles = listContent(site);
   return c.json({ ok: true, site, count: articles.length, articles });
 });
 
 agentProtocolRouter.get('/content/:slug', (c) => {
   const slug = c.req.param('slug');
-  const siteParam = c.req.query('site');
-  const site = siteParam === 'org' ? 'org' : resolveSite(c.req.header('host'));
+  const site = resolveSite(c);
   const document = getContent(slug, site);
 
   if (!document) {
@@ -233,7 +277,7 @@ agentProtocolRouter.post('/agent/authorize', async (c) => {
     return c.json({ ok: false, error: 'validation_error', message: parsed.error.issues[0]?.message }, 400);
   }
 
-  const site = resolveSite(c.req.header('host'));
+  const site = resolveSite(c);
   const origin = resolveOrigin(site);
   const { confirmCode } = createAuthorizeRequest({
     email: parsed.data.email,
@@ -309,7 +353,7 @@ agentProtocolRouter.post('/contributions', async (c) => {
     return c.json({ ok: false, error: 'validation_error', message: parsed.error.issues[0]?.message }, 400);
   }
 
-  const hostSite = resolveSite(c.req.header('host'));
+  const hostSite = resolveSite(c);
   const site = parsed.data.site ?? hostSite;
 
   if (parsed.data.type === 'story' || parsed.data.type === 'prompt_reply') {

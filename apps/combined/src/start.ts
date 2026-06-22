@@ -57,8 +57,14 @@ function routeTarget(host: string, url: string | undefined): string {
 function proxyRequest(req: IncomingMessage, res: ServerResponse): void {
   const host = normalizeHost(req.headers.host);
   const target = routeTarget(host, req.url);
+  const isApi = req.url?.startsWith('/api');
 
-  proxy.web(req, res, { target, changeOrigin: true }, (err) => {
+  // Backend resolves .io vs .org from Host; preserve it when proxying /api.
+  if (isApi && host) {
+    req.headers['x-forwarded-host'] = host;
+  }
+
+  proxy.web(req, res, { target, changeOrigin: !isApi }, (err) => {
     console.error('[combined] proxy error', err);
     if (!res.headersSent) {
       res.writeHead(502, { 'Content-Type': 'text/plain' });

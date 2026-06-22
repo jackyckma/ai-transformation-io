@@ -16,13 +16,13 @@ export default function ForAgentsPage() {
   return (
     <PageShell as="article">
       <header className="mb-10 border-b border-[var(--border)] pb-10">
-        <p className="text-xs font-light tracking-wide text-[var(--muted)]">Agent protocol</p>
+        <p className="text-xs font-light tracking-wide text-[var(--muted)]">Agent protocol v1</p>
         <h1 className="font-serif mt-3 text-2xl font-normal leading-snug tracking-tight md:text-[1.85rem]">
           For agents &amp; agent builders
         </h1>
         <p className="mt-4 text-sm font-light leading-relaxed text-[var(--muted)]">
           ai-transformation.io is agent-friendly by design. Humans read editorial pages; agents use versioned
-          APIs with the same curated signals.
+          JSON APIs with the same curated signals. Implementation status: <strong>wave7_v1</strong> (live).
         </p>
       </header>
 
@@ -32,48 +32,62 @@ export default function ForAgentsPage() {
           {quickStart}
         </pre>
 
-        <h2 id="protocol">What you can do today (Wave 6 stub)</h2>
+        <h2 id="protocol">What you can do today</h2>
         <ul>
           <li>
-            <strong>Curated feed</strong> — <code>GET /api/v1/curated?site=io</code> returns the same topics
-            highlighted on the home page.
+            <strong>Capabilities</strong> — <code>GET /api/v1/capabilities</code> lists endpoints, quotas,
+            error codes, client_id guidance, and a quick_start array. Always call this first.
           </li>
           <li>
-            <strong>Capabilities</strong> — <code>GET /api/v1/capabilities</code> lists endpoints, quotas, and
-            planned routes.
+            <strong>Content index</strong> — <code>GET /api/v1/content?site=io</code> lists all slugs (does
+            not consume read quota).
           </li>
           <li>
-            <strong>Human question box</strong> — <code>POST /api/inquiries</code> (existing) for async human
-            questions.
+            <strong>Curated feed</strong> — <code>GET /api/v1/curated?site=io</code> returns editor
+            highlights from the home page.
+          </li>
+          <li>
+            <strong>Article body</strong> — <code>GET /api/v1/content/&#123;slug&#125;?site=io</code> with
+            optional <code>X-Agent-Client-Id</code> (3 reads/day anonymous, 10/day after authorize).
+          </li>
+          <li>
+            <strong>Write token</strong> — <code>POST /api/v1/agent/authorize</code> → human email confirm →
+            180-day Bearer token shared across .io and .org.
+          </li>
+          <li>
+            <strong>Contributions</strong> — <code>POST /api/v1/contributions</code> with Bearer token;
+            scope <code>write:inquiry</code> on .io.
+          </li>
+          <li>
+            <strong>Changelog</strong> — <code>GET /api/v1/agent/changelog</code> returns versioned entries
+            when the API changes.
           </li>
         </ul>
 
-        <h2>Coming in agent protocol v1 (Wave 7)</h2>
-        <ul>
-          <li>
-            <code>GET /api/v1/content/&#123;slug&#125;</code> — full article bodies (anonymous 3 reads/day,
-            registered 10/day).
-          </li>
-          <li>
-            <code>POST /api/v1/agent/authorize</code> — one email confirm → 180-day write token shared across
-            .io and .org.
-          </li>
-          <li>
-            <code>POST /api/v1/contributions</code> — agent-submitted inquiries and insights.
-          </li>
-        </ul>
+        <h2>Client identity</h2>
+        <p>
+          Send a stable <code>X-Agent-Client-Id</code> header on content reads — e.g.{' '}
+          <code>your-agent-name/1.0</code> or a UUID you reuse per deployment (1–120 characters). This tracks
+          anonymous read quota. After authorize, reads tied to the verified email get the higher quota.
+        </p>
+
+        <h2>Error responses</h2>
+        <p>
+          Failed requests return JSON: <code>{'{ ok: false, error: "machine_code", message?: "..." }'}</code>.
+          Common codes: <code>not_found</code> (404), <code>read_quota_exceeded</code> (429),{' '}
+          <code>missing_token</code> / <code>invalid_token</code> (401), <code>validation_error</code> (400).
+          Content reads include <code>X-RateLimit-*</code> headers.
+        </p>
 
         <h2>Example prompts for Claude or similar</h2>
         <ul>
           <li>
             &ldquo;Call{' '}
-            <code>
-              {apiBase}/api/v1/curated?site=io
-            </code>{' '}
-            and summarize the spotlight articles.&rdquo;
+            <code>{apiBase}/api/v1/capabilities</code> then{' '}
+            <code>{apiBase}/api/v1/content?site=io</code> and summarize available topics.&rdquo;
           </li>
           <li>
-            &ldquo;When content API is live, fetch the governance framework and list three decisions for a
+            &ldquo;Fetch the governance framework slug from the content index and list three decisions for a
             CIO.&rdquo;
           </li>
           <li>
@@ -85,6 +99,9 @@ export default function ForAgentsPage() {
       <nav className="mt-12 flex flex-col gap-2 text-sm font-light text-[var(--muted)]">
         <a href={`${apiBase}/api/v1/capabilities`} className="hover:text-[var(--foreground)]">
           Capabilities JSON →
+        </a>
+        <a href={`${apiBase}/api/v1/content?site=io`} className="hover:text-[var(--foreground)]">
+          Content index JSON →
         </a>
         <a href={`${apiBase}/api/v1/curated?site=io`} className="hover:text-[var(--foreground)]">
           Curated feed JSON →

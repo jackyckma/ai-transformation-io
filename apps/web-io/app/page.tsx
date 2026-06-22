@@ -1,6 +1,7 @@
 import { CompanionHomeEntry } from '@ai-transformation/chat-ui';
 import { HomeCuratedPreview, loadIoCuratedFeed } from '@/components/curated-sections';
 import { HubExploreNav } from '@/components/hub-explore-nav';
+import { SiteLogicStrip } from '@/components/site-logic-strip';
 import { IO_EXPLORE_LINKS } from '@/lib/explore-links';
 
 export default function HomePage() {
@@ -13,12 +14,14 @@ export default function HomePage() {
           Your AI transformation companion
         </h1>
         <p className="mt-3 text-sm font-light leading-relaxed text-[var(--muted)] md:text-base">
-          Structured guidance for enterprise leaders — ask first, then read frameworks and playbook
-          articles when you need depth.
+          Structured guidance for enterprise leaders — ask first, read when you need depth, assess when you
+          are ready.
         </p>
       </section>
 
-      <div className="mt-8 max-w-2xl">
+      <SiteLogicStrip />
+
+      <div className="mt-10 max-w-2xl">
         <CompanionHomeEntry site="io" />
       </div>
 

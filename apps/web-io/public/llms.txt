@@ -4,7 +4,12 @@ Agent-friendly information portal for enterprise AI transformation.
 
 - Human home: https://ai-transformation.io
 - Agent protocol: https://ai-transformation.io/for-agents
-- Capabilities: https://ai-transformation.io/api/v1/capabilities
+- Capabilities (call first): https://ai-transformation.io/api/v1/capabilities
+- Content index: https://ai-transformation.io/api/v1/content?site=io
 - Curated feed: https://ai-transformation.io/api/v1/curated?site=io
+- Changelog: https://ai-transformation.io/api/v1/agent/changelog
+
+Set header X-Agent-Client-Id on content reads (stable string, e.g. your-agent/1.0).
+Errors: JSON { ok: false, error: "machine_code", message?: "..." }.
 
 Community site: https://ai-transformation.org

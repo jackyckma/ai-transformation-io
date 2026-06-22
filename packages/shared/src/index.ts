@@ -646,13 +646,17 @@ export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
   return [
     `You can interact with ${SITE_ORIGIN[site]} without browsing HTML.`,
     '',
-    '1. Call GET ' + `${base}/api/v1/capabilities` + ' — quotas, endpoints, and auth rules.',
-    '2. Call GET ' + `${base}/api/v1/curated?site=${site}` + ' — what editors highlight now.',
-    '3. Call GET ' + `${base}/api/v1/content/{slug}` + ' — full article body (Wave 7; counts as a read).',
-    '4. To submit on behalf of a human (' + writeScopes + '):',
-    '   POST ' + `${base}/api/v1/agent/authorize` + ' (human completes one email confirm),',
-    '   then POST ' + `${base}/api/v1/contributions` + ' with the write token.',
+    'Set a stable X-Agent-Client-Id header (e.g. "your-agent/1.0") on content reads — 3/day anonymous, 10/day after authorize.',
     '',
+    '1. Call GET ' + `${base}/api/v1/capabilities` + ' — quotas, endpoints, error codes, and auth rules.',
+    '2. Call GET ' + `${base}/api/v1/content?site=${site}` + ' — discover all article slugs (no read quota).',
+    '3. Call GET ' + `${base}/api/v1/curated?site=${site}` + ' — what editors highlight now.',
+    '4. Call GET ' + `${base}/api/v1/content/{slug}?site=${site}` + ' — full article body (counts as a read).',
+    '5. To submit on behalf of a human (' + writeScopes + '):',
+    '   POST ' + `${base}/api/v1/agent/authorize` + ' (human completes one email confirm),',
+    '   then POST ' + `${base}/api/v1/contributions` + ' with Authorization: Bearer <token>.',
+    '',
+    'Errors return JSON: { ok: false, error: "machine_code", message?: "..." }.',
     'Human-readable protocol: ' + `${origin}/for-agents`,
   ].join('\n');
 }
