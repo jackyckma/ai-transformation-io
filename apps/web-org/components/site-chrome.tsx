@@ -1,14 +1,20 @@
 import Link from 'next/link';
+import { CompanionNavButton } from '@ai-transformation/chat-ui';
 import { AuthNav } from '@/components/auth-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 
-const nav = [
+type NavItem =
+  | { href: string; label: string }
+  | { type: 'companion'; label: string };
+
+const nav: NavItem[] = [
   { href: '/stories', label: 'Stories' },
   { href: '/stories/submit', label: 'Share' },
   { href: '/prompts', label: 'Prompts' },
   { href: '/learn', label: 'Learn' },
   { href: '/apprenticeship', label: 'Apprenticeship' },
   { href: '/for-agents', label: 'For agents' },
+  { type: 'companion', label: 'Companion' },
   { href: '/ask', label: 'Ask' },
 ];
 
@@ -28,15 +34,19 @@ export function SiteHeader() {
           aria-label="Primary"
           className="col-span-2 row-start-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-light lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:justify-center"
         >
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap text-[var(--muted)] transition hover:text-[var(--foreground)]"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {nav.map((item) =>
+            'type' in item && item.type === 'companion' ? (
+              <CompanionNavButton key={item.label} />
+            ) : (
+              <Link
+                key={'href' in item ? item.href : item.label}
+                href={'href' in item ? item.href : '/'}
+                className="whitespace-nowrap text-[var(--muted)] transition hover:text-[var(--foreground)]"
+              >
+                {item.label}
+              </Link>
+            ),
+          )}
         </nav>
       </div>
     </header>

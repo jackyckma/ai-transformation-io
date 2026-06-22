@@ -1,5 +1,6 @@
 'use client';
 
+import { resolveClientApiUrl } from '@ai-transformation/shared';
 import { useCallback, useEffect, useState } from 'react';
 
 type AuthUser = {
@@ -15,12 +16,6 @@ type AuthMeResponse = {
   user: AuthUser | null;
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
-
-function apiUrl(path: string): string {
-  return `${API_BASE}${path}`;
-}
-
 function displayName(user: AuthUser): string {
   if (user.name && user.name.trim().length > 0) {
     return user.name;
@@ -35,7 +30,7 @@ export function AuthNav() {
 
   const refreshAuth = useCallback(async () => {
     try {
-      const response = await fetch(apiUrl('/api/auth/me'), {
+      const response = await fetch(resolveClientApiUrl('/api/auth/me'), {
         credentials: 'include',
       });
       if (!response.ok) {
@@ -59,7 +54,7 @@ export function AuthNav() {
   async function signOut() {
     setIsSigningOut(true);
     try {
-      await fetch(apiUrl('/api/auth/logout'), {
+      await fetch(resolveClientApiUrl('/api/auth/logout'), {
         method: 'POST',
         credentials: 'include',
       });
@@ -72,14 +67,14 @@ export function AuthNav() {
   }
 
   if (isLoading) {
-    return <div className="h-8 w-20" aria-hidden />;
+    return <div className="h-8 w-24" aria-hidden />;
   }
 
   if (!user) {
     return (
       <a
-        href={apiUrl('/api/auth/google')}
-        className="text-sm font-light text-[var(--muted)] transition hover:text-[var(--foreground)]"
+        href={resolveClientApiUrl('/api/auth/google')}
+        className="rounded-full border border-[var(--border)] px-3 py-1.5 text-sm font-light text-[var(--foreground)] transition hover:border-[var(--accent)]"
       >
         Sign in
       </a>

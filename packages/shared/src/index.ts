@@ -607,6 +607,25 @@ export function getSiteOrigin(site: AgentSite): string {
   return SITE_ORIGIN[site];
 }
 
+/** Browser-safe API path — avoids localhost env base on production domains. */
+export function resolveClientApiUrl(path: string): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const envBase = process.env.NEXT_PUBLIC_API_BASE_URL?.trim().replace(/\/$/, '') ?? '';
+  if (!envBase) {
+    return normalizedPath;
+  }
+
+  if (typeof window !== 'undefined') {
+    const isLocalEnvBase = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(envBase);
+    const onLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
+    if (isLocalEnvBase && !onLocalHost) {
+      return normalizedPath;
+    }
+  }
+
+  return `${envBase}${normalizedPath}`;
+}
+
 export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
   const origin = getSiteOrigin(site);
   const base = apiBase || origin;

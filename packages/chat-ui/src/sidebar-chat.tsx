@@ -1,6 +1,9 @@
 'use client';
 
+import { resolveClientApiUrl } from '@ai-transformation/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { OPEN_COMPANION_EVENT } from './companion-nav';
 
 type ChatSite = 'io' | 'org';
 
@@ -25,6 +28,7 @@ type ChatQuota = {
 
 export type SidebarChatProps = {
   site: ChatSite;
+  /** @deprecated use same-origin resolveClientApiUrl inside the component */
   apiBase?: string;
 };
 
@@ -46,7 +50,7 @@ const COPY: Record<
   },
 };
 
-export function SidebarChat({ site, apiBase = '' }: SidebarChatProps) {
+export function SidebarChat({ site }: SidebarChatProps) {
   const copy = COPY[site];
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -69,7 +73,7 @@ export function SidebarChat({ site, apiBase = '' }: SidebarChatProps) {
     setLoadingSession(true);
     setError(null);
     try {
-      const res = await fetch(`${apiBase}/api/chat/session?site=${site}`, {
+      const res = await fetch(resolveClientApiUrl(`/api/chat/session?site=${site}`), {
         credentials: 'include',
       });
       const data = (await res.json()) as {
@@ -88,7 +92,13 @@ export function SidebarChat({ site, apiBase = '' }: SidebarChatProps) {
     } finally {
       setLoadingSession(false);
     }
-  }, [apiBase, site]);
+  }, [site]);
+
+  useEffect(() => {
+    const openFromNav = () => setOpen(true);
+    window.addEventListener(OPEN_COMPANION_EVENT, openFromNav);
+    return () => window.removeEventListener(OPEN_COMPANION_EVENT, openFromNav);
+  }, []);
 
   useEffect(() => {
     if (open && !loaded && !loadingSession) {
@@ -113,7 +123,7 @@ export function SidebarChat({ site, apiBase = '' }: SidebarChatProps) {
     setInput('');
 
     try {
-      const res = await fetch(`${apiBase}/api/chat/session/messages`, {
+      const res = await fetch(resolveClientApiUrl('/api/chat/session/messages'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         credentials: 'include',
@@ -143,20 +153,29 @@ export function SidebarChat({ site, apiBase = '' }: SidebarChatProps) {
 
   return (
     <>
+      {open ? (
+        <button
+          type="button"
+          aria-label="Close companion panel"
+          className="fixed inset-0 z-[90] bg-black/20 sm:bg-black/10"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
+
       <button
         type="button"
         aria-expanded={open}
         aria-controls="site-companion-panel"
         onClick={() => setOpen((value) => !value)}
-        className="fixed bottom-5 right-5 z-40 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] shadow-sm transition hover:border-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+        className="fixed bottom-5 right-5 z-[100] rounded-full border border-[var(--accent)] bg-[var(--card)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] shadow-md transition hover:bg-[var(--background)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
       >
-        {open ? 'Close' : copy.toggle}
+        {open ? 'Close companion' : copy.toggle}
       </button>
 
       <aside
         id="site-companion-panel"
         aria-hidden={!open}
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:top-16 ${
+        className={`fixed inset-y-0 right-0 z-[100] flex w-full max-w-md flex-col border-l border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:top-16 ${
           open ? 'translate-x-0' : 'translate-x-full pointer-events-none'
         }`}
       >

@@ -159,6 +159,9 @@ importers:
 
   packages/chat-ui:
     dependencies:
+      '@ai-transformation/shared':
+        specifier: workspace:*
+        version: link:../shared
       react:
         specifier: ^19.0.0
         version: 19.2.7

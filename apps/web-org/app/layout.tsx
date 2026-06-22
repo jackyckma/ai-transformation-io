@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Lora } from 'next/font/google';
 import { SiteJsonLd } from '@/components/site-json-ld';
+import { AuthErrorBanner } from '@/components/auth-error-banner';
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
 import { SiteCompanion } from '@/components/site-companion';
 import './globals.css';
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${geistSans.variable} ${lora.variable} flex min-h-screen flex-col font-light antialiased`}
       >
         <SiteJsonLd />
+        <AuthErrorBanner />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
