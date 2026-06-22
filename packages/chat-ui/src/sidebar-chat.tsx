@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { OPEN_COMPANION_EVENT, OPEN_COMPANION_WITH_MESSAGE_EVENT } from './companion-nav';
 
 type ChatSite = 'io' | 'org';
-type ChatLayout = 'docked' | 'floating';
+type ChatLayout = 'docked' | 'floating' | 'page';
 
 type ChatLink = {
   label: string;
@@ -30,6 +30,8 @@ type ChatQuota = {
 export type SidebarChatProps = {
   site: ChatSite;
   layout?: ChatLayout;
+  /** Prefill the message input (e.g. from /ask?message=). */
+  initialInput?: string;
   /** @deprecated use same-origin resolveClientApiUrl inside the component */
   apiBase?: string;
 };
@@ -52,13 +54,14 @@ const COPY: Record<
   },
 };
 
-export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
+export function SidebarChat({ site, layout = 'docked', initialInput }: SidebarChatProps) {
   const copy = COPY[site];
   const isDocked = layout === 'docked';
-  const [open, setOpen] = useState(isDocked);
+  const isPage = layout === 'page';
+  const [open, setOpen] = useState(isDocked || isPage);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [quota, setQuota] = useState<ChatQuota | null>(null);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(initialInput ?? '');
   const [loadingSession, setLoadingSession] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +105,18 @@ export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
   }, [loadSession]);
 
   useEffect(() => {
-    if (isDocked) {
+    if (!isPage || !initialInput) {
+      return undefined;
+    }
+
+    setInput(initialInput);
+    inputRef.current?.focus();
+
+    return undefined;
+  }, [isPage, initialInput]);
+
+  useEffect(() => {
+    if (isDocked || isPage) {
       return undefined;
     }
 
@@ -120,7 +134,7 @@ export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
       window.removeEventListener(OPEN_COMPANION_EVENT, openFromNav);
       window.removeEventListener(OPEN_COMPANION_WITH_MESSAGE_EVENT, openWithMessage);
     };
-  }, [isDocked]);
+  }, [isDocked, isPage]);
 
   useEffect(() => {
     if (isDocked) {
@@ -137,8 +151,12 @@ export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
       };
     }
 
+    if (isPage) {
+      return undefined;
+    }
+
     return undefined;
-  }, [isDocked]);
+  }, [isDocked, isPage]);
 
   useEffect(() => {
     if (open && !loaded && !loadingSession) {
@@ -368,10 +386,21 @@ export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
     return (
       <aside
         id="site-companion-panel"
-        className="flex h-[min(28rem,50vh)] flex-col bg-[var(--background)] lg:sticky lg:top-0 lg:h-screen lg:min-h-0"
+        className="flex h-full min-h-0 flex-col bg-[var(--background)]"
       >
         {panel}
       </aside>
+    );
+  }
+
+  if (isPage) {
+    return (
+      <div
+        id="site-companion-panel"
+        className="flex min-h-[calc(100dvh-var(--mobile-nav-h)-11rem)] flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] lg:min-h-[32rem]"
+      >
+        <div className="flex min-h-0 flex-1 flex-col">{panel}</div>
+      </div>
     );
   }
 

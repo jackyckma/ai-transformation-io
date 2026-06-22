@@ -5,7 +5,8 @@
   --foreground: #1a2e22;
   --accent: #3d7a5c;
   --accent-fg: #f7faf8;
-  --muted: #6b7f72;
+  --muted: #5c6f62;
+  --secondary: #4a5c50;
   --card: #ffffff;
   --border: #dce8e0;
   --layout-shell: 72rem;
@@ -14,6 +15,7 @@
   --layout-wide: 56rem;
   --site-header-h: 5.75rem;
   --chat-panel-w: 22rem;
+  --mobile-nav-h: 4.25rem;
 }
 
 .dark {
@@ -21,7 +23,8 @@
   --foreground: #e2ebe5;
   --accent: #7ec9a0;
   --accent-fg: #0f1411;
-  --muted: #8fa396;
+  --muted: #9fb0a4;
+  --secondary: #b8c9bd;
   --card: #161c18;
   --border: #2a352e;
 }
@@ -30,7 +33,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .site-panel-x {
@@ -71,8 +74,8 @@ body {
 
 .markdown-body {
   line-height: 1.8;
-  font-size: 0.95rem;
-  font-weight: 300;
+  font-size: 0.975rem;
+  font-weight: 400;
 }
 
 .markdown-body h2 {

@@ -1,0 +1,55 @@
+{
+  "frameworks": {
+    "title": "Frameworks",
+    "description": "Cornerstone explainers — definitions, roadmaps, governance, and how to measure value. Read before diving into playbook detail.",
+    "sections": [
+      {
+        "id": "foundations",
+        "title": "Foundations",
+        "slugs": ["what-is-ai-transformation", "ai-transformation-vs-digital-transformation"]
+      },
+      {
+        "id": "roadmap-governance",
+        "title": "Roadmap & governance",
+        "slugs": ["transformation-roadmap", "governance-and-operating-model", "measuring-ai-value"]
+      }
+    ]
+  },
+  "playbook": {
+    "title": "Playbook",
+    "description": "Patterns, pitfalls, use cases, glossary, and FAQ — supporting depth behind the frameworks.",
+    "sections": [
+      {
+        "id": "patterns",
+        "title": "Patterns & implementation",
+        "slugs": ["ai-patterns-copilots-agents-automation", "use-cases-by-industry"]
+      },
+      {
+        "id": "pitfalls-answers",
+        "title": "Pitfalls & answers",
+        "slugs": ["common-pitfalls", "faq"]
+      },
+      {
+        "id": "reference",
+        "title": "Reference",
+        "slugs": ["glossary"]
+      }
+    ]
+  },
+  "functions": {
+    "title": "Guides by role",
+    "description": "How AI transformation shows up for your lane — responsibilities, decisions, and links into frameworks and playbook.",
+    "sections": [
+      {
+        "id": "role-guides",
+        "title": "Role guides",
+        "roleSlugs": ["executive", "cio"]
+      },
+      {
+        "id": "reference",
+        "title": "Shared reference",
+        "slugs": ["glossary", "faq", "use-cases-by-industry"]
+      }
+    ]
+  }
+}

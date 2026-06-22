@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getPagesByPillar } from '@ai-transformation/content';
-import { ArticleList } from '@/components/article-list';
-import { HubExploreNav } from '@/components/hub-explore-nav';
-import { PageIntro } from '@/components/page-intro';
+
+import { HubIndexSections } from '@/components/hub-index-sections';
 import { PageShell } from '@/components/page-shell';
-import { IO_EXPLORE_LINKS } from '@/lib/explore-links';
+import { getHubPage } from '@/lib/hub-index';
 
 export const metadata: Metadata = {
   title: 'Frameworks',
@@ -13,22 +11,22 @@ export const metadata: Metadata = {
 };
 
 export default function FrameworksHubPage() {
-  const pages = getPagesByPillar('framework');
+  const { intro, sections } = getHubPage('frameworks');
 
   return (
     <PageShell>
-      <PageIntro
-        title="Frameworks"
-        description="Cornerstone explainers — definitions, roadmaps, governance, and how to measure value."
+      <HubIndexSections
+        title={intro.title}
+        description={intro.description}
+        seed="frameworks"
+        sections={sections}
       />
-      <ArticleList pages={pages} />
       <Link
         href="/playbook"
-        className="mt-10 inline-block text-sm font-light text-[var(--muted)] hover:text-[var(--foreground)]"
+        className="mt-10 inline-block text-sm font-normal text-[var(--secondary)] hover:text-[var(--foreground)]"
       >
         Playbook articles →
       </Link>
-      <HubExploreNav links={IO_EXPLORE_LINKS} className="mt-12" />
     </PageShell>
   );
 }

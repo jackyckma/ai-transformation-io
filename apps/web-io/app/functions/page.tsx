@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
-import { FunctionsIndex } from '@/components/functions-index';
+import { HubIndexSections } from '@/components/hub-index-sections';
+import { PageShell } from '@/components/page-shell';
+import { getHubPage } from '@/lib/hub-index';
 
 export const metadata: Metadata = {
   title: 'Guides by role',
@@ -9,5 +11,16 @@ export const metadata: Metadata = {
 };
 
 export default function FunctionsIndexPage() {
-  return <FunctionsIndex />;
+  const { intro, sections } = getHubPage('functions');
+
+  return (
+    <PageShell>
+      <HubIndexSections
+        title={intro.title}
+        description={intro.description}
+        seed="functions"
+        sections={sections}
+      />
+    </PageShell>
+  );
 }

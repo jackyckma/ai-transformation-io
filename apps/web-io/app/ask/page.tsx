@@ -1,30 +1,35 @@
 import type { Metadata } from 'next';
-import { CompanionHomeEntry } from '@ai-transformation/chat-ui';
+import { Suspense } from 'react';
+import { AskChat } from '@/components/ask-chat';
 import { InquiryForm } from '@/components/inquiry-form';
-import { PageIntro } from '@/components/page-intro';
 import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
-  title: 'Ask a question',
-  description: 'Ask the companion for immediate guidance, or leave a message for our team.',
+  title: 'Ask',
+  description: 'Ask the companion for grounded answers from frameworks and playbook content.',
 };
 
 export default function AskPage() {
   return (
-    <PageShell width="wide">
-      <PageIntro
-        title="Ask"
-        description="Start with the companion for grounded answers from frameworks and playbook. Leave a message below if you prefer a human follow-up."
-      />
-
-      <CompanionHomeEntry site="io" />
-
-      <section className="mt-12 border-t border-[var(--border)] pt-10">
-        <h2 className="font-serif text-lg font-normal tracking-tight">Message our team</h2>
-        <p className="mt-2 text-sm font-light text-[var(--muted)]">
-          Async follow-up — we reply by email when a human response is better than the companion.
+    <PageShell width="wide" className="!py-4 md:!py-6">
+      <header className="mb-4">
+        <p className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]">Companion</p>
+        <h1 className="font-serif mt-2 text-2xl font-normal tracking-tight md:text-[1.75rem]">Ask</h1>
+        <p className="mt-3 max-w-2xl text-sm font-normal leading-relaxed text-[var(--muted)]">
+          Grounded answers from frameworks and playbook — no sign-in required.
         </p>
-        <div className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 md:p-6">
+      </header>
+
+      <Suspense fallback={<p className="text-sm text-[var(--muted)]">Loading companion…</p>}>
+        <AskChat />
+      </Suspense>
+
+      <section className="mt-10 border-t border-[var(--border)] pt-8">
+        <h2 className="font-serif text-lg font-normal tracking-tight">Message our team</h2>
+        <p className="mt-2 text-sm font-normal leading-relaxed text-[var(--muted)]">
+          Async follow-up when a human response is better than the companion.
+        </p>
+        <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 md:p-6">
           <InquiryForm embedded />
         </div>
       </section>

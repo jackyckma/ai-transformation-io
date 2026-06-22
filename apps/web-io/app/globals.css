@@ -5,7 +5,8 @@
   --foreground: #1c1917;
   --accent: #8b7355;
   --accent-fg: #faf9f7;
-  --muted: #78716c;
+  --muted: #6b6560;
+  --secondary: #57534e;
   --card: #ffffff;
   --border: #e7e5e4;
   --layout-shell: 72rem;
@@ -14,6 +15,7 @@
   --layout-wide: 56rem;
   --site-header-h: 5.75rem;
   --chat-panel-w: 22rem;
+  --mobile-nav-h: 4.25rem;
 }
 
 .dark {
@@ -22,6 +24,7 @@
   --accent: #c4a882;
   --accent-fg: #121110;
   --muted: #a8a29e;
+  --secondary: #c4bdb5;
   --card: #1a1918;
   --border: #292524;
 }
@@ -30,7 +33,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .site-panel-x {
@@ -71,8 +74,8 @@ body {
 
 .markdown-body {
   line-height: 1.8;
-  font-size: 0.95rem;
-  font-weight: 300;
+  font-size: 0.975rem;
+  font-weight: 400;
 }
 
 .markdown-body h2 {

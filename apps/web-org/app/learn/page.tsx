@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getOrgLearnPages } from '@ai-transformation/content';
-import { ArticleList } from '@/components/article-list';
-import { HubExploreNav } from '@/components/hub-explore-nav';
-import { PageIntro } from '@/components/page-intro';
+
+import { HubIndexSections } from '@/components/hub-index-sections';
 import { PageShell } from '@/components/page-shell';
-import { ORG_EXPLORE_LINKS } from '@/lib/explore-links';
+import { getHubPage } from '@/lib/hub-index';
 
 export const metadata: Metadata = {
   title: 'Learn',
@@ -13,25 +11,25 @@ export const metadata: Metadata = {
 };
 
 export default function LearnHubPage() {
-  const pages = getOrgLearnPages();
+  const { intro, sections } = getHubPage('learn');
 
   return (
     <PageShell>
-      <PageIntro
-        title="Learn"
-        description="Foundational guides from our knowledge base — substance for visitors before they contribute."
+      <HubIndexSections
+        title={intro.title}
+        description={intro.description}
+        seed="learn"
+        sections={sections}
       />
-      <ArticleList pages={pages} />
-      <p className="mt-10 text-sm font-light text-[var(--muted)]">
+      <p className="mt-10 text-sm font-normal text-[var(--muted)]">
         More on{' '}
         <a href="https://ai-transformation.io/playbook" className="underline hover:text-[var(--foreground)]">
           ai-transformation.io/playbook
         </a>
       </p>
-      <Link href="/" className="mt-4 inline-block text-sm font-light text-[var(--muted)] hover:text-[var(--foreground)]">
+      <Link href="/" className="mt-4 inline-block text-sm font-normal text-[var(--secondary)] hover:text-[var(--foreground)]">
         ← Home
       </Link>
-      <HubExploreNav links={ORG_EXPLORE_LINKS} className="mt-12" />
     </PageShell>
   );
 }
