@@ -615,15 +615,24 @@ export function resolveClientApiUrl(path: string): string {
     return normalizedPath;
   }
 
-  if (typeof window !== 'undefined') {
+  const browserHost = getBrowserHostname();
+  if (browserHost) {
     const isLocalEnvBase = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(envBase);
-    const onLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
+    const onLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(browserHost);
     if (isLocalEnvBase && !onLocalHost) {
       return normalizedPath;
     }
   }
 
   return `${envBase}${normalizedPath}`;
+}
+
+function getBrowserHostname(): string | null {
+  if (typeof globalThis === 'undefined') {
+    return null;
+  }
+  const maybeWindow = (globalThis as { window?: { location?: { hostname?: string } } }).window;
+  return maybeWindow?.location?.hostname ?? null;
 }
 
 export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
