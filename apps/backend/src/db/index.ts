@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import type { ContributionSource } from '@ai-transformation/shared';
 import Database from 'better-sqlite3';
 
+import { runAgentProtocolMigrations } from './agent-protocol.js';
+
 type InsertContributionInput = {
   id: string;
   source: ContributionSource;
@@ -247,6 +249,7 @@ function runMigrations(db: Database.Database): void {
     status: 'active',
     createdAt: '2026-06-15T00:00:00.000Z',
   });
+  runAgentProtocolMigrations(db);
 }
 
 export function getDb(): Database.Database {

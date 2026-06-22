@@ -15,8 +15,8 @@
 | M4 — Assessment live (Wave 3) | 2026-06-19 | ✅ |
 | M5 — Auth + save (Wave 4) | 2026-06-19 | ✅ |
 | M6 — .org Harvest Hub (Wave 5) | 2026-06-20 | ✅ |
-| M7 — Curation + agent discovery (Wave 6) | 2026-06-20 | 🔄 Partial (home + stubs; rate limits + chatbot hook TBD) |
-| M8 — Agent protocol v1 (Wave 7) | TBD | ⏳ |
+| M7 — Curation + agent discovery (Wave 6) | 2026-06-22 | ✅ |
+| M8 — Agent protocol v1 (Wave 7) | 2026-06-22 | ✅ |
 | M9 — Newsletter + internal agent jobs (Wave 8) | TBD | ⏳ |
 | M10 — IA expansion (Wave 9) | TBD | ⏳ |
 | M11 — Newsletter pilot (Wave 10) | TBD | ⏳ |
@@ -220,7 +220,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 - [x] Both homes lead with ≤5 curated topics (via `data/curated/` + reader entry paths)
 - [x] `/for-agents` live on .io and .org
 - [x] Capabilities JSON returns stable v1 stub shape
-- [ ] Read rate-limit middleware skeleton (anonymous vs registered tiers)
+- [x] Read rate-limit middleware skeleton (implemented in Wave 7 content reads)
 - [ ] Sidebar chatbot hook (support interaction, on-site history) — post–Wave 7 UX bet
 
 **Locked decisions (2026-06-20, amended 2026-06-22):**
@@ -250,10 +250,12 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L11 | Changelog + versioned paths documented |
 
 **Exit criteria:**
-- [ ] Agent can list + fetch content within quota
-- [ ] Human completes one email authorize → agent receives write token
-- [ ] Agent submission lands in `contributions` with `source=agent`
-- [ ] Credits ledger stub (Phase B — no PayPal per-read in v1)
+- [x] Agent can list + fetch content within quota
+- [x] Human completes one email authorize → agent receives write token
+- [x] Agent submission lands in `contributions` with `source=agent`
+- [x] Credits ledger stub (`credit_accounts` table)
+- [ ] Token refresh / revoke endpoints (optional v1.1)
+- [ ] Production ZSend authorize email (env `ZSEND_API_KEY` + `AGENT_AUTHORIZE_FROM`)
 
 **Not in v1:** Per-post email confirm, author-set pricing, read-once consensus (Phase B).
 

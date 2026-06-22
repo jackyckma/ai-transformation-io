@@ -52,7 +52,7 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - ai-transformation.io is a corporate-facing executive info portal; ai-transformation.org is community Harvest Hub plus AI-era Apprenticeship (`/apprenticeship`, `/apprenticeship/rationale`, `POST /api/apprenticeship/interest`; brand as AI Transformation · Harvest Hub, not "Learn Together"). Apprenticeship is formation/judgment training, not enterprise consulting.
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–5 production-verified; Wave 6 partial (curated homes via `data/curated/`, reader entry Option A, agent-friendly panels, `/for-agents`, curated/capabilities API stubs; visual curation layout Phase A); Wave 7 agent protocol v1; Wave 9 function IA; L11 Agent protocol split from L10 internal jobs.
+- Lane-based waves: 0–6 production-verified; Wave 7 agent protocol v1 shipped (content read + quotas, authorize + write token, agent contributions); Wave 9 function IA; L11 Agent protocol split from L10 internal jobs.
 - Product direction: agent-first site — humans and agents are first-class participants; `/for-agents` plus embedded machine-readable hints on human pages.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token.
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie).

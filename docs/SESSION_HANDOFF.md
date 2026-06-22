@@ -1,30 +1,31 @@
 # Session handoff
 
 **Date:** 2026-06-22  
-**Session:** Product positioning lock + document alignment
+**Session:** Wave 7 agent protocol v1
 
 ## Completed
 
-1. Founder confirmed three product decisions — see [POSITIONING-UX.md](./POSITIONING-UX.md):
-   - .io: companion/support, weaken quiz, role paths + future progress; sidebar chatbot v1 preferred
-   - .org: Share/Stories nav first; Join removed from nav; agent = panel + `/for-agents`
-   - Spotlight: agent proposes JSON → founder approves PR
-2. Created alignment docs: `POSITIONING-UX.md`, `DOC_ALIGNMENT_AUDIT.md`, `data/curated/EDITORIAL_POLICY.md`, skill `curated-home-refresh`
-3. Updated stale docs: POSITIONING, CURRENT_STATUS, project-progress, product-architecture, ARCHITECTURE, README, AGENTS.md, curated README
-4. Added superseded-by pointers on `usr/06`, `07`, `09`, `10`
-5. Applied aligned UX: org nav reorder + remove Join; curated JSON dedup + share-first paths; agent panel copy
+1. Confirmed Wave/Lane roadmap aligned with [POSITIONING-UX.md](./POSITIONING-UX.md)
+2. **Wave 7 shipped (core v1):**
+   - L0 agent Zod schemas in `packages/shared`
+   - DB: `agent_authorize_requests`, `agent_write_tokens`, `agent_read_usage`, `credit_accounts` stub
+   - `GET /api/v1/content`, `/content/{slug}` with read quotas + rate-limit headers
+   - `POST /api/v1/agent/authorize`, `GET /api/v1/agent/authorize/confirm`
+   - `POST /api/v1/contributions` with bearer write token (`source=agent`)
+   - Capabilities + changelog updated to `wave7_v1`
+3. Backend tests pass (22)
 
 ## Next
 
-- **Wave 7** — agent protocol v1
-- **Wave 6 remainder** — read rate-limit middleware skeleton
-- **UX (post-docs)** — `/for-agents` "For humans" section; mobile nav after desktop IA locked
-- **Chatbot** — sidebar v1 design after Wave 7; on-site chat history data model
+- Configure `ZSEND_API_KEY` on Zeabur for production authorize emails
+- Sidebar chatbot v1 (post–Wave 7 UX bet)
+- Wave 8 newsletter / internal jobs
+- Optional: token refresh/revoke endpoints
 
 ## Key docs
 
 | Doc | Purpose |
 |-----|---------|
 | [POSITIONING-UX.md](./POSITIONING-UX.md) | Locked product/UX |
-| [DOC_ALIGNMENT_AUDIT.md](./DOC_ALIGNMENT_AUDIT.md) | Contradiction log |
 | [CURRENT_STATUS.md](./CURRENT_STATUS.md) | Shipped state |
+| [usr/11-agent-first-api-v1.md](../usr/11-agent-first-api-v1.md) | Agent API spec |

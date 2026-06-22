@@ -16,7 +16,82 @@ export const contributionSourceSchema = z.enum([
   'apprenticeship_interest',
   'newsletter_reply',
   'linkedin_manual',
+  'agent',
 ]);
+
+export const AGENT_READ_QUOTA_ANONYMOUS = 3;
+export const AGENT_READ_QUOTA_VERIFIED = 10;
+export const AGENT_WRITE_TOKEN_TTL_DAYS = 180;
+
+export const agentClientIdSchema = z.string().min(1).max(120);
+
+export const agentAuthorizeRequestSchema = z.object({
+  email: z.string().email(),
+  client_id: agentClientIdSchema,
+  agent_name: z.string().max(120).optional(),
+});
+
+export type AgentAuthorizeRequest = z.infer<typeof agentAuthorizeRequestSchema>;
+
+export const agentAuthorizePendingResponseSchema = z.object({
+  ok: z.literal(true),
+  message: z.string(),
+  /** Present in dev/test when email transport is noop — omit in production send. */
+  confirm_url: z.string().url().optional(),
+});
+
+export type AgentAuthorizePendingResponse = z.infer<typeof agentAuthorizePendingResponseSchema>;
+
+export const agentWriteTokenResponseSchema = z.object({
+  ok: z.literal(true),
+  token: z.string(),
+  token_id: z.string(),
+  expires_at: z.string(),
+  email: z.string().email(),
+  client_id: z.string(),
+  scopes: z.array(z.string()),
+});
+
+export type AgentWriteTokenResponse = z.infer<typeof agentWriteTokenResponseSchema>;
+
+export const agentContributionTypeSchema = z.enum(['inquiry', 'story', 'prompt_reply']);
+
+export type AgentContributionType = z.infer<typeof agentContributionTypeSchema>;
+
+export const agentContributionWriteSchema = z.object({
+  type: agentContributionTypeSchema,
+  site: z.enum(['io', 'org']).optional(),
+  body: z.string().min(10).max(8000),
+  title: z.string().min(4).max(160).optional(),
+  name: z.string().max(120).optional(),
+  prompt_id: z.string().max(120).optional(),
+});
+
+export type AgentContributionWrite = z.infer<typeof agentContributionWriteSchema>;
+
+export const agentContributionResponseSchema = z.object({
+  ok: z.literal(true),
+  id: z.string(),
+  status: z.string(),
+});
+
+export type AgentContributionResponse = z.infer<typeof agentContributionResponseSchema>;
+
+export const agentContentIndexEntrySchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  description: z.string(),
+  pillar: z.string(),
+  pathname: z.string(),
+});
+
+export type AgentContentIndexEntry = z.infer<typeof agentContentIndexEntrySchema>;
+
+export const agentContentDocumentSchema = agentContentIndexEntrySchema.extend({
+  markdown: z.string(),
+});
+
+export type AgentContentDocument = z.infer<typeof agentContentDocumentSchema>;
 
 export type ContributionSource = z.infer<typeof contributionSourceSchema>;
 
