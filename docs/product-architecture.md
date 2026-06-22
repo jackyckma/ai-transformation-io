@@ -166,7 +166,7 @@ Lanes are **planning and agent-coordination** boundaries. Runtime code lives in 
 | **Web IO** | L8 | Editorial UI — .io | `apps/web-io` |
 | **Web ORG** | L9 | Editorial UI — .org | `apps/web-org` |
 | **Agent jobs** | L10 | Internal jobs: issue compile, synthesize, cluster | `apps/backend/src/lanes/agent` |
-| **Agent protocol** | L11 | External agent API: read, write tokens, credits, capabilities | `apps/backend/src/lanes/agent-protocol` (planned path) |
+| **Agent protocol** | L11 | External agent API: read, write tokens, credits, capabilities | `apps/backend/src/lanes/agent-protocol` |
 
 ### Dependency rules
 
@@ -196,20 +196,20 @@ Browser (.io / .org)
 
 | Lane | 上次完成的功能 | 下次要做的功能 |
 |------|----------------|----------------|
-| L0 Shared | Assessment + inquiry schemas, API client | Agent protocol schemas (L11) |
+| L0 Shared | Assessment + agent + **newsletter** schemas | — |
 | L1 Platform | Combined proxy + Zeabur deploy | — |
-| L2 Backend core | Health, DB, inquiries, assessment routes | Rate limits, capabilities route (L11) |
-| L3 Auth | Google OAuth, sessions, users, `/api/auth/*` | — (configure Zeabur env for live OAuth) |
+| L2 Backend core | Health, DB, all lane routers | — |
+| L3 Auth | Google OAuth, sessions, agent authorize email | — |
 | L4 Assessment | Scoring API + session save/resume | — |
-| L5 Harvest | `POST /api/inquiries`, contributions table | Stories, moderation (Wave 5) |
-| L6 Newsletter | — | Schema stub + NoopProvider (Wave 8 area) |
-| L7 Content | 10 KB articles, content registry, `data/curated/` feeds | Curated topics on home (Wave 6 ✅) |
-| L8 Web IO | Reader entry home, assessment, `/for-agents`, `/ask` | Chatbot hook (Wave 6 partial) |
-| L9 Web ORG | Learn hub, Harvest, apprenticeship, `/for-agents` | Curated home parity (Wave 6 ✅) |
-| L10 Agent jobs | — | compile_issue_draft stub (Wave 8 area) |
-| L11 Agent protocol | Spec in usr/11; Wave 6 stub routes | API v1 MVP (Wave 7) |
+| L5 Harvest | Stories, prompts, inquiries, moderation | `newsletter_reply` ingestion (Wave 10) |
+| L6 Newsletter | **Wave 8** — issues/subscribers tables, providers, webhooks | Public send + subscribe (Wave 10) |
+| L7 Content | KB registry, curated JSON, agent content API | — |
+| L8 Web IO | Reader home, assessment secondary, for-agents | Sidebar chatbot v1 |
+| L9 Web ORG | Share-first Harvest Hub, apprenticeship | Sidebar chatbot v1 |
+| L10 Agent jobs | **Wave 8** — compile-draft, cluster-replies | LLM synthesis (later) |
+| L11 Agent protocol | Wave 7 v1 — read, authorize, write | Token refresh/revoke (v1.1) |
 
-*Updated at end of each wave — see [project-progress.md](./project-progress.md)*
+*Updated 2026-06-22 — see [project-progress.md](./project-progress.md)*
 
 ---
 

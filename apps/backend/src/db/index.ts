@@ -7,6 +7,7 @@ import type { ContributionSource } from '@ai-transformation/shared';
 import Database from 'better-sqlite3';
 
 import { runAgentProtocolMigrations } from './agent-protocol.js';
+import { runNewsletterMigrations } from './newsletter.js';
 
 type InsertContributionInput = {
   id: string;
@@ -250,6 +251,7 @@ function runMigrations(db: Database.Database): void {
     createdAt: '2026-06-15T00:00:00.000Z',
   });
   runAgentProtocolMigrations(db);
+  runNewsletterMigrations(db);
 }
 
 export function getDb(): Database.Database {

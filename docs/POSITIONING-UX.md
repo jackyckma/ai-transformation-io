@@ -86,11 +86,10 @@ Same 3-step model as .io; agents can read community metadata and (after authoriz
 
 | Phase | Focus |
 |-------|--------|
-| **Now (Wave 6 partial)** | Curated homes, agent discovery UI, API stubs |
-| **Wave 7** | Agent read/write protocol, quotas |
-| **Post–Wave 7** | Sidebar chatbot v1 (primary human interaction) |
-| **Later** | Your progress dashboard; optional conversation export API |
+| **Now (Wave 8 ✅)** | Newsletter tables, compile-draft job, webhook stubs |
 | **Wave 9** | Function-by-role IA (deferred from default home) |
+| **Wave 10** | Newsletter pilot + inbound replies |
+| **Parallel** | Sidebar chatbot v1 (primary human interaction) |
 
 ---
 

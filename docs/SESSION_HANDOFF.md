@@ -1,31 +1,24 @@
 # Session handoff
 
 **Date:** 2026-06-22  
-**Session:** Wave 7 agent protocol v1
+**Session:** Wave 8 — newsletter infra + internal agent jobs
 
 ## Completed
 
-1. Confirmed Wave/Lane roadmap aligned with [POSITIONING-UX.md](./POSITIONING-UX.md)
-2. **Wave 7 shipped (core v1):**
-   - L0 agent Zod schemas in `packages/shared`
-   - DB: `agent_authorize_requests`, `agent_write_tokens`, `agent_read_usage`, `credit_accounts` stub
-   - `GET /api/v1/content`, `/content/{slug}` with read quotas + rate-limit headers
-   - `POST /api/v1/agent/authorize`, `GET /api/v1/agent/authorize/confirm`
-   - `POST /api/v1/contributions` with bearer write token (`source=agent`)
-   - Capabilities + changelog updated to `wave7_v1`
-3. Backend tests pass (22)
+1. **Wave 8 shipped:**
+   - L6: `issues`, `subscribers`, `issue_contributions`; `NoopNewsletterProvider` + `ZeaburZSendProvider`
+   - Webhooks: `/api/webhooks/zsend` (accept), `/api/webhooks/inbound-email` (501)
+   - Subscribe/unsubscribe routes return 501 (deferred Wave 10)
+   - L10: `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies` (admin)
+2. ZSend DNS verified for `.io` + `.org`; `ZSEND_API_KEY` on Zeabur
+3. Docs updated: CURRENT_STATUS, project-progress, product-architecture, traceability-index, EMAIL_NEWSLETTER, AGENT_ENV
 
 ## Next
 
-- Configure `ZSEND_API_KEY` on Zeabur for production authorize emails
-- Sidebar chatbot v1 (post–Wave 7 UX bet)
-- Wave 8 newsletter / internal jobs
-- Optional: token refresh/revoke endpoints
+- **Wave 9** — Function-by-role IA (.io)
+- **Parallel** — Sidebar chatbot v1
+- **Wave 10** — Newsletter pilot (subscribe, send, inbound Worker)
 
-## Key docs
+## Admin: compile draft
 
-| Doc | Purpose |
-|-----|---------|
-| [POSITIONING-UX.md](./POSITIONING-UX.md) | Locked product/UX |
-| [CURRENT_STATUS.md](./CURRENT_STATUS.md) | Shipped state |
-| [usr/11-agent-first-api-v1.md](../usr/11-agent-first-api-v1.md) | Agent API spec |
+`POST /api/agent/compile-draft` with `{ "site": "io"|"org" }` — requires `ADMIN_EMAILS` session.

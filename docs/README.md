@@ -10,7 +10,7 @@
 | [POSITIONING-UX.md](POSITIONING-UX.md) | **Locked** product / UX decisions (.io companion, .org share-first, chatbot, spotlight) |
 | [DOC_ALIGNMENT_AUDIT.md](DOC_ALIGNMENT_AUDIT.md) | Outdated / contradictory doc scan |
 | [product-architecture.md](product-architecture.md) | Site IA (.io / .org) + lane map |
-| [project-progress.md](project-progress.md) | Wave delivery plan (0–8) |
+| [project-progress.md](project-progress.md) | Wave delivery plan (0–10) |
 | [traceability-index.md](traceability-index.md) | Lane → package → skill mapping |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Technical monorepo architecture |
 | [POSITIONING.md](POSITIONING.md) | Two-site positioning (short) |

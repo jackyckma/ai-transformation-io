@@ -93,6 +93,42 @@ export const agentContentDocumentSchema = agentContentIndexEntrySchema.extend({
 
 export type AgentContentDocument = z.infer<typeof agentContentDocumentSchema>;
 
+export const newsletterListSchema = z.enum(['io_pulse', 'org_harvest']);
+
+export type NewsletterList = z.infer<typeof newsletterListSchema>;
+
+export const issueStatusSchema = z.enum(['draft', 'scheduled', 'sent', 'archived']);
+
+export type IssueStatus = z.infer<typeof issueStatusSchema>;
+
+export const compileIssueDraftRequestSchema = z.object({
+  site: z.enum(['io', 'org']),
+  list: newsletterListSchema.optional(),
+  since: z.string().optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+});
+
+export type CompileIssueDraftRequest = z.infer<typeof compileIssueDraftRequestSchema>;
+
+export const compileIssueDraftResponseSchema = z.object({
+  ok: z.literal(true),
+  job: z.literal('compile_issue_draft'),
+  issue: z.object({
+    id: z.string(),
+    site: z.enum(['io', 'org']),
+    list: newsletterListSchema,
+    slug: z.string(),
+    title: z.string(),
+    status: issueStatusSchema,
+    replyToToken: z.string(),
+    draftMd: z.string(),
+    createdAt: z.string(),
+  }),
+  contributionCount: z.number().int(),
+});
+
+export type CompileIssueDraftResponse = z.infer<typeof compileIssueDraftResponseSchema>;
+
 export type ContributionSource = z.infer<typeof contributionSourceSchema>;
 
 export const inquiryPayloadSchema = z.object({

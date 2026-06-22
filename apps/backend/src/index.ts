@@ -3,9 +3,11 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
 import assessmentRouter from './lanes/assessment/index.js';
+import agentRouter from './lanes/agent/index.js';
 import agentProtocolRouter from './lanes/agent-protocol/index.js';
 import authRouter from './lanes/auth/index.js';
 import harvestRouter from './lanes/harvest/index.js';
+import newsletterRouter from './lanes/newsletter/index.js';
 import { sessionMiddleware } from './middleware/session.js';
 import type { SessionVariables } from './types/session.js';
 
@@ -33,11 +35,13 @@ export function createApp() {
     c.json({
       ok: true,
       service: 'backend',
-      version: '0.1.0-wave0',
+      version: '0.1.0-wave8',
     }),
   );
 
   app.route('/api', harvestRouter);
+  app.route('/api', newsletterRouter);
+  app.route('/api/agent', agentRouter);
   app.route('/api/auth', authRouter);
   app.route('/api/assessment', assessmentRouter);
   app.route('/api/v1', agentProtocolRouter);

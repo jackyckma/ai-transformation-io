@@ -1,0 +1,11 @@
+{
+  "job": "compile_issue_draft",
+  "contributionCount": 3,
+  "issue": {
+    "site": "org",
+    "list": "org_harvest",
+    "status": "draft",
+    "replyToToken": "issue-abc123def456"
+  },
+  "draftMdPreview": "# Harvest Hub digest — 2026-06-22\n\n> Draft compiled by internal job"
+}

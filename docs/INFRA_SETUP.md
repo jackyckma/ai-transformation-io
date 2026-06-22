@@ -51,6 +51,18 @@ Config file: `zbpack.ai-transformation-io.json` at repo root.
 
 Verify Gmail destination in Cloudflare dashboard if mail doesn't forward.
 
+## Email (ZSend)
+
+Both domains verified for Zeabur Email (2026-06-22). Agent authorize + future newsletter send via `ZSEND_API_KEY` on Zeabur.
+
+| Address | Purpose |
+|---------|---------|
+| pulse@ai-transformation.io | .io send / agent authorize |
+| learn@ai-transformation.org | .org digest (Wave 10) |
+| info@* | Cloudflare forward (human contact) |
+
+See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md).
+
 ## Live URLs
 
 - https://ai-transformation.io ✅ (Next.js Wave 0)

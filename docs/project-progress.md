@@ -17,7 +17,7 @@
 | M6 — .org Harvest Hub (Wave 5) | 2026-06-20 | ✅ |
 | M7 — Curation + agent discovery (Wave 6) | 2026-06-22 | ✅ |
 | M8 — Agent protocol v1 (Wave 7) | 2026-06-22 | ✅ |
-| M9 — Newsletter + internal agent jobs (Wave 8) | TBD | ⏳ |
+| M9 — Newsletter + internal agent jobs (Wave 8) | 2026-06-22 | ✅ |
 | M10 — IA expansion (Wave 9) | TBD | ⏳ |
 | M11 — Newsletter pilot (Wave 10) | TBD | ⏳ |
 
@@ -255,7 +255,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 - [x] Agent submission lands in `contributions` with `source=agent`
 - [x] Credits ledger stub (`credit_accounts` table)
 - [ ] Token refresh / revoke endpoints (optional v1.1)
-- [ ] Production ZSend authorize email (env `ZSEND_API_KEY` + `AGENT_AUTHORIZE_FROM`)
+- [x] Production ZSend authorize email (`ZSEND_API_KEY` + `AGENT_AUTHORIZE_FROM`)
 
 **Not in v1:** Per-post email confirm, author-set pricing, read-once consensus (Phase B).
 
@@ -274,9 +274,14 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | L5 | `source=newsletter_reply` enum ready |
 
 **Exit criteria:**
-- [ ] Internal job can generate draft MD from fixture contributions
-- [ ] No subscribe UI exposed (or footer "coming soon" only)
-- [ ] Webhook route stubs return 501 until Wave 10
+- [x] Internal job can generate draft MD from contributions (`POST /api/agent/compile-draft`)
+- [x] `cluster_replies` stub for newsletter_reply contributions
+- [x] `issues`, `subscribers`, `issue_contributions` tables + providers
+- [x] No subscribe UI exposed (`POST /api/newsletter/subscribe` → 501)
+- [x] Inbound webhook stub returns 501 until Wave 10
+- [x] `POST /api/webhooks/zsend` accepts events (log-only stub)
+
+**Not in Wave 8:** Public send, subscribe UI, inbound Email Worker (Wave 10).
 
 See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Worker inbound replies.
 
@@ -349,20 +354,20 @@ Wave 3 (assessment) ✅
     ↓
 Wave 4 (auth + save) ✅
     ↓
-Wave 5 (.org harvest)                    ← NEXT
+Wave 5 (.org harvest) ✅
     ↓
-Wave 6 (curation + /for-agents)
+Wave 6 (curation + /for-agents) ✅
     ↓
-Wave 7 (agent protocol v1 — L11)
+Wave 7 (agent protocol v1 — L11) ✅
     ↓
-Wave 8 (newsletter + L10 jobs)
+Wave 8 (newsletter + L10 jobs) ✅
     ↓
-Wave 9 (function pages / IA expansion)
+Wave 9 (function pages / IA expansion)                    ← NEXT
     ↓
 Wave 10 (newsletter pilot) — optional trigger
 ```
 
-Waves 3 requires Wave 2 DB. Wave 7 requires Wave 6 capabilities stub + L7 content registry. Wave 8 can start after Wave 5 contributions exist.
+Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. Wave 10 pilot needs Wave 8 infra.
 
 ---
 
