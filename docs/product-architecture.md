@@ -34,7 +34,7 @@ One monorepo, two public faces, one backend:
 
 **Audience:** Enterprise / corporate leaders — **information portal**, not product marketing  
 **Voice:** Editorial, anti-hype, content-first (serif titles, light sans body)  
-**Organizing principle:** **Curated topics** + playbook/framework articles; function pages remain roadmap item
+**Organizing principle:** **Curated topics** + playbook/framework articles; **function pages** secondary (footer + deep links, not primary nav)
 
 ### Information architecture (current + target)
 
@@ -45,11 +45,11 @@ One monorepo, two public faces, one backend:
 /for-agents                     Agent protocol + copy-paste quick start
 /assessment                     36-question Three Gaps assessment (Wave 3)
 /ask                            Question box
-/functions/*                    By role (template — later waves)
+/functions/*                    By role — Executive + CIO (Wave 9; shared template)
 /insights                       Curated Harvest outputs (Wave 5+)
 ```
 
-### Function page template (each `/functions/*`) — when built
+### Function page template (each `/functions/*`) — Wave 9 ✅
 
 1. **You own** — role responsibilities in AI transformation  
 2. **Three Gaps lens** — how gaps show up for this function  
@@ -66,18 +66,19 @@ One monorepo, two public faces, one backend:
 - `/insights/*` from moderated Harvest outputs (later)
 - Agent-readable content via **L11** read API (planned)
 
-### Shipped (Waves 1–2 + content refresh)
+### Shipped (Waves 1–9 + content refresh)
 
 - 10 knowledge-base articles on .io (`/frameworks/*`, `/playbook/*`)
 - Editorial blog-index home, serif typography
 - Question box + SQLite contributions
+- **Wave 9:** `/functions` index + Executive + CIO role guides (shared template); assessment → role deep links
 
 ### Deferred
 
 - Function-primary landing as default home
 - Newsletter subscribe UI on landing
 - Book a call / Calendly
-- Full function page set (Wave 8+)
+- Additional function roles beyond Executive + CIO
 
 ---
 
@@ -204,7 +205,7 @@ Browser (.io / .org)
 | L5 Harvest | Stories, prompts, inquiries, moderation | `newsletter_reply` ingestion (Wave 10) |
 | L6 Newsletter | **Wave 8** — issues/subscribers tables, providers, webhooks | Public send + subscribe (Wave 10) |
 | L7 Content | KB registry, curated JSON, agent content API | — |
-| L8 Web IO | Reader home, assessment secondary, for-agents | Sidebar chatbot v1 |
+| L8 Web IO | Reader home, assessment secondary, for-agents, **function role guides** | Sidebar chatbot v1 |
 | L9 Web ORG | Share-first Harvest Hub, apprenticeship | Sidebar chatbot v1 |
 | L10 Agent jobs | **Wave 8** — compile-draft, cluster-replies | LLM synthesis (later) |
 | L11 Agent protocol | Wave 7 v1 — read, authorize, write | Token refresh/revoke (v1.1) |

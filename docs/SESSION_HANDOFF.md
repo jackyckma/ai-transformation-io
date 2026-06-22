@@ -1,23 +1,28 @@
 # Session handoff
 
 **Date:** 2026-06-22  
-**Session:** Wave 8 — newsletter infra + internal agent jobs
+**Session:** Wave 9 — function-by-role IA (.io)
 
 ## Completed
 
-1. **Wave 8 shipped:**
-   - L6: `issues`, `subscribers`, `issue_contributions`; `NoopNewsletterProvider` + `ZeaburZSendProvider`
-   - Webhooks: `/api/webhooks/zsend` (accept), `/api/webhooks/inbound-email` (501)
-   - Subscribe/unsubscribe routes return 501 (deferred Wave 10)
-   - L10: `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies` (admin)
-2. ZSend DNS verified for `.io` + `.org`; `ZSEND_API_KEY` on Zeabur
-3. Docs updated: CURRENT_STATUS, project-progress, product-architecture, traceability-index, EMAIL_NEWSLETTER, AGENT_ENV
+1. **Wave 9 shipped:**
+   - L8: Shared `FunctionPageLayout` + `apps/web-io/data/function-pages.ts`
+   - Routes: `/functions`, `/functions/executive`, `/functions/cio` (dynamic `[slug]`)
+   - `/functions` index links glossary, FAQ, use cases (playbook stubs already live)
+   - Assessment weakest-gap CTAs → role guides + "All role guides"
+   - Sitemap: `/functions` + both role slugs
+   - Footer secondary link "Role guides" (not primary nav)
+2. Removed Wave 1 placeholder `app/functions/executive/page.tsx`
+3. Docs updated: CURRENT_STATUS, project-progress, product-architecture
 
 ## Next
 
-- **Wave 9** — Function-by-role IA (.io)
 - **Parallel** — Sidebar chatbot v1
 - **Wave 10** — Newsletter pilot (subscribe, send, inbound Worker)
+
+## Verify locally
+
+`pnpm --filter @ai-transformation/web-io build` — passes (24 static routes)
 
 ## Admin: compile draft
 

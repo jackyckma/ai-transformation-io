@@ -18,7 +18,7 @@
 | M7 — Curation + agent discovery (Wave 6) | 2026-06-22 | ✅ |
 | M8 — Agent protocol v1 (Wave 7) | 2026-06-22 | ✅ |
 | M9 — Newsletter + internal agent jobs (Wave 8) | 2026-06-22 | ✅ |
-| M10 — IA expansion (Wave 9) | TBD | ⏳ |
+| M10 — IA expansion (Wave 9) | 2026-06-22 | ✅ |
 | M11 — Newsletter pilot (Wave 10) | TBD | ⏳ |
 
 Legend: ✅ Done · 🔄 In progress · ⏳ Planned · ❌ Blocked
@@ -299,10 +299,12 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 | L8 | Assessment → function playbook deep links |
 
 **Exit criteria:**
-- [ ] ≥2 function pages using shared template
-- [ ] Sitemap complete
+- [x] ≥2 function pages using shared template (`/functions/executive`, `/functions/cio`)
+- [x] Sitemap complete (`/functions`, role slugs)
 
-**Note:** Function-primary nav is **deferred**; article index + curation remain default home.
+**Not in Wave 9:** Function-primary nav; additional roles beyond Executive + CIO.
+
+**Shipped:** Shared `FunctionPageLayout` + `function-pages.ts` data; `/functions` index with glossary/FAQ/use-cases links; assessment weakest-gap CTAs → role guides; footer secondary link only.
 
 ---
 
@@ -362,9 +364,9 @@ Wave 7 (agent protocol v1 — L11) ✅
     ↓
 Wave 8 (newsletter + L10 jobs) ✅
     ↓
-Wave 9 (function pages / IA expansion)                    ← NEXT
+Wave 9 (function pages / IA expansion) ✅
     ↓
-Wave 10 (newsletter pilot) — optional trigger
+Wave 10 (newsletter pilot) — optional trigger                    ← NEXT
 ```
 
 Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. Wave 10 pilot needs Wave 8 infra.

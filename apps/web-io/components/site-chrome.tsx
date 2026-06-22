@@ -50,6 +50,10 @@ export function SiteFooter() {
           Agent-friendly API
         </Link>
         {' · '}
+        <Link href="/functions" className="underline hover:text-[var(--foreground)]">
+          Role guides
+        </Link>
+        {' · '}
         <a href="https://ai-transformation.org" className="underline hover:text-[var(--foreground)]">
           Community on .org
         </a>

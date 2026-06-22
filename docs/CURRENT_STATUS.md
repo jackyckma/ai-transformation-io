@@ -4,11 +4,11 @@
 
 ## Summary
 
-Wave 0–7 ✅ · **Wave 8 ✅** — newsletter infra + internal agent jobs · **Positioning locked** in [POSITIONING-UX.md](./POSITIONING-UX.md)
+Wave 0–8 ✅ · **Wave 9 ✅** — function-by-role IA (.io) · **Positioning locked** in [POSITIONING-UX.md](./POSITIONING-UX.md)
 
 ## What works
 
-- https://ai-transformation.io — layered home, `/for-agents`, frameworks, playbook, `/assessment` (secondary), `/ask`
+- https://ai-transformation.io — layered home, `/for-agents`, frameworks, playbook, `/functions` (Executive + CIO), `/assessment` (secondary), `/ask`
 - https://ai-transformation.org — Share-first home, Harvest Hub, apprenticeship, `/for-agents`, `/ask`
 - **Agent API v1** — read, authorize, write (`/api/v1/*`)
 - **Newsletter infra (Wave 8)** — `issues` / `subscribers` tables, `NoopNewsletterProvider` + `ZeaburZSendProvider`, webhooks stub
@@ -26,8 +26,7 @@ See [AGENT_ENV.md](./AGENT_ENV.md):
 
 ## Next
 
-- **Post–Wave 8 UX** — sidebar chatbot v1 (primary human interaction)
-- **Wave 9** — Function-by-role IA (secondary)
+- **Post–Wave 9 UX** — sidebar chatbot v1 (primary human interaction)
 - **Wave 10** — Newsletter pilot (subscribe UI, send issue, inbound Worker)
 
 ## Docs
