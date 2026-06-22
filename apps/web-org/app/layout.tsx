@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-site="org" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${lora.variable} flex min-h-screen flex-col font-normal antialiased lg:h-screen lg:flex-row lg:overflow-hidden`}
       >

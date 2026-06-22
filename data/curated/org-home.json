@@ -21,7 +21,7 @@
     {
       "id": "learn",
       "layout": "compact",
-      "image": "/curation/path-governance.jpg",
+      "image": "/curation/harvest-stories.jpg",
       "label": "I want to learn the basics",
       "description": "Intro guides on transformation, patterns, and common pitfalls.",
       "articleSlugs": [
@@ -44,7 +44,7 @@
     {
       "slug": "ai-patterns-copilots-agents-automation",
       "layout": "feature",
-      "image": "/curation/cornerstone.jpg",
+      "image": "/curation/path-share.jpg",
       "editorNote": "Patterns for copilots, agents, and automation — useful context before you share what worked.",
       "useOrgLearnPaths": true
     }
@@ -110,7 +110,7 @@
       "title": "Weekly prompts",
       "summary": "Reply to the current community question when your experience matches — a lighter-weight way to contribute.",
       "href": "/prompts",
-      "image": "/curation/cornerstone.jpg"
+      "image": "/curation/path-share.jpg"
     },
     {
       "id": "agent-entry",

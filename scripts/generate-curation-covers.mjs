@@ -3,7 +3,9 @@
  * Generate reusable topic cover images for curated home feeds.
  * Uses MiniMax image-01 when MINIMAX_API_KEY is set; otherwise writes SVG fallbacks.
  *
- * Usage: node scripts/generate-curation-covers.mjs
+ * Writes site-specific palettes to each Next.js public tree (io warm stone, org moss green).
+ *
+ * Usage: node scripts/generate-curation-covers.mjs [--site io|org|all]
  */
 
 import fs from 'node:fs';
@@ -11,72 +13,121 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const outDirs = [
-  path.join(repoRoot, 'apps/web-io/public/curation'),
-  path.join(repoRoot, 'apps/web-org/public/curation'),
-];
+const siteArg = process.argv.find((arg) => arg.startsWith('--site='))?.slice('--site='.length) ?? 'all';
 
 loadEnvFile(path.join(repoRoot, '.env'));
 
-const STYLE =
+const BASE_STYLE =
   'Editorial abstract cover art for a premium knowledge website. Muted palette, subtle paper grain, minimal geometric composition, no text, no letters, no people, no faces, no logos. Calm refined museum-catalog aesthetic, soft diffused light.';
 
-const ASSETS = [
-  {
-    file: 'cornerstone',
-    ext: 'jpg',
-    aspect_ratio: '16:9',
-    prompt: `${STYLE} Warm stone and cream tones. Layered translucent planes suggesting operating-model change and organizational structure, not technology hype.`,
+const IO_STYLE = `${BASE_STYLE} Warm stone, cream, bronze, and taupe only — no green tones.`;
+const ORG_STYLE = `${BASE_STYLE} Soft moss green, fern, sage, and parchment — community harvest feel, no bronze or coffee brown.`;
+
+function assetList(style, site) {
+  return [
+    {
+      file: 'cornerstone',
+      ext: 'jpg',
+      aspect_ratio: '16:9',
+      site,
+      prompt: `${style} Layered translucent planes suggesting operating-model change and organizational structure.`,
+    },
+    {
+      file: 'three-gaps',
+      ext: 'jpg',
+      aspect_ratio: '3:2',
+      site,
+      prompt: `${style} Three horizontal strata with subtle luminous gaps — work, governance, and value measurement.`,
+    },
+    {
+      file: 'roadmap',
+      ext: 'jpg',
+      aspect_ratio: '3:2',
+      site,
+      prompt:
+        site === 'io'
+          ? `${style} Abstract ascending path with seven bronze markers on warm stone terraces — enterprise roadmap.`
+          : `${style} Abstract ascending path with seven soft green markers on moss terraces — community learning journey.`,
+    },
+    {
+      file: 'harvest-stories',
+      ext: 'jpg',
+      aspect_ratio: '3:2',
+      site,
+      prompt: `${style} Abstract open field notebook, marginal notes, and thread lines — community field experiences.`,
+    },
+    {
+      file: 'apprenticeship',
+      ext: 'jpg',
+      aspect_ratio: '3:2',
+      site,
+      prompt: `${style} Abstract workbench, tools, and judgment craft — mentorship and hands-on learning.`,
+    },
+    {
+      file: 'path-governance',
+      ext: 'jpg',
+      aspect_ratio: '1:1',
+      site,
+      prompt: `${style} Square icon. Minimal compass horizon and balanced pillars — executive governance.`,
+    },
+    {
+      file: 'path-playbook',
+      ext: 'jpg',
+      aspect_ratio: '1:1',
+      site,
+      prompt: `${style} Square icon. Connected nodes and practical patterns — implementation work.`,
+    },
+    {
+      file: 'path-explore',
+      ext: 'jpg',
+      aspect_ratio: '1:1',
+      site,
+      prompt: `${style} Square icon. Soft doorway light and open horizon — exploration and first steps.`,
+    },
+    {
+      file: 'path-share',
+      ext: 'jpg',
+      aspect_ratio: '1:1',
+      site,
+      prompt: `${style} Square icon. Overlapping conversation threads and shared notes — community contribution.`,
+    },
+  ];
+}
+
+const SITE_CONFIG = {
+  io: {
+    outDir: path.join(repoRoot, 'apps/web-io/public/curation'),
+    assets: assetList(IO_STYLE, 'io'),
   },
-  {
-    file: 'three-gaps',
-    ext: 'jpg',
-    aspect_ratio: '3:2',
-    prompt: `${STYLE} Warm taupe palette. Three horizontal strata with subtle luminous gaps between them — metaphor for work, governance, and value measurement.`,
+  org: {
+    outDir: path.join(repoRoot, 'apps/web-org/public/curation'),
+    assets: assetList(ORG_STYLE, 'org'),
   },
-  {
-    file: 'roadmap',
-    ext: 'jpg',
-    aspect_ratio: '3:2',
-    prompt: `${STYLE} Sage green and stone palette. Abstract ascending path with seven small markers or terraces, suggesting a multi-stage transformation roadmap.`,
-  },
-  {
-    file: 'harvest-stories',
-    ext: 'jpg',
-    aspect_ratio: '3:2',
-    prompt: `${STYLE} Soft muted green and parchment tones. Abstract open field notebook, marginal notes, and thread lines — community field experiences, not journalism.`,
-  },
-  {
-    file: 'apprenticeship',
-    ext: 'jpg',
-    aspect_ratio: '3:2',
-    prompt: `${STYLE} Warm wood and linen tones. Abstract workbench, tools, and judgment craft — mentorship and hands-on learning, no people visible.`,
-  },
-  {
-    file: 'path-governance',
-    ext: 'jpg',
-    aspect_ratio: '1:1',
-    prompt: `${STYLE} Square icon composition. Minimal compass horizon and balanced pillars — executive governance and sponsorship.`,
-  },
-  {
-    file: 'path-playbook',
-    ext: 'jpg',
-    aspect_ratio: '1:1',
-    prompt: `${STYLE} Square icon composition. Connected nodes and practical patterns — implementation and enablement work.`,
-  },
-  {
-    file: 'path-explore',
-    ext: 'jpg',
-    aspect_ratio: '1:1',
-    prompt: `${STYLE} Square icon composition. Soft doorway light and open horizon — exploration and first steps.`,
-  },
-  {
-    file: 'path-share',
-    ext: 'jpg',
-    aspect_ratio: '1:1',
-    prompt: `${STYLE} Square icon composition in soft green. Overlapping conversation threads and shared notes — community contribution.`,
-  },
-];
+};
+
+const IO_PALETTES = {
+  cornerstone: ['#ebe3d6', '#c9b08a', '#8f5e2c'],
+  'three-gaps': ['#e8ddd0', '#b8a088', '#6b5340'],
+  roadmap: ['#e5d8c8', '#c9924f', '#7a4f24'],
+  'harvest-stories': ['#ebe3d6', '#c4a882', '#8b6914'],
+  apprenticeship: ['#ebe4d8', '#c9a882', '#8b6914'],
+  'path-governance': ['#e8e0d4', '#8f5e2c'],
+  'path-playbook': ['#e5ddd2', '#7a6554'],
+  'path-explore': ['#f0ebe3', '#a89882'],
+  'path-share': ['#e8ddd0', '#9a6534'],
+};
+
+const ORG_PALETTES = {
+  cornerstone: ['#d8ebe0', '#7ec9a0', '#2f6b4f'],
+  'three-gaps': ['#cfe8da', '#6db896', '#2d6a4f'],
+  roadmap: ['#d4ebe0', '#5cb888', '#256b4a'],
+  'harvest-stories': ['#e0f2e8', '#6db896', '#2f6b4f'],
+  apprenticeship: ['#dcebe2', '#8fd4ad', '#3d7a5c'],
+  'path-governance': ['#d0e8da', '#3d7a5c'],
+  'path-playbook': ['#c8e0d0', '#4a8f6a'],
+  'path-explore': ['#dff0e6', '#5cb888'],
+  'path-share': ['#d8ebe0', '#2f6b4f'],
+};
 
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
@@ -99,17 +150,7 @@ function loadEnvFile(filePath) {
 }
 
 function svgFallback(asset) {
-  const palettes = {
-    cornerstone: ['#e8e4dc', '#c4b8a8', '#8b7355'],
-    'three-gaps': ['#e5dfd6', '#b8aea0', '#78716c'],
-    roadmap: ['#dce8e0', '#9bb5a4', '#5c7a68'],
-    'harvest-stories': ['#e8f0ea', '#8fb89a', '#3d7a5c'],
-    apprenticeship: ['#ebe4d8', '#c9a882', '#8b6914'],
-    'path-governance': ['#e8e4dc', '#8b7355'],
-    'path-playbook': ['#dfe4ea', '#6b7280'],
-    'path-explore': ['#f0ebe3', '#a89882'],
-    'path-share': ['#e8f0ea', '#3d7a5c'],
-  };
+  const palettes = asset.site === 'org' ? ORG_PALETTES : IO_PALETTES;
   const [a, b, c = b] = palettes[asset.file] ?? ['#e8e4dc', '#c4b8a8'];
   const isSquare = asset.aspect_ratio === '1:1';
   const w = isSquare ? 400 : asset.aspect_ratio === '16:9' ? 960 : 900;
@@ -197,7 +238,7 @@ async function generateWithMinimax(asset) {
   return Buffer.from(base64List[0], 'base64');
 }
 
-async function writeAsset(asset) {
+async function writeAsset(asset, outDir) {
   let buffer = null;
   let ext = asset.ext;
   let source = 'minimax';
@@ -205,7 +246,7 @@ async function writeAsset(asset) {
   try {
     buffer = await generateWithMinimax(asset);
   } catch (error) {
-    console.warn(`MiniMax failed for ${asset.file}: ${error.message}`);
+    console.warn(`MiniMax failed for ${asset.file} (${asset.site}): ${error.message}`);
   }
 
   if (!buffer) {
@@ -214,28 +255,37 @@ async function writeAsset(asset) {
     buffer = Buffer.from(svgFallback(asset), 'utf8');
   }
 
-  for (const dir of outDirs) {
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, `${asset.file}.${ext}`), buffer);
-  }
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, `${asset.file}.${ext}`), buffer);
 
-  return { file: asset.file, ext, source };
+  return { file: asset.file, ext, source, site: asset.site };
 }
 
 async function main() {
-  for (const dir of outDirs) fs.mkdirSync(dir, { recursive: true });
-
+  const sites = siteArg === 'all' ? ['io', 'org'] : [siteArg];
   const results = [];
-  for (const asset of ASSETS) {
-    process.stdout.write(`Generating ${asset.file}… `);
-    const result = await writeAsset(asset);
-    results.push(result);
-    console.log(`${result.source} → .${result.ext}`);
+
+  for (const site of sites) {
+    const config = SITE_CONFIG[site];
+    if (!config) {
+      console.error(`Unknown site: ${site}`);
+      process.exit(1);
+    }
+
+    fs.mkdirSync(config.outDir, { recursive: true });
+
+    for (const asset of config.assets) {
+      process.stdout.write(`Generating ${site}/${asset.file}… `);
+      const result = await writeAsset(asset, config.outDir);
+      results.push(result);
+      console.log(`${result.source} → .${result.ext}`);
+    }
   }
 
-  console.log('\nDone. Files written to:');
-  for (const dir of outDirs) console.log(`  ${path.relative(repoRoot, dir)}/`);
-  console.log('\nUpdate data/curated/*.json image paths to match extensions above.');
+  console.log('\nDone. Files written per site under apps/web-*/public/curation/');
+  if (results.some((result) => result.ext === 'svg')) {
+    console.log('Some assets used SVG fallback — update data/curated/*.json image paths if needed.');
+  }
 }
 
 main().catch((error) => {

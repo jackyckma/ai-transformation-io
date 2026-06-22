@@ -21,7 +21,7 @@ export function SiteHeader() {
         <div className="flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="shrink-0 font-serif text-xl font-normal tracking-tight text-[var(--foreground)] md:text-[1.35rem]"
+            className="min-w-0 max-w-[calc(100%-3rem)] truncate font-serif text-xl font-normal tracking-tight text-[var(--foreground)] md:max-w-none md:text-[1.35rem]"
           >
             AI Transformation
             <span className="ml-1 font-sans text-sm font-normal text-[var(--secondary)]">.org</span>

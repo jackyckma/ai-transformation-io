@@ -12,10 +12,10 @@ type CuratedVisualProps = {
 };
 
 const PLACEHOLDER_TONES = [
-  'from-[#e8e4dc] to-[#f5f2eb] dark:from-[#2a2824] dark:to-[#1a1917]',
-  'from-[#dce8e0] to-[#f0f7f3] dark:from-[#1e2a24] dark:to-[#141916]',
-  'from-[#e5dfe8] to-[#f3eff5] dark:from-[#252028] dark:to-[#18161a]',
-  'from-[#dfe4ea] to-[#eef1f5] dark:from-[#1e2228] dark:to-[#121416]',
+  'from-[#ebe3d6] to-[#f7f0e4] dark:from-[#2a241c] dark:to-[#181410]',
+  'from-[#e8ddd0] to-[#f5ebe0] dark:from-[#2d251c] dark:to-[#1a1510]',
+  'from-[#dfd0bc] to-[#f0e6d8] dark:from-[#332a20] dark:to-[#1c1610]',
+  'from-[#d4c4ae] to-[#ede3d4] dark:from-[#3a3024] dark:to-[#201912]',
 ] as const;
 
 function toneForSeed(seed: string): (typeof PLACEHOLDER_TONES)[number] {
@@ -53,6 +53,10 @@ export function CuratedVisual({
     return (
       <div className={frameClass}>
         <Image src={image} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
+        <div
+          className="pointer-events-none absolute inset-0 bg-[var(--accent)]/12 mix-blend-multiply dark:bg-[var(--accent)]/20"
+          aria-hidden
+        />
       </div>
     );
   }
