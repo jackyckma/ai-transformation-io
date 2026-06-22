@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Lora, Geist } from 'next/font/google';
+import { SiteJsonLd } from '@/components/site-json-ld';
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
 import './globals.css';
 
@@ -22,6 +23,21 @@ export const metadata: Metadata = {
   },
   description: 'Organized knowledge for enterprise AI transformation — frameworks, assessment, and playbooks.',
   metadataBase: new URL('https://ai-transformation.io'),
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/',
+    siteName: 'AI Transformation',
+    title: 'AI Transformation',
+    description: 'Organized knowledge for enterprise AI transformation — frameworks, assessment, and playbooks.',
+    images: [{ url: '/curation/cornerstone.jpg', width: 1200, height: 630, alt: 'AI Transformation' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Transformation',
+    description: 'Organized knowledge for enterprise AI transformation — frameworks, assessment, and playbooks.',
+    images: ['/curation/cornerstone.jpg'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -30,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${lora.variable} flex min-h-screen flex-col font-light antialiased`}
       >
+        <SiteJsonLd />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
