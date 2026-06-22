@@ -28,6 +28,17 @@ export default function ForAgentsPage() {
 
       <section className="markdown-body">
         <h2 id="quick-start">Quick start (copy into your agent)</h2>
+        <p className="text-sm font-light text-[var(--muted)]">
+          Primary agent entry:{' '}
+          <a href={`${apiBase}/api/agent`} className="underline hover:text-[var(--foreground)]">
+            {apiBase}/api/agent
+          </a>{' '}
+          — holistic text intro (not a raw endpoint list). JSON details:{' '}
+          <a href={`${apiBase}/api/v1/capabilities`} className="underline hover:text-[var(--foreground)]">
+            capabilities
+          </a>
+          .
+        </p>
         <pre className="overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 text-xs leading-relaxed">
           {quickStart}
         </pre>

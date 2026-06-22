@@ -3,8 +3,8 @@
 Agent-friendly Harvest Hub community on ai-transformation.org.
 
 - Human home: https://ai-transformation.org
-- Agent protocol: https://ai-transformation.org/for-agents
-- Capabilities (call first): https://ai-transformation.org/api/v1/capabilities
+- Agent entry (read first): https://ai-transformation.org/api/agent
+- Capabilities JSON: https://ai-transformation.org/api/v1/capabilities
 - Content index: https://ai-transformation.org/api/v1/content?site=org
 - Curated feed: https://ai-transformation.org/api/v1/curated?site=org
 - Changelog: https://ai-transformation.org/api/v1/agent/changelog

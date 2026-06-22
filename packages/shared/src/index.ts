@@ -646,6 +646,7 @@ export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
   return [
     `You can interact with ${SITE_ORIGIN[site]} without browsing HTML.`,
     '',
+    'Start at GET ' + `${base}/api/agent` + ' — holistic site intro and API orientation (text).',
     'Set a stable X-Agent-Client-Id header (e.g. "your-agent/1.0") on content reads — 3/day anonymous, 10/day after authorize.',
     '',
     '1. Call GET ' + `${base}/api/v1/capabilities` + ' — quotas, endpoints, error codes, and auth rules.',
@@ -659,6 +660,142 @@ export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
     'Errors return JSON: { ok: false, error: "machine_code", message?: "..." }.',
     'Human-readable protocol: ' + `${origin}/for-agents`,
   ].join('\n');
+}
+
+const AGENT_ENTRY_API_VERSION = '1.0.0';
+
+function agentEntryQuickStartLines(site: AgentSite, origin: string): string {
+  const writeScopes =
+    site === 'io'
+      ? 'inquiries (question box)'
+      : 'stories, prompt replies, and inquiries';
+
+  return [
+    'Set a stable X-Agent-Client-Id header (e.g. "your-agent/1.0") on content reads — 3/day anonymous, 10/day after authorize.',
+    '',
+    `1. GET ${origin}/api/v1/capabilities — quotas, endpoints, error codes.`,
+    `2. GET ${origin}/api/v1/content?site=${site} — all article slugs (no read quota).`,
+    `3. GET ${origin}/api/v1/curated?site=${site} — editor highlights.`,
+    `4. GET ${origin}/api/v1/content/{slug}?site=${site} — full article (counts as a read).`,
+    `5. To submit on behalf of a human (${writeScopes}): POST ${origin}/api/v1/agent/authorize, then POST ${origin}/api/v1/contributions with Bearer token.`,
+    '',
+    'Errors: JSON { ok: false, error: "machine_code", message?: "..." }.',
+  ].join('\n');
+}
+
+export function buildAgentEntryText(site: AgentSite): string {
+  const origin = SITE_ORIGIN[site];
+  const quickStart = agentEntryQuickStartLines(site, origin);
+
+  if (site === 'org') {
+    return [
+      '# AI Transformation · Harvest Hub — agent entry',
+      '',
+      `You are reading the agent entry for ${origin}.`,
+      'This is a community site ("Harvest Hub") for sharing field experiences about enterprise AI transformation — not hype, not vendor pitches.',
+      '',
+      '## What humans do here',
+      '',
+      '- Read learn guides and curated topics before contributing.',
+      '- Share stories and prompt replies when they have something real.',
+      '- Use the in-site companion (chat sidebar) when unsure where to start.',
+      '',
+      '## What agents should do',
+      '',
+      'Do not scrape HTML. Use the versioned JSON API under `/api/v1/`.',
+      'Start with this page for orientation, then follow the machine-readable steps below.',
+      '',
+      '### API version',
+      '',
+      `- Current protocol: **${AGENT_ENTRY_API_VERSION}** (implementation: wave7_v1)`,
+      `- Capabilities (endpoints, quotas, error codes): ${origin}/api/v1/capabilities`,
+      `- Changelog (check before caching API knowledge): ${origin}/api/v1/agent/changelog`,
+      '',
+      'If a future version changes behavior, the changelog and capabilities response will say so first.',
+      '',
+      '### Interaction flow (summary)',
+      '',
+      quickStart,
+      '',
+      '### Write access',
+      '',
+      'Agents never post without a human in the loop. POST /api/v1/agent/authorize sends a one-time email confirm;',
+      'the human clicks the link and you receive a Bearer token (180-day TTL, shared across .io and .org).',
+      'On .org you may submit stories, prompt replies, and inquiries. On .io, inquiries only.',
+      '',
+      '### Human-readable mirror',
+      '',
+      `${origin}/for-agents — same protocol in editorial form for humans pasting into ChatGPT or Claude.`,
+      '',
+      '---',
+      `api_version: ${AGENT_ENTRY_API_VERSION}`,
+      `capabilities: ${origin}/api/v1/capabilities`,
+    ].join('\n');
+  }
+
+  return [
+    '# AI Transformation — agent entry',
+    '',
+    `You are reading the agent entry for ${origin}.`,
+    'This is an executive information portal: structured frameworks, playbook articles, and role guides for enterprise AI transformation.',
+    'Assessment (Three Gaps diagnostic) exists but is secondary — the primary human path is ask → read → assess.',
+    '',
+    '## What humans do here',
+    '',
+    '- Ask the in-site companion (chat sidebar) for grounded answers.',
+    '- Read frameworks, playbook, and role guides for depth.',
+    '- Run the organizational assessment when ready to measure progress.',
+    '',
+    '## What agents should do',
+    '',
+    'Do not scrape HTML. Use the versioned JSON API under `/api/v1/`.',
+    'Start with this page for orientation, then follow the machine-readable steps below.',
+    '',
+    '### API version',
+    '',
+    `- Current protocol: **${AGENT_ENTRY_API_VERSION}** (implementation: wave7_v1)`,
+    `- Capabilities (endpoints, quotas, error codes): ${origin}/api/v1/capabilities`,
+    `- Changelog (check before caching API knowledge): ${origin}/api/v1/agent/changelog`,
+    '',
+    'If a future version changes behavior, the changelog and capabilities response will say so first.',
+    '',
+    '### Interaction flow (summary)',
+    '',
+    quickStart,
+    '',
+    '### Write access',
+    '',
+    'Agents never post without a human in the loop. POST /api/v1/agent/authorize sends a one-time email confirm;',
+    'the human clicks the link and you receive a Bearer token (180-day TTL, shared across .io and .org).',
+    'On .io you may submit inquiries via POST /api/v1/contributions.',
+    '',
+    '### Community site',
+    '',
+    'Harvest Hub on https://ai-transformation.org — field stories and prompts. Same token, different write scopes.',
+    '',
+    '### Human-readable mirror',
+    '',
+    `${origin}/for-agents — same protocol in editorial form for humans pasting into ChatGPT or Claude.`,
+    '',
+    '---',
+    `api_version: ${AGENT_ENTRY_API_VERSION}`,
+    `capabilities: ${origin}/api/v1/capabilities`,
+  ].join('\n');
+}
+
+export function buildAgentEntryJson(site: AgentSite) {
+  const origin = SITE_ORIGIN[site];
+  return {
+    ok: true,
+    api_version: AGENT_ENTRY_API_VERSION,
+    implementation_status: 'wave7_v1',
+    site: site === 'org' ? 'ai-transformation.org' : 'ai-transformation.io',
+    entry: `${origin}/api/agent`,
+    text: buildAgentEntryText(site),
+    capabilities_url: `${origin}/api/v1/capabilities`,
+    changelog_url: `${origin}/api/v1/agent/changelog`,
+    human_documentation: `${origin}/for-agents`,
+  };
 }
 
 export const AGENT_PANEL_HEADLINE = 'Agent-friendly';

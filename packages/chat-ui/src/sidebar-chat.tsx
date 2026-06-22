@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { OPEN_COMPANION_EVENT, OPEN_COMPANION_WITH_MESSAGE_EVENT } from './companion-nav';
 
 type ChatSite = 'io' | 'org';
+type ChatLayout = 'docked' | 'floating';
 
 type ChatLink = {
   label: string;
@@ -28,6 +29,7 @@ type ChatQuota = {
 
 export type SidebarChatProps = {
   site: ChatSite;
+  layout?: ChatLayout;
   /** @deprecated use same-origin resolveClientApiUrl inside the component */
   apiBase?: string;
 };
@@ -50,9 +52,10 @@ const COPY: Record<
   },
 };
 
-export function SidebarChat({ site }: SidebarChatProps) {
+export function SidebarChat({ site, layout = 'docked' }: SidebarChatProps) {
   const copy = COPY[site];
-  const [open, setOpen] = useState(false);
+  const isDocked = layout === 'docked';
+  const [open, setOpen] = useState(isDocked);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [quota, setQuota] = useState<ChatQuota | null>(null);
   const [input, setInput] = useState('');
@@ -99,6 +102,10 @@ export function SidebarChat({ site }: SidebarChatProps) {
   }, [loadSession]);
 
   useEffect(() => {
+    if (isDocked) {
+      return undefined;
+    }
+
     const openFromNav = () => setOpen(true);
     const openWithMessage = (event: Event) => {
       const message = (event as CustomEvent<string>).detail?.trim();
@@ -113,7 +120,25 @@ export function SidebarChat({ site }: SidebarChatProps) {
       window.removeEventListener(OPEN_COMPANION_EVENT, openFromNav);
       window.removeEventListener(OPEN_COMPANION_WITH_MESSAGE_EVENT, openWithMessage);
     };
-  }, []);
+  }, [isDocked]);
+
+  useEffect(() => {
+    if (isDocked) {
+      const openWithMessage = (event: Event) => {
+        const message = (event as CustomEvent<string>).detail?.trim();
+        if (message) {
+          setInput(message);
+          inputRef.current?.focus();
+        }
+      };
+      window.addEventListener(OPEN_COMPANION_WITH_MESSAGE_EVENT, openWithMessage);
+      return () => {
+        window.removeEventListener(OPEN_COMPANION_WITH_MESSAGE_EVENT, openWithMessage);
+      };
+    }
+
+    return undefined;
+  }, [isDocked]);
 
   useEffect(() => {
     if (open && !loaded && !loadingSession) {
@@ -251,6 +276,105 @@ export function SidebarChat({ site }: SidebarChatProps) {
     }
   }
 
+  const panel = (
+    <>
+      <header className="shrink-0 border-b border-[var(--border)] px-4 py-3 lg:px-5 lg:py-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="font-serif text-base font-normal tracking-tight lg:text-lg">{copy.title}</h2>
+            <p className="mt-1 text-xs font-light text-[var(--muted)] lg:text-sm">{copy.subtitle}</p>
+          </div>
+          {!isDocked ? (
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-1 text-sm text-[var(--muted)] transition hover:text-[var(--foreground)]"
+              aria-label="Close companion panel"
+            >
+              ×
+            </button>
+          ) : null}
+        </div>
+        {quota ? (
+          <p className="mt-2 text-xs font-light text-[var(--muted)]">
+            {quota.remaining} of {quota.limit} messages left today
+          </p>
+        ) : null}
+      </header>
+
+      <div ref={listRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 lg:px-5">
+        {loadingSession ? <p className="text-sm text-[var(--muted)]">Loading conversation…</p> : null}
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[95%] rounded-2xl px-3 py-2.5 text-sm leading-relaxed lg:max-w-[90%] lg:px-4 lg:py-3 ${
+                message.role === 'user'
+                  ? 'bg-[var(--accent)] text-[var(--accent-fg)]'
+                  : 'border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]'
+              }`}
+            >
+              <p className="whitespace-pre-wrap">{message.content}</p>
+              {message.links && message.links.length > 0 ? (
+                <ul className="mt-3 space-y-2 border-t border-[var(--border)] pt-3 text-sm">
+                  {message.links.map((link) => (
+                    <li key={`${message.id}-${link.href}`}>
+                      <a
+                        href={link.href}
+                        className="underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <footer className="shrink-0 border-t border-[var(--border)] px-4 py-3 lg:px-5 lg:py-4">
+        {error ? <p className="mb-2 text-sm text-[var(--accent)]">{error}</p> : null}
+        <form onSubmit={handleSend} className="space-y-2 lg:space-y-3">
+          <label htmlFor={`companion-input-${site}`} className="sr-only">
+            Message
+          </label>
+          <textarea
+            id={`companion-input-${site}`}
+            ref={inputRef}
+            rows={2}
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder={copy.placeholder}
+            disabled={sending || loadingSession || (quota?.remaining ?? 1) <= 0}
+            className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] disabled:opacity-60"
+          />
+          <button
+            type="submit"
+            disabled={sending || loadingSession || !input.trim() || (quota?.remaining ?? 1) <= 0}
+            className="inline-flex w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {sending ? 'Thinking…' : 'Send'}
+          </button>
+        </form>
+      </footer>
+    </>
+  );
+
+  if (isDocked) {
+    return (
+      <aside
+        id="site-companion-panel"
+        className="flex h-[min(28rem,50vh)] flex-col bg-[var(--background)] lg:sticky lg:top-[var(--site-header-h)] lg:h-[calc(100vh-var(--site-header-h))] lg:min-h-0"
+      >
+        {panel}
+      </aside>
+    );
+  }
+
   return (
     <>
       {open ? (
@@ -276,95 +400,12 @@ export function SidebarChat({ site }: SidebarChatProps) {
         id="site-companion-panel"
         aria-hidden={!open}
         className={`fixed inset-x-0 bottom-0 top-14 z-[100] flex flex-col border-t border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:inset-x-auto sm:inset-y-0 sm:right-0 sm:top-14 sm:w-full sm:max-w-md sm:border-l sm:border-t-0 ${
-          open ? 'translate-y-0 sm:translate-x-0 sm:translate-y-0' : 'translate-y-full sm:translate-y-0 sm:translate-x-full pointer-events-none'
+          open
+            ? 'translate-y-0 sm:translate-x-0 sm:translate-y-0'
+            : 'pointer-events-none translate-y-full sm:translate-y-0 sm:translate-x-full'
         }`}
       >
-        <header className="border-b border-[var(--border)] px-5 py-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="font-serif text-lg font-normal tracking-tight">{copy.title}</h2>
-              <p className="mt-1 text-sm font-light text-[var(--muted)]">{copy.subtitle}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded-md px-2 py-1 text-sm text-[var(--muted)] transition hover:text-[var(--foreground)]"
-              aria-label="Close companion panel"
-            >
-              ×
-            </button>
-          </div>
-          {quota ? (
-            <p className="mt-3 text-xs font-light text-[var(--muted)]">
-              {quota.remaining} of {quota.limit} messages left today
-            </p>
-          ) : null}
-        </header>
-
-        <div ref={listRef} className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-          {loadingSession ? (
-            <p className="text-sm text-[var(--muted)]">Loading conversation…</p>
-          ) : null}
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                  message.role === 'user'
-                    ? 'bg-[var(--accent)] text-[var(--accent-fg)]'
-                    : 'border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]'
-                }`}
-              >
-                <p className="whitespace-pre-wrap">{message.content}</p>
-                {message.links && message.links.length > 0 ? (
-                  <ul className="mt-3 space-y-2 border-t border-[var(--border)] pt-3 text-sm">
-                    {message.links.map((link) => (
-                      <li key={`${message.id}-${link.href}`}>
-                        <a
-                          href={link.href}
-                          className="underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
-                          onClick={() => setOpen(false)}
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <footer className="border-t border-[var(--border)] px-5 py-4">
-          {error ? <p className="mb-3 text-sm text-[var(--accent)]">{error}</p> : null}
-          <form onSubmit={handleSend} className="space-y-3">
-            <label htmlFor="companion-input" className="sr-only">
-              Message
-            </label>
-            <textarea
-              id="companion-input"
-              ref={inputRef}
-              rows={3}
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder={copy.placeholder}
-              disabled={sending || loadingSession || (quota?.remaining ?? 1) <= 0}
-              className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] disabled:opacity-60"
-            />
-            <button
-              type="submit"
-              disabled={
-                sending || loadingSession || !input.trim() || (quota?.remaining ?? 1) <= 0
-              }
-              className="inline-flex w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {sending ? 'Thinking…' : 'Send'}
-            </button>
-          </form>
-        </footer>
+        {panel}
       </aside>
     </>
   );

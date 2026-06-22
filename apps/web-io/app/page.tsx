@@ -1,33 +1,11 @@
-import { CompanionHomeEntry } from '@ai-transformation/chat-ui';
-import { HomeCuratedPreview, loadIoCuratedFeed } from '@/components/curated-sections';
-import { HubExploreNav } from '@/components/hub-explore-nav';
-import { SiteLogicStrip } from '@/components/site-logic-strip';
-import { IO_EXPLORE_LINKS } from '@/lib/explore-links';
+import { HomeCurationGrid, loadIoCuratedFeed } from '@/components/home-curation-grid';
 
 export default function HomePage() {
   const feed = loadIoCuratedFeed();
 
   return (
-    <div className="layout-shell py-8 md:py-12">
-      <section className="max-w-2xl">
-        <h1 className="font-serif text-2xl font-normal tracking-tight md:text-3xl">
-          Your AI transformation companion
-        </h1>
-        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--muted)] md:text-base">
-          Structured guidance for enterprise leaders — ask first, read when you need depth, assess when you
-          are ready.
-        </p>
-      </section>
-
-      <SiteLogicStrip />
-
-      <div className="mt-10 max-w-2xl">
-        <CompanionHomeEntry site="io" />
-      </div>
-
-      <HubExploreNav links={IO_EXPLORE_LINKS} className="mt-10 border-y py-4" />
-
-      <HomeCuratedPreview feed={feed} />
+    <div className="layout-shell py-6 md:py-8">
+      <HomeCurationGrid feed={feed} />
     </div>
   );
 }

@@ -255,6 +255,7 @@ export function getCuratedApiPayload(site: 'io' | 'org') {
 export {
   getCuratedHomeFeed,
   type CuratedHomeFeed,
+  type CuratedHomeTile,
   type CuratedLayout,
   type CuratedReaderPath,
   type CuratedSpotlight,

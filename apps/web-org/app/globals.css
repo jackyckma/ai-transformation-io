@@ -12,6 +12,8 @@
   --layout-read: 48rem;
   --layout-prose: 42rem;
   --layout-wide: 56rem;
+  --site-header-h: 5.75rem;
+  --chat-panel-w: 22rem;
 }
 
 .dark {

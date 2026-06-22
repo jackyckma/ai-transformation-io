@@ -51,6 +51,17 @@ export type CuratedSecondaryLink = {
   href: string;
 };
 
+export type CuratedHomeTile = {
+  id: string;
+  title: string;
+  summary?: string;
+  href?: string;
+  slug?: string;
+  image?: string;
+  useOrgLearnPaths?: boolean;
+  external?: boolean;
+};
+
 export type CuratedHomeFeed = {
   site: 'io' | 'org';
   updatedAt: string;
@@ -62,6 +73,7 @@ export type CuratedHomeFeed = {
   spotlight: CuratedSpotlight[];
   topics: CuratedTopic[];
   secondaryLinks: CuratedSecondaryLink[];
+  homeTiles?: CuratedHomeTile[];
 };
 
 export function getCuratedHomeFeed(site: 'io' | 'org'): CuratedHomeFeed {

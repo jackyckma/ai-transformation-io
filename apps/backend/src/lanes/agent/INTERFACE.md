@@ -8,8 +8,8 @@ Background jobs: compile newsletter drafts, cluster replies, synthesize .io arti
 
 ## Provides
 - Job types: `compile_issue_draft`, `cluster_replies`, `synthesize_article` (latter deferred)
-- `POST /api/agent/compile-draft` — admin-only (Wave 8)
-- `POST /api/agent/cluster-replies` — admin-only keyword cluster stub (Wave 8)
+- `POST /api/internal/agent/compile-draft` — admin-only (Wave 8)
+- `POST /api/internal/agent/cluster-replies` — admin-only keyword cluster stub (Wave 8)
 
 ## Consumes
 | Lane | Contract |

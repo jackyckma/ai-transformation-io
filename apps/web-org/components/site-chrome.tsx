@@ -1,21 +1,15 @@
 import Link from 'next/link';
-import { CompanionNavButton } from '@ai-transformation/chat-ui';
 import { AuthNav } from '@/components/auth-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 
-type NavItem =
-  | { href: string; label: string }
-  | { type: 'companion'; label: string };
-
-const nav: NavItem[] = [
+const nav = [
   { href: '/stories/submit', label: 'Share' },
   { href: '/stories', label: 'Stories' },
   { href: '/learn', label: 'Learn' },
   { href: '/apprenticeship', label: 'Apprenticeship' },
+  { href: '/prompts', label: 'Prompts' },
   { href: '/for-agents', label: 'For agents' },
-  { type: 'companion', label: 'Companion' },
-  { href: '/ask', label: 'Ask' },
-];
+] as const;
 
 export function SiteHeader() {
   return (
@@ -40,19 +34,15 @@ export function SiteHeader() {
           aria-label="Primary"
           className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-light sm:mt-4"
         >
-          {nav.map((item) =>
-            'type' in item && item.type === 'companion' ? (
-              <CompanionNavButton key={item.label} />
-            ) : (
-              <Link
-                key={'href' in item ? item.href : item.label}
-                href={'href' in item ? item.href : '/'}
-                className="whitespace-nowrap text-[var(--muted)] transition hover:text-[var(--foreground)]"
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="whitespace-nowrap text-[var(--muted)] transition hover:text-[var(--foreground)]"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
       </div>
     </header>
@@ -61,12 +51,12 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-[var(--border)] py-8 text-center text-sm font-light text-[var(--muted)]">
+    <footer className="mt-auto border-t border-[var(--border)] py-6 text-center text-sm font-light text-[var(--muted)]">
       <p>
         Harvest Hub — share experiences, not hype.{' '}
-        <Link href="/for-agents" className="underline hover:text-[var(--foreground)]">
-          Agent API
-        </Link>
+        <a href="/api/agent" className="underline hover:text-[var(--foreground)]">
+          Agent entry
+        </a>
         {' · '}
         <a href="https://ai-transformation.io" className="underline hover:text-[var(--foreground)]">
           Frameworks on .io

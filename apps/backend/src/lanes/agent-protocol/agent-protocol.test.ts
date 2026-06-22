@@ -44,6 +44,30 @@ async function loadBackend() {
 }
 
 describe('Wave 7 agent protocol', () => {
+  it('returns agent entry text for org host', async () => {
+    const app = await loadBackend();
+    const response = await app.request('http://localhost/api/agent', {
+      headers: { host: 'ai-transformation.org' },
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/plain');
+    const text = await response.text();
+    expect(text).toContain('Harvest Hub');
+    expect(text).toContain('/api/v1/capabilities');
+  });
+
+  it('returns agent entry JSON when Accept application/json', async () => {
+    const app = await loadBackend();
+    const response = await app.request('http://localhost/api/v1/agent', {
+      headers: { host: 'ai-transformation.io', accept: 'application/json' },
+    });
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { ok: boolean; entry: string; text: string };
+    expect(payload.ok).toBe(true);
+    expect(payload.entry).toContain('/api/agent');
+    expect(payload.text).toContain('AI Transformation');
+  });
+
   it('returns capabilities v1', async () => {
     const app = await loadBackend();
     const response = await app.request('http://localhost/api/v1/capabilities', {

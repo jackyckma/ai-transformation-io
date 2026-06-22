@@ -21,6 +21,7 @@ import {
 } from '../../db/agent-protocol.js';
 import { getCurrentPrompt, insertContribution } from '../../db/index.js';
 import { getContent, listContent } from './content-loader.js';
+import { handleAgentEntry } from './entry.js';
 import { sendAuthorizeEmail } from './email.js';
 import { resolveRequestSite } from './request-site.js';
 
@@ -89,6 +90,7 @@ function buildCapabilities(site: 'io' | 'org') {
     documentation: {
       human: `${origin}/for-agents`,
       spec: `${origin}/for-agents#protocol`,
+      agent_entry: `${origin}/api/agent`,
     },
     endpoints: {
       read_curated: {
@@ -174,6 +176,7 @@ function buildCapabilities(site: 'io' | 'org') {
       },
     },
     quick_start: [
+      `GET ${origin}/api/agent`,
       `GET ${origin}/api/v1/capabilities`,
       `GET ${origin}/api/v1/content?site=${site}`,
       `GET ${origin}/api/v1/curated?site=${site}`,
@@ -185,6 +188,8 @@ function buildCapabilities(site: 'io' | 'org') {
 }
 
 const agentProtocolRouter = new Hono();
+
+agentProtocolRouter.get('/agent', handleAgentEntry);
 
 agentProtocolRouter.get('/capabilities', (c) => {
   const site = resolveSite(c);

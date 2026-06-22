@@ -5,6 +5,7 @@ import { cors } from 'hono/cors';
 import assessmentRouter from './lanes/assessment/index.js';
 import agentRouter from './lanes/agent/index.js';
 import agentProtocolRouter from './lanes/agent-protocol/index.js';
+import { handleAgentEntry } from './lanes/agent-protocol/entry.js';
 import authRouter from './lanes/auth/index.js';
 import chatRouter from './lanes/chat/index.js';
 import harvestRouter from './lanes/harvest/index.js';
@@ -40,10 +41,12 @@ export function createApp() {
     }),
   );
 
+  app.get('/api/agent', handleAgentEntry);
+
   app.route('/api', harvestRouter);
   app.route('/api', chatRouter);
   app.route('/api', newsletterRouter);
-  app.route('/api/agent', agentRouter);
+  app.route('/api/internal/agent', agentRouter);
   app.route('/api/auth', authRouter);
   app.route('/api/assessment', assessmentRouter);
   app.route('/api/v1', agentProtocolRouter);

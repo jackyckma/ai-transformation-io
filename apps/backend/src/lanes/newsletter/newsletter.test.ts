@@ -112,7 +112,7 @@ describe('Wave 8 newsletter + agent jobs', () => {
       createdAt: new Date().toISOString(),
     });
 
-    const response = await app.request('http://localhost/api/agent/compile-draft', {
+    const response = await app.request('http://localhost/api/internal/agent/compile-draft', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -157,7 +157,7 @@ describe('Wave 8 newsletter + agent jobs', () => {
       createdAt: new Date().toISOString(),
     });
 
-    const response = await app.request('http://localhost/api/agent/cluster-replies', {
+    const response = await app.request('http://localhost/api/internal/agent/cluster-replies', {
       method: 'POST',
       headers: { cookie: `atx_session=${session.id}` },
     });

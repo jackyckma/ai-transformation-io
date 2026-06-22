@@ -75,5 +75,49 @@
       "description": "Enterprise playbooks and assessment for leaders.",
       "href": "https://ai-transformation.io"
     }
+  ],
+  "homeTiles": [
+    {
+      "id": "share",
+      "title": "Share a story",
+      "summary": "Field experiences — wins, failures, surprises.",
+      "href": "/stories/submit",
+      "image": "/curation/path-share.jpg"
+    },
+    {
+      "id": "learn",
+      "title": "Learn guides",
+      "summary": "Transformation basics before you contribute.",
+      "href": "/learn",
+      "image": "/curation/path-governance.jpg"
+    },
+    {
+      "id": "stories",
+      "title": "Read stories",
+      "summary": "What practitioners are sharing this month.",
+      "href": "/stories",
+      "image": "/curation/harvest-stories.jpg"
+    },
+    {
+      "id": "apprenticeship",
+      "title": "Apprenticeship",
+      "summary": "Judgment training for the AI era — preparing to launch.",
+      "href": "/apprenticeship",
+      "image": "/curation/apprenticeship.jpg"
+    },
+    {
+      "id": "prompts",
+      "title": "Weekly prompts",
+      "summary": "Reply when a question matches your experience.",
+      "href": "/prompts",
+      "image": "/curation/cornerstone.jpg"
+    },
+    {
+      "id": "agent-entry",
+      "title": "README for agent visitors",
+      "summary": "Holistic entry — site intro and API orientation.",
+      "href": "/api/agent",
+      "image": "/curation/path-explore.jpg"
+    }
   ]
 }

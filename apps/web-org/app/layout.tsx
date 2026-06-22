@@ -51,9 +51,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteJsonLd />
         <AuthErrorBanner />
         <SiteHeader />
-        <main className="flex-1 pb-24">{children}</main>
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          <main className="min-w-0 flex-1">{children}</main>
+          <div className="border-t border-[var(--border)] lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:border-t-0 lg:border-l">
+            <SiteCompanion />
+          </div>
+        </div>
         <SiteFooter />
-        <SiteCompanion />
       </body>
     </html>
   );

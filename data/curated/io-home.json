@@ -79,5 +79,50 @@
       "description": "For teams leading AI transformation — Three Gaps radar, not a personal quiz.",
       "href": "/assessment"
     }
+  ],
+  "homeTiles": [
+    {
+      "id": "playbook",
+      "title": "Playbook",
+      "summary": "Practical moves and patterns for implementation.",
+      "href": "/playbook",
+      "image": "/curation/path-playbook.jpg"
+    },
+    {
+      "id": "three-gaps",
+      "title": "Three Gaps Assessment",
+      "summary": "Organizational diagnostic — work, governance, and value.",
+      "href": "/assessment",
+      "image": "/curation/three-gaps.jpg"
+    },
+    {
+      "id": "roadmap",
+      "title": "Seven stages, not a pilot",
+      "summary": "From alignment to governed scaling.",
+      "slug": "transformation-roadmap",
+      "image": "/curation/roadmap.jpg"
+    },
+    {
+      "id": "roles",
+      "title": "Guides by role",
+      "summary": "CIO, COO, CHRO, and other executive lenses.",
+      "href": "/functions",
+      "image": "/curation/path-governance.jpg"
+    },
+    {
+      "id": "community",
+      "title": "Community on .org",
+      "summary": "Field stories and prompts from practitioners.",
+      "href": "https://ai-transformation.org",
+      "image": "/curation/path-explore.jpg",
+      "external": true
+    },
+    {
+      "id": "agent-entry",
+      "title": "README for agent visitors",
+      "summary": "Holistic entry — site intro and API orientation.",
+      "href": "/api/agent",
+      "image": "/curation/cornerstone.jpg"
+    }
   ]
 }
