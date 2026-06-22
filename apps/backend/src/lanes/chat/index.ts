@@ -8,11 +8,12 @@ import {
 import type { Context } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import { Hono } from 'hono';
+import { streamSSE } from 'hono/streaming';
 
 import { getChatDb } from '../../db/index.js';
 import type { SessionVariables } from '../../types/session.js';
 import { buildContextSnippets, buildFallbackReply } from './context.js';
-import { generateChatReply } from './llm.js';
+import { generateChatReply, streamChatReply } from './llm.js';
 
 const CHAT_SESSION_COOKIE = 'atx_chat_session';
 const CHAT_VISITOR_COOKIE = 'atx_chat_visitor';
@@ -113,6 +114,90 @@ function getOrCreateSession(c: Context<{ Variables: SessionVariables }>) {
   return { session, site };
 }
 
+function parseMessageBody(c: Context<{ Variables: SessionVariables }>) {
+  return c.req.json().catch(() => null);
+}
+
+type PreparedMessage =
+  | { ok: false; status: number; error: string }
+  | {
+      ok: true;
+      session: NonNullable<ReturnType<ReturnType<typeof getChatDb>['getSessionById']>>;
+      userMessage: ReturnType<ReturnType<typeof getChatDb>['insertChatMessage']>;
+      history: Array<{ role: 'user' | 'assistant'; content: string }>;
+      snippets: string[];
+      contextLinks: Array<{ label: string; href: string }>;
+      limit: number;
+      quotaKey: string;
+    };
+
+async function prepareUserMessage(
+  c: Context<{ Variables: SessionVariables }>,
+  body: unknown,
+): Promise<PreparedMessage> {
+  const { session: activeSession } = getOrCreateSession(c);
+  const chat = getChatDb();
+  const user = c.get('user');
+
+  if (user && !activeSession.userId) {
+    chat.attachUserToSession(activeSession.id, user.id);
+  }
+  const session = chat.getSessionById(activeSession.id)!;
+
+  const parsed = chatSendMessageRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return { ok: false, status: 400, error: parsed.error.issues[0]?.message ?? 'Invalid body' };
+  }
+
+  const quotaKey = chat.getQuotaKey(session);
+  const limit = session.userId ? CHAT_QUOTA_REGISTERED : CHAT_QUOTA_ANONYMOUS;
+  const used = chat.getMessageCountToday(quotaKey);
+  if (used >= limit) {
+    return {
+      ok: false,
+      status: 429,
+      error: session.userId
+        ? 'Daily message limit reached. Try again tomorrow.'
+        : 'Daily message limit reached. Sign in for a higher limit, or try again tomorrow.',
+    };
+  }
+
+  const userMessage = chat.insertChatMessage({
+    sessionId: session.id,
+    role: 'user',
+    content: parsed.data.content.trim(),
+  });
+
+  const history = chat
+    .listMessagesForSession(session.id)
+    .filter((row) => row.id !== userMessage.id)
+    .map((row) => ({ role: row.role, content: row.content }));
+
+  const { snippets, links: contextLinks } = buildContextSnippets(session.site, parsed.data.content.trim());
+
+  return {
+    ok: true,
+    session,
+    userMessage,
+    history,
+    snippets,
+    contextLinks,
+    limit,
+    quotaKey,
+  };
+}
+
+function serializeQuota(sessionId: string, limit: number, quotaKey: string) {
+  const chat = getChatDb();
+  const messageCount = chat.getMessageCountToday(quotaKey);
+  const refreshedSession = chat.getSessionById(sessionId)!;
+  return {
+    limit,
+    remaining: Math.max(0, limit - messageCount),
+    reset: chat.getQuotaForSession(refreshedSession).reset,
+  };
+}
+
 chatRouter.get('/chat/session', (c) => {
   const { session } = getOrCreateSession(c);
   const chat = getChatDb();
@@ -130,62 +215,27 @@ chatRouter.get('/chat/session', (c) => {
 });
 
 chatRouter.post('/chat/session/messages', async (c) => {
-  const { session: activeSession } = getOrCreateSession(c);
-  const chat = getChatDb();
-  const user = c.get('user');
-
-  if (user && !activeSession.userId) {
-    chat.attachUserToSession(activeSession.id, user.id);
-  }
-  const session = chat.getSessionById(activeSession.id)!;
-
-  let body: unknown;
-  try {
-    body = await c.req.json();
-  } catch {
+  const body = await parseMessageBody(c);
+  if (body === null) {
     return c.json({ ok: false, error: 'Invalid request body' }, 400);
   }
 
-  const parsed = chatSendMessageRequestSchema.safeParse(body);
-  if (!parsed.success) {
-    return c.json({ ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid body' }, 400);
+  const prepared = await prepareUserMessage(c, body);
+  if (!prepared.ok) {
+    return c.json({ ok: false, error: prepared.error }, prepared.status as 400 | 429);
   }
 
-  const quotaKey = chat.getQuotaKey(session);
-  const limit = session.userId ? CHAT_QUOTA_REGISTERED : CHAT_QUOTA_ANONYMOUS;
-  const used = chat.getMessageCountToday(quotaKey);
-  if (used >= limit) {
-    return c.json(
-      {
-        ok: false,
-        error: session.userId
-          ? 'Daily message limit reached. Try again tomorrow.'
-          : 'Daily message limit reached. Sign in for a higher limit, or try again tomorrow.',
-      },
-      429,
-    );
-  }
+  const chat = getChatDb();
+  const { session, userMessage, history, snippets, contextLinks, limit, quotaKey } = prepared;
 
-  const userMessage = chat.insertChatMessage({
-    sessionId: session.id,
-    role: 'user',
-    content: parsed.data.content.trim(),
-  });
-
-  const history = chat
-    .listMessagesForSession(session.id)
-    .filter((row) => row.id !== userMessage.id)
-    .map((row) => ({ role: row.role, content: row.content }));
-
-  const { snippets, links: contextLinks } = buildContextSnippets(session.site, parsed.data.content);
   const llmReply = await generateChatReply({
     site: session.site,
     history,
-    userMessage: parsed.data.content.trim(),
+    userMessage: userMessage.content,
     contextSnippets: snippets,
   });
 
-  const fallback = buildFallbackReply(session.site, parsed.data.content);
+  const fallback = buildFallbackReply(session.site, userMessage.content);
   const assistantContent = llmReply ?? fallback.content;
   const assistantLinks = llmReply ? contextLinks : fallback.links;
 
@@ -196,8 +246,7 @@ chatRouter.post('/chat/session/messages', async (c) => {
     metadata: assistantLinks.length > 0 ? { links: assistantLinks } : {},
   });
 
-  const messageCount = chat.incrementMessageCount(quotaKey);
-  const refreshedSession = chat.getSessionById(session.id)!;
+  chat.incrementMessageCount(quotaKey);
 
   return c.json({
     ok: true,
@@ -214,11 +263,90 @@ chatRouter.post('/chat/session/messages', async (c) => {
       links: chat.parseMessageLinks(assistantMessage.metadata),
       createdAt: assistantMessage.createdAt,
     },
-    quota: {
-      limit,
-      remaining: Math.max(0, limit - messageCount),
-      reset: chat.getQuotaForSession(refreshedSession).reset,
-    },
+    quota: serializeQuota(session.id, limit, quotaKey),
+  });
+});
+
+chatRouter.post('/chat/session/messages/stream', async (c) => {
+  const body = await parseMessageBody(c);
+  if (body === null) {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+
+  const prepared = await prepareUserMessage(c, body);
+  if (!prepared.ok) {
+    return c.json({ ok: false, error: prepared.error }, prepared.status as 400 | 429);
+  }
+
+  const chat = getChatDb();
+  const { session, userMessage, history, snippets, contextLinks, limit, quotaKey } = prepared;
+  const fallback = buildFallbackReply(session.site, userMessage.content);
+
+  return streamSSE(c, async (stream) => {
+    await stream.writeSSE({
+      event: 'user',
+      data: JSON.stringify({
+        id: userMessage.id,
+        role: userMessage.role,
+        content: userMessage.content,
+        createdAt: userMessage.createdAt,
+      }),
+    });
+
+    let assistantContent = '';
+    let usedLlm = false;
+
+    const streamResult = streamChatReply({
+      site: session.site,
+      history,
+      userMessage: userMessage.content,
+      contextSnippets: snippets,
+    });
+
+    let next = await streamResult.next();
+    while (!next.done) {
+      assistantContent += next.value;
+      usedLlm = true;
+      await stream.writeSSE({
+        event: 'delta',
+        data: JSON.stringify({ content: next.value }),
+      });
+      next = await streamResult.next();
+    }
+
+    if (!usedLlm) {
+      assistantContent = fallback.content;
+      await stream.writeSSE({
+        event: 'delta',
+        data: JSON.stringify({ content: assistantContent }),
+      });
+    } else if (next.value) {
+      assistantContent = next.value;
+    }
+
+    const assistantLinks = usedLlm ? contextLinks : fallback.links;
+    const assistantMessage = chat.insertChatMessage({
+      sessionId: session.id,
+      role: 'assistant',
+      content: assistantContent,
+      metadata: assistantLinks.length > 0 ? { links: assistantLinks } : {},
+    });
+
+    chat.incrementMessageCount(quotaKey);
+
+    await stream.writeSSE({
+      event: 'done',
+      data: JSON.stringify({
+        assistantMessage: {
+          id: assistantMessage.id,
+          role: assistantMessage.role,
+          content: assistantMessage.content,
+          links: chat.parseMessageLinks(assistantMessage.metadata),
+          createdAt: assistantMessage.createdAt,
+        },
+        quota: serializeQuota(session.id, limit, quotaKey),
+      }),
+    });
   });
 });
 

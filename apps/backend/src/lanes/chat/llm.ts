@@ -53,6 +53,7 @@ export function extractAssistantContent(message: {
   if (raw) {
     const withoutThinking = raw
       .replace(/<redacted_thinking>[\s\S]*?<\/redacted_thinking>\s*/gi, '')
+      .replace(/<redacted_thinking>[\s\S]*?<\/think>\s*/gi, '')
       .trim();
     if (withoutThinking) {
       return withoutThinking;
@@ -89,13 +90,8 @@ function buildSystemPrompt(site: 'io' | 'org', contextSnippets: string[]): strin
   ].join('\n');
 }
 
-export async function generateChatReply(input: GenerateReplyInput): Promise<string | null> {
-  const { apiKey, baseUrl, model, provider } = resolveLlmConfig();
-  if (!apiKey) {
-    return null;
-  }
-
-  const messages: ChatCompletionMessage[] = [
+function buildCompletionMessages(input: GenerateReplyInput): ChatCompletionMessage[] {
+  return [
     { role: 'system', content: buildSystemPrompt(input.site, input.contextSnippets) },
     ...input.history.slice(-8).map((item) => ({
       role: item.role,
@@ -103,25 +99,114 @@ export async function generateChatReply(input: GenerateReplyInput): Promise<stri
     })),
     { role: 'user', content: input.userMessage },
   ];
+}
 
+function buildCompletionBody(
+  config: LlmConfig,
+  messages: ChatCompletionMessage[],
+  stream: boolean,
+): Record<string, unknown> {
   const body: Record<string, unknown> = {
-    model,
+    model: config.model,
     messages,
     temperature: 0.4,
     max_tokens: 700,
+    stream,
   };
 
-  if (provider === 'minimax') {
+  if (config.provider === 'minimax') {
     body.reasoning_split = true;
   }
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  return body;
+}
+
+function parseSseDelta(line: string): string | null {
+  if (!line.startsWith('data: ')) {
+    return null;
+  }
+  const data = line.slice(6).trim();
+  if (!data || data === '[DONE]') {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(data) as {
+      choices?: Array<{
+        delta?: { content?: string; reasoning_content?: string };
+      }>;
+    };
+    const delta = parsed.choices?.[0]?.delta;
+    return delta?.content ?? delta?.reasoning_content ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function* streamChatReply(
+  input: GenerateReplyInput,
+): AsyncGenerator<string, string | null, undefined> {
+  const config = resolveLlmConfig();
+  if (!config.apiKey) {
+    return null;
+  }
+
+  const messages = buildCompletionMessages(input);
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      authorization: `Bearer ${apiKey}`,
+      authorization: `Bearer ${config.apiKey}`,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(buildCompletionBody(config, messages, true)),
+  });
+
+  if (!response.ok || !response.body) {
+    return null;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let rawContent = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() ?? '';
+
+    for (const line of lines) {
+      const delta = parseSseDelta(line.trim());
+      if (!delta) {
+        continue;
+      }
+      rawContent += delta;
+      yield delta;
+    }
+  }
+
+  return (extractAssistantContent({ content: rawContent }) ?? rawContent.trim()) || null;
+}
+
+export async function generateChatReply(input: GenerateReplyInput): Promise<string | null> {
+  const config = resolveLlmConfig();
+  if (!config.apiKey) {
+    return null;
+  }
+
+  const messages = buildCompletionMessages(input);
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify(buildCompletionBody(config, messages, false)),
   });
 
   if (!response.ok) {

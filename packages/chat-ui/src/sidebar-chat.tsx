@@ -137,34 +137,115 @@ export function SidebarChat({ site }: SidebarChatProps) {
     setError(null);
     setInput('');
 
+    const streamingAssistantId = `streaming-${Date.now()}`;
+
     try {
       if (!loaded) {
         await loadSession();
       }
 
-      const res = await fetch(resolveClientApiUrl('/api/chat/session/messages'), {
+      const res = await fetch(resolveClientApiUrl('/api/chat/session/messages/stream'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ content: trimmed }),
       });
-      const data = (await res.json()) as {
-        ok?: boolean;
-        userMessage?: ChatMessage;
-        assistantMessage?: ChatMessage;
-        quota?: ChatQuota;
-        error?: string;
-      };
-      if (!res.ok || !data.ok || !data.userMessage || !data.assistantMessage) {
-        throw new Error(data.error ?? 'Could not send message');
+
+      if (!res.ok) {
+        const errPayload = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(errPayload?.error ?? 'Could not send message');
       }
-      setMessages((prev) => [...prev, data.userMessage!, data.assistantMessage!]);
-      if (data.quota) {
-        setQuota(data.quota);
+
+      if (!res.body) {
+        throw new Error('Could not send message');
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let userAdded = false;
+      let assistantStarted = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop() ?? '';
+
+        for (const frame of frames) {
+          if (!frame.trim()) {
+            continue;
+          }
+
+          let eventName = 'message';
+          let dataLine = '';
+          for (const line of frame.split('\n')) {
+            if (line.startsWith('event:')) {
+              eventName = line.slice(6).trim();
+            } else if (line.startsWith('data:')) {
+              dataLine = line.slice(5).trim();
+            }
+          }
+
+          if (!dataLine) {
+            continue;
+          }
+
+          if (eventName === 'user') {
+            const userMessage = JSON.parse(dataLine) as ChatMessage;
+            if (!userAdded) {
+              setMessages((prev) => [...prev, userMessage]);
+              userAdded = true;
+            }
+            continue;
+          }
+
+          if (eventName === 'delta') {
+            const { content } = JSON.parse(dataLine) as { content: string };
+            if (!assistantStarted) {
+              assistantStarted = true;
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: streamingAssistantId,
+                  role: 'assistant',
+                  content,
+                  createdAt: new Date().toISOString(),
+                },
+              ]);
+            } else {
+              setMessages((prev) =>
+                prev.map((message) =>
+                  message.id === streamingAssistantId
+                    ? { ...message, content: message.content + content }
+                    : message,
+                ),
+              );
+            }
+            continue;
+          }
+
+          if (eventName === 'done') {
+            const payload = JSON.parse(dataLine) as {
+              assistantMessage: ChatMessage;
+              quota: ChatQuota;
+            };
+            setMessages((prev) => {
+              const withoutStreaming = prev.filter((message) => message.id !== streamingAssistantId);
+              return [...withoutStreaming, payload.assistantMessage];
+            });
+            setQuota(payload.quota);
+          }
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not send message');
       setInput(trimmed);
+      setMessages((prev) => prev.filter((message) => message.id !== streamingAssistantId));
     } finally {
       setSending(false);
     }
@@ -280,7 +361,7 @@ export function SidebarChat({ site }: SidebarChatProps) {
               }
               className="inline-flex w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {sending ? 'Sending…' : 'Send'}
+              {sending ? 'Thinking…' : 'Send'}
             </button>
           </form>
         </footer>

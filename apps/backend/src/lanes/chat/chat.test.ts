@@ -140,4 +140,22 @@ describe('Chat companion backend', () => {
 
     expect(messageResponse.status).toBe(400);
   });
+
+  it('streams fallback assistant reply without LLM key', async () => {
+    const app = await loadBackend();
+    const response = await app.request('http://localhost/api/chat/session/messages/stream', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content: 'How should we approach AI governance?' }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+
+    const text = await response.text();
+    expect(text).toContain('event: user');
+    expect(text).toContain('event: delta');
+    expect(text).toContain('event: done');
+    expect(text).toContain('assistantMessage');
+  });
 });

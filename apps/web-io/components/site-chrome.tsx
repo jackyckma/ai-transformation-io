@@ -72,6 +72,10 @@ export function SiteFooter() {
           Frameworks
         </Link>
         {' · '}
+        <Link href="/progress" className="underline hover:text-[var(--foreground)]">
+          Your progress
+        </Link>
+        {' · '}
         <a href="https://ai-transformation.org" className="underline hover:text-[var(--foreground)]">
           Community on .org
         </a>

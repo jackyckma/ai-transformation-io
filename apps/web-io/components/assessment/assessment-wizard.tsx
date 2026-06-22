@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { requestOpenCompanionWithMessage } from '@ai-transformation/chat-ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AssessmentGapId,
@@ -793,10 +794,27 @@ function ResultsView({
             </Link>
           ))}
           <Link
+            href="/progress"
+            className="inline-flex items-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:border-[var(--accent)]"
+          >
+            Your progress
+          </Link>
+          <button
+            type="button"
+            onClick={() =>
+              requestOpenCompanionWithMessage(
+                `My weakest Three Gaps area is ${result.weakestGap.label}. What should I read or do next?`,
+              )
+            }
+            className="inline-flex items-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:border-[var(--accent)]"
+          >
+            Ask companion
+          </button>
+          <Link
             href="/ask"
             className="inline-flex items-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:border-[var(--accent)]"
           >
-            Ask a question
+            Message our team
           </Link>
           <Link
             href="/functions"
