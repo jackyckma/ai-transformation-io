@@ -2,10 +2,52 @@
   "version": 1,
   "transcripts": {
     "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/6d376ad9-2801-4d03-9433-c0c69f18f859.jsonl": {
-      "mtimeMs": 1781825573907
+      "mtimeMs": 1781956015792
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/1ec794d5-341c-419d-827e-e1d21d73aff8.jsonl": {
+      "mtimeMs": 1781825615868
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/286e6c5d-5f77-4437-9711-5da60423cc3b.jsonl": {
+      "mtimeMs": 1781781380838
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/5358d2f2-0d3c-4bff-b0ae-a82f1ed1134e.jsonl": {
+      "mtimeMs": 1781776949115
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/560f4a88-c1e7-4b2e-8a40-76186ffb57b0.jsonl": {
+      "mtimeMs": 1781875057785
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/5d493bb2-425c-4c08-ad87-68420707a315.jsonl": {
+      "mtimeMs": 1781788029194
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/9b2f775c-5bc9-4284-95ef-8f8ec8ebb78f.jsonl": {
+      "mtimeMs": 1781780488229
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/a654b469-4296-44de-9092-8bf59b8269ee.jsonl": {
+      "mtimeMs": 1781884352499
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/c89a4ed1-7fd0-4e33-b392-849a378cf500.jsonl": {
+      "mtimeMs": 1781783184484
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/d521ad52-215b-461d-a268-bbcc926d0fb9.jsonl": {
+      "mtimeMs": 1781782280626
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/6d376ad9-2801-4d03-9433-c0c69f18f859/subagents/eb720ee2-43ed-42f1-b371-b10ca9ff9e8e.jsonl": {
+      "mtimeMs": 1781784079715
     },
     "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/7edc4d2e-0635-4fe2-83ff-716e1d4600ca/7edc4d2e-0635-4fe2-83ff-716e1d4600ca.jsonl": {
-      "mtimeMs": 1781783279660
+      "mtimeMs": 1781783279966
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/a542b6bd-7159-44a3-9eda-e933f6056025/a542b6bd-7159-44a3-9eda-e933f6056025.jsonl": {
+      "mtimeMs": 1782086826965
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/a542b6bd-7159-44a3-9eda-e933f6056025/subagents/2d841247-5d9b-43e9-a5f0-6b114b95b4da.jsonl": {
+      "mtimeMs": 1782086837516
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/a542b6bd-7159-44a3-9eda-e933f6056025/subagents/627ad5d1-0436-4414-8904-bf75f419dff9.jsonl": {
+      "mtimeMs": 1781966142483
+    },
+    "/home/jackyma/.cursor/projects/home-jackyma-ai-transformation-io/agent-transcripts/a542b6bd-7159-44a3-9eda-e933f6056025/subagents/6c60d1ed-b5be-4b9d-892e-ae8457e4ad36.jsonl": {
+      "mtimeMs": 1782079458876
     }
   }
 }

@@ -3,7 +3,7 @@
 import { resolveClientApiUrl } from '@ai-transformation/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { OPEN_COMPANION_EVENT } from './companion-nav';
+import { OPEN_COMPANION_EVENT, OPEN_COMPANION_WITH_MESSAGE_EVENT } from './companion-nav';
 
 type ChatSite = 'io' | 'org';
 
@@ -95,9 +95,24 @@ export function SidebarChat({ site }: SidebarChatProps) {
   }, [site]);
 
   useEffect(() => {
+    void loadSession();
+  }, [loadSession]);
+
+  useEffect(() => {
     const openFromNav = () => setOpen(true);
+    const openWithMessage = (event: Event) => {
+      const message = (event as CustomEvent<string>).detail?.trim();
+      setOpen(true);
+      if (message) {
+        setInput(message);
+      }
+    };
     window.addEventListener(OPEN_COMPANION_EVENT, openFromNav);
-    return () => window.removeEventListener(OPEN_COMPANION_EVENT, openFromNav);
+    window.addEventListener(OPEN_COMPANION_WITH_MESSAGE_EVENT, openWithMessage);
+    return () => {
+      window.removeEventListener(OPEN_COMPANION_EVENT, openFromNav);
+      window.removeEventListener(OPEN_COMPANION_WITH_MESSAGE_EVENT, openWithMessage);
+    };
   }, []);
 
   useEffect(() => {
@@ -123,6 +138,10 @@ export function SidebarChat({ site }: SidebarChatProps) {
     setInput('');
 
     try {
+      if (!loaded) {
+        await loadSession();
+      }
+
       const res = await fetch(resolveClientApiUrl('/api/chat/session/messages'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -175,8 +194,8 @@ export function SidebarChat({ site }: SidebarChatProps) {
       <aside
         id="site-companion-panel"
         aria-hidden={!open}
-        className={`fixed inset-y-0 right-0 z-[100] flex w-full max-w-md flex-col border-l border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:top-16 ${
-          open ? 'translate-x-0' : 'translate-x-full pointer-events-none'
+        className={`fixed inset-x-0 bottom-0 top-14 z-[100] flex flex-col border-t border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:inset-x-auto sm:inset-y-0 sm:right-0 sm:top-14 sm:w-full sm:max-w-md sm:border-l sm:border-t-0 ${
+          open ? 'translate-y-0 sm:translate-x-0 sm:translate-y-0' : 'translate-y-full sm:translate-y-0 sm:translate-x-full pointer-events-none'
         }`}
       >
         <header className="border-b border-[var(--border)] px-5 py-4">

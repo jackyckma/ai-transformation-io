@@ -67,14 +67,14 @@ export function AuthNav() {
   }
 
   if (isLoading) {
-    return <div className="h-8 w-24" aria-hidden />;
+    return <div className="h-9 w-24" aria-hidden />;
   }
 
   if (!user) {
     return (
       <a
         href={resolveClientApiUrl('/api/auth/google')}
-        className="rounded-full border border-[var(--border)] px-3 py-1.5 text-sm font-light text-[var(--foreground)] transition hover:border-[var(--accent)]"
+        className="inline-flex min-h-9 min-w-[5.5rem] items-center justify-center rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-light text-[var(--foreground)] transition hover:border-[var(--accent)]"
       >
         Sign in
       </a>
@@ -82,15 +82,15 @@ export function AuthNav() {
   }
 
   return (
-    <div className="flex items-center gap-3 text-sm font-light">
-      <span className="max-w-32 truncate text-[var(--muted)]" title={user.email}>
+    <div className="flex items-center gap-2 sm:gap-3 text-sm font-light">
+      <span className="hidden max-w-32 truncate text-[var(--muted)] sm:inline" title={user.email}>
         {displayName(user)}
       </span>
       <button
         type="button"
         onClick={signOut}
         disabled={isSigningOut}
-        className="text-[var(--muted)] transition hover:text-[var(--foreground)] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-9 min-w-[5.5rem] items-center justify-center rounded-full border border-[var(--border)] px-4 py-2 text-[var(--foreground)] transition hover:border-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSigningOut ? 'Signing out…' : 'Sign out'}
       </button>

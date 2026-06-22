@@ -1,51 +1,50 @@
 import Link from 'next/link';
-import { getAllPages } from '@ai-transformation/content';
-import { AgentFriendlyPanel } from '@/components/agent-friendly-panel';
-import {
-  CollapsibleArticleIndex,
-  CuratedSections,
-  loadIoCuratedFeed,
-} from '@/components/curated-sections';
-import { PageIntro } from '@/components/page-intro';
-import { ReaderEntrySection } from '@/components/reader-entry-section';
+import { CompanionHomeEntry } from '@ai-transformation/chat-ui';
+import { HomeCuratedPreview, loadIoCuratedFeed } from '@/components/curated-sections';
+
+const exploreLinks = [
+  { href: '/frameworks', label: 'Frameworks' },
+  { href: '/playbook', label: 'Playbook' },
+  { href: '/functions', label: 'Role guides' },
+  { href: '/assessment', label: 'Assessment' },
+  { href: '/for-agents', label: 'For agents' },
+];
 
 export default function HomePage() {
   const feed = loadIoCuratedFeed();
-  const allArticles = getAllPages();
 
   return (
-    <div className="layout-read py-14">
-      <PageIntro
-        title="AI Transformation"
-        description="An information portal for enterprise leaders — frameworks, playbook articles, and practical guides on operating model change, not tool deployment alone."
-      />
+    <div className="layout-shell py-8 md:py-12">
+      <section className="max-w-2xl">
+        <h1 className="font-serif text-2xl font-normal tracking-tight md:text-3xl">
+          Your AI transformation companion
+        </h1>
+        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--muted)] md:text-base">
+          Structured guidance for enterprise leaders — ask first, then read frameworks and playbook
+          articles when you need depth.
+        </p>
+      </section>
 
-      <ReaderEntrySection feed={feed} />
+      <div className="mt-8 max-w-2xl">
+        <CompanionHomeEntry site="io" />
+      </div>
 
-      <CuratedSections feed={feed} />
-
-      <AgentFriendlyPanel site="io" />
-
-      <CollapsibleArticleIndex
-        title="All articles"
-        description="Full index — secondary to curated paths above."
-        pages={allArticles}
-      />
-
-      <nav className="mt-12 flex flex-wrap gap-x-6 gap-y-2 text-sm font-light text-[var(--muted)]">
-        <Link href="/frameworks" className="hover:text-[var(--foreground)]">
-          Frameworks
-        </Link>
-        <Link href="/playbook" className="hover:text-[var(--foreground)]">
-          Playbook
-        </Link>
-        <Link href="/for-agents" className="hover:text-[var(--foreground)]">
-          For agents
-        </Link>
-        <a href="https://ai-transformation.org" className="hover:text-[var(--foreground)]">
-          Harvest Hub on .org
-        </a>
+      <nav
+        aria-label="Explore"
+        className="mt-10 flex flex-wrap gap-x-4 gap-y-2 border-y border-[var(--border)] py-4 text-sm font-light"
+      >
+        {exploreLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--foreground)] hover:decoration-[var(--accent)]"
+          >
+            {link.label}
+          </Link>
+        ))}
       </nav>
+
+      <HomeCuratedPreview feed={feed} />
     </div>
   );
 }

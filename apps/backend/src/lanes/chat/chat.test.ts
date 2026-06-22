@@ -104,6 +104,23 @@ describe('Chat companion backend', () => {
     expect(body.quota.remaining).toBeGreaterThanOrEqual(0);
   });
 
+  it('accepts first message without prior GET session', async () => {
+    const app = await loadBackend();
+    const response = await app.request('http://localhost/api/chat/session/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content: 'How should we approach AI governance?' }),
+    });
+
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      ok: boolean;
+      assistantMessage: { content: string };
+    };
+    expect(body.ok).toBe(true);
+    expect(body.assistantMessage.content.length).toBeGreaterThan(0);
+  });
+
   it('returns 400 for invalid message body', async () => {
     const app = await loadBackend();
     const sessionResponse = await app.request('http://localhost/api/chat/session?site=org');

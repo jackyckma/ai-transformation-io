@@ -86,6 +86,64 @@ export function CuratedSections({ feed }: CuratedSectionsProps) {
   );
 }
 
+export function HomeCuratedPreview({ feed }: CuratedSectionsProps) {
+  const spotlight = feed.spotlight.slice(0, 1);
+  const topics = feed.topics.slice(0, 2);
+
+  return (
+    <>
+      {spotlight.length > 0 ? (
+        <section className="mt-12">
+          <h2 className="font-serif text-lg font-normal tracking-tight">Editor&apos;s pick</h2>
+          <ul className="mt-5 space-y-6">
+            {spotlight.map((item) => {
+              const article = resolveCuratedArticles([item.slug], item.useOrgLearnPaths)[0];
+              if (!article) return null;
+              return (
+                <li key={item.slug}>
+                  <FeatureSpotlightCard
+                    article={article}
+                    editorNote={item.editorNote}
+                    image={item.image}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      {topics.length > 0 ? (
+        <section className="mt-12 border-t border-[var(--border)] pt-10">
+          <h2 className="font-serif text-lg font-normal tracking-tight">Curated topics</h2>
+          <ul className="mt-5 grid gap-4 md:grid-cols-2 md:gap-5">
+            {topics.map((topic) => {
+              const anchor = topic.anchorSlug
+                ? resolveCuratedArticles([topic.anchorSlug], topic.useOrgLearnPaths)[0]
+                : null;
+              const related = resolveCuratedArticles(topic.relatedSlugs ?? [], topic.useOrgLearnPaths);
+              const primaryHref = topic.externalHref ?? anchor?.pathname ?? null;
+
+              return (
+                <li key={topic.id} className="h-full">
+                  <TopicRowCard
+                    title={topic.title}
+                    summary={topic.summary}
+                    href={primaryHref}
+                    related={related}
+                    image={topic.image}
+                    seed={topic.id}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+    </>
+  );
+}
+
 export function loadOrgCuratedFeed() {
   return getCuratedHomeFeed('org');
 }

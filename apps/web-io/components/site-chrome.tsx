@@ -10,27 +10,35 @@ type NavItem =
 const nav: NavItem[] = [
   { href: '/frameworks', label: 'Frameworks' },
   { href: '/playbook', label: 'Playbook' },
+  { href: '/functions', label: 'Roles' },
   { href: '/for-agents', label: 'For agents' },
-  { href: '/assessment', label: 'Assessment' },
   { type: 'companion', label: 'Companion' },
+  { href: '/assessment', label: 'Assessment' },
   { href: '/ask', label: 'Ask' },
 ];
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-[var(--border)]">
-      <div className="layout-shell grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-4 py-4 sm:py-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-x-8">
-        <Link href="/" className="col-start-1 row-start-1 shrink-0 font-serif text-base font-normal tracking-tight">
-          AI Transformation
-          <span className="ml-1 font-sans text-sm font-light text-[var(--muted)]">.io</span>
-        </Link>
-        <div className="col-start-2 row-start-1 flex shrink-0 items-center gap-3">
-          <AuthNav />
-          <ThemeToggle />
+    <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80">
+      <div className="layout-shell py-3 sm:py-4">
+        <div className="flex items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="shrink-0 font-serif text-base font-normal tracking-tight"
+          >
+            AI Transformation
+            <span className="ml-1 font-sans text-sm font-light text-[var(--muted)]">.io</span>
+          </Link>
+
+          <div className="relative z-40 flex shrink-0 items-center gap-2 sm:gap-3">
+            <AuthNav />
+            <ThemeToggle />
+          </div>
         </div>
+
         <nav
           aria-label="Primary"
-          className="col-span-2 row-start-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-light lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:justify-center"
+          className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-light sm:mt-4"
         >
           {nav.map((item) =>
             'type' in item && item.type === 'companion' ? (
@@ -53,15 +61,15 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-[var(--border)] py-10 text-center text-sm font-light text-[var(--muted)]">
+    <footer className="mt-auto border-t border-[var(--border)] py-8 text-center text-sm font-light text-[var(--muted)]">
       <p>
         Information for enterprise leaders.{' '}
         <Link href="/for-agents" className="underline hover:text-[var(--foreground)]">
-          Agent-friendly API
+          Agent API
         </Link>
         {' · '}
-        <Link href="/functions" className="underline hover:text-[var(--foreground)]">
-          Role guides
+        <Link href="/frameworks" className="underline hover:text-[var(--foreground)]">
+          Frameworks
         </Link>
         {' · '}
         <a href="https://ai-transformation.org" className="underline hover:text-[var(--foreground)]">

@@ -51,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteJsonLd />
         <AuthErrorBanner />
         <SiteHeader />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-24">{children}</main>
         <SiteFooter />
         <SiteCompanion />
       </body>

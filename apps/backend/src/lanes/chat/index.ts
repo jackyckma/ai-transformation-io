@@ -130,22 +130,14 @@ chatRouter.get('/chat/session', (c) => {
 });
 
 chatRouter.post('/chat/session/messages', async (c) => {
-  const sessionCookie = getCookie(c, CHAT_SESSION_COOKIE);
-  if (!sessionCookie) {
-    return c.json({ ok: false, error: 'Start a chat session first' }, 400);
-  }
-
+  const { session: activeSession } = getOrCreateSession(c);
   const chat = getChatDb();
-  const session = chat.getSessionById(sessionCookie);
-  if (!session) {
-    return c.json({ ok: false, error: 'Chat session not found' }, 404);
-  }
-
   const user = c.get('user');
-  if (user && !session.userId) {
-    chat.attachUserToSession(session.id, user.id);
+
+  if (user && !activeSession.userId) {
+    chat.attachUserToSession(activeSession.id, user.id);
   }
-  const activeSession = chat.getSessionById(session.id)!;
+  const session = chat.getSessionById(activeSession.id)!;
 
   let body: unknown;
   try {
@@ -159,14 +151,14 @@ chatRouter.post('/chat/session/messages', async (c) => {
     return c.json({ ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid body' }, 400);
   }
 
-  const quotaKey = chat.getQuotaKey(activeSession);
-  const limit = activeSession.userId ? CHAT_QUOTA_REGISTERED : CHAT_QUOTA_ANONYMOUS;
+  const quotaKey = chat.getQuotaKey(session);
+  const limit = session.userId ? CHAT_QUOTA_REGISTERED : CHAT_QUOTA_ANONYMOUS;
   const used = chat.getMessageCountToday(quotaKey);
   if (used >= limit) {
     return c.json(
       {
         ok: false,
-        error: activeSession.userId
+        error: session.userId
           ? 'Daily message limit reached. Try again tomorrow.'
           : 'Daily message limit reached. Sign in for a higher limit, or try again tomorrow.',
       },
@@ -175,37 +167,37 @@ chatRouter.post('/chat/session/messages', async (c) => {
   }
 
   const userMessage = chat.insertChatMessage({
-    sessionId: activeSession.id,
+    sessionId: session.id,
     role: 'user',
     content: parsed.data.content.trim(),
   });
 
   const history = chat
-    .listMessagesForSession(activeSession.id)
+    .listMessagesForSession(session.id)
     .filter((row) => row.id !== userMessage.id)
     .map((row) => ({ role: row.role, content: row.content }));
 
-  const { snippets, links: contextLinks } = buildContextSnippets(activeSession.site, parsed.data.content);
+  const { snippets, links: contextLinks } = buildContextSnippets(session.site, parsed.data.content);
   const llmReply = await generateChatReply({
-    site: activeSession.site,
+    site: session.site,
     history,
     userMessage: parsed.data.content.trim(),
     contextSnippets: snippets,
   });
 
-  const fallback = buildFallbackReply(activeSession.site, parsed.data.content);
+  const fallback = buildFallbackReply(session.site, parsed.data.content);
   const assistantContent = llmReply ?? fallback.content;
   const assistantLinks = llmReply ? contextLinks : fallback.links;
 
   const assistantMessage = chat.insertChatMessage({
-    sessionId: activeSession.id,
+    sessionId: session.id,
     role: 'assistant',
     content: assistantContent,
     metadata: assistantLinks.length > 0 ? { links: assistantLinks } : {},
   });
 
   const messageCount = chat.incrementMessageCount(quotaKey);
-  const refreshedSession = chat.getSessionById(activeSession.id)!;
+  const refreshedSession = chat.getSessionById(session.id)!;
 
   return c.json({
     ok: true,
