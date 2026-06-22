@@ -10,22 +10,57 @@ type GenerateReplyInput = {
   contextSnippets: string[];
 };
 
-function resolveLlmConfig() {
-  const apiKey =
-    process.env.CHAT_LLM_API_KEY?.trim() ||
-    process.env.OPENAI_API_KEY?.trim() ||
-    process.env.MINIMAX_API_KEY?.trim() ||
-    '';
+export type LlmConfig = {
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+  provider: 'minimax' | 'openai-compatible';
+};
+
+const MINIMAX_BASE_URL = 'https://api.minimax.io/v1';
+const DEFAULT_MINIMAX_MODEL = 'MiniMax-M3';
+
+export function resolveLlmConfig(): LlmConfig {
+  const minimaxKey = process.env.MINIMAX_API_KEY?.trim() || '';
+  const chatKey = process.env.CHAT_LLM_API_KEY?.trim() || '';
+  const openaiKey = process.env.OPENAI_API_KEY?.trim() || '';
+  const apiKey = minimaxKey || chatKey || openaiKey;
+
+  const explicitBase =
+    process.env.CHAT_LLM_BASE_URL?.trim() || process.env.OPENAI_BASE_URL?.trim() || '';
   const baseUrl = (
-    process.env.CHAT_LLM_BASE_URL?.trim() ||
-    process.env.OPENAI_BASE_URL?.trim() ||
-    'https://hnd1.aihub.zeabur.ai/v1'
+    explicitBase ||
+    (minimaxKey ? MINIMAX_BASE_URL : 'https://hnd1.aihub.zeabur.ai/v1')
   ).replace(/\/$/, '');
+
   const model =
     process.env.CHAT_LLM_MODEL?.trim() ||
     process.env.MINIMAX_MODEL?.trim() ||
-    'MiniMax-M2.1';
-  return { apiKey, baseUrl, model };
+    DEFAULT_MINIMAX_MODEL;
+
+  const provider: LlmConfig['provider'] = baseUrl.includes('minimax.io')
+    ? 'minimax'
+    : 'openai-compatible';
+
+  return { apiKey, baseUrl, model, provider };
+}
+
+export function extractAssistantContent(message: {
+  content?: string | null;
+  reasoning_content?: string | null;
+}): string | null {
+  const raw = message.content?.trim() ?? '';
+  if (raw) {
+    const withoutThinking = raw
+      .replace(/<redacted_thinking>[\s\S]*?<\/redacted_thinking>\s*/gi, '')
+      .trim();
+    if (withoutThinking) {
+      return withoutThinking;
+    }
+  }
+
+  const reasoning = message.reasoning_content?.trim();
+  return reasoning && reasoning.length > 0 ? reasoning : null;
 }
 
 function buildSystemPrompt(site: 'io' | 'org', contextSnippets: string[]): string {
@@ -55,7 +90,7 @@ function buildSystemPrompt(site: 'io' | 'org', contextSnippets: string[]): strin
 }
 
 export async function generateChatReply(input: GenerateReplyInput): Promise<string | null> {
-  const { apiKey, baseUrl, model } = resolveLlmConfig();
+  const { apiKey, baseUrl, model, provider } = resolveLlmConfig();
   if (!apiKey) {
     return null;
   }
@@ -69,18 +104,24 @@ export async function generateChatReply(input: GenerateReplyInput): Promise<stri
     { role: 'user', content: input.userMessage },
   ];
 
+  const body: Record<string, unknown> = {
+    model,
+    messages,
+    temperature: 0.4,
+    max_tokens: 700,
+  };
+
+  if (provider === 'minimax') {
+    body.reasoning_split = true;
+  }
+
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
       authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.4,
-      max_tokens: 700,
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -88,10 +129,14 @@ export async function generateChatReply(input: GenerateReplyInput): Promise<stri
   }
 
   const payload = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
+    choices?: Array<{ message?: { content?: string; reasoning_content?: string } }>;
   };
-  const content = payload.choices?.[0]?.message?.content?.trim();
-  return content && content.length > 0 ? content : null;
+  const message = payload.choices?.[0]?.message;
+  if (!message) {
+    return null;
+  }
+
+  return extractAssistantContent(message);
 }
 
 export function isChatLlmConfigured(): boolean {

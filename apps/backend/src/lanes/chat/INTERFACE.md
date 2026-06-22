@@ -6,5 +6,6 @@
 - `chat_sessions`, `chat_messages`, `chat_usage` tables
 
 # LLM
-- OpenAI-compatible endpoint via `CHAT_LLM_*` or `OPENAI_*` / `MINIMAX_*` env vars
+- **Default:** `MINIMAX_API_KEY` + `MINIMAX_MODEL=MiniMax-M3` → `https://api.minimax.io/v1/chat/completions` with `reasoning_split: true`
+- Overrides: `CHAT_LLM_*` or `OPENAI_*` env vars
 - Falls back to keyword-matched site links when no API key is configured

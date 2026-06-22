@@ -73,11 +73,13 @@ Optional (Wave 10): `INBOUND_EMAIL_WEBHOOK_SECRET`, `NEWSLETTER_FROM_IO`, `NEWSL
 
 | Variable | Purpose |
 |----------|---------|
-| `CHAT_LLM_API_KEY` | Preferred key for companion LLM (falls back to `OPENAI_API_KEY` or `MINIMAX_API_KEY`) |
-| `CHAT_LLM_BASE_URL` | OpenAI-compatible base URL (default Zeabur AI Hub `https://hnd1.aihub.zeabur.ai/v1`) |
-| `CHAT_LLM_MODEL` | Model id (falls back to `MINIMAX_MODEL` or `MiniMax-M2.1`) |
+| `MINIMAX_API_KEY` | **Default** companion LLM key (project standard) |
+| `MINIMAX_MODEL` | Model id — use **`MiniMax-M3`** |
+| `CHAT_LLM_API_KEY` | Optional override key |
+| `CHAT_LLM_BASE_URL` | Optional override base URL (default with Minimax: `https://api.minimax.io/v1`) |
+| `CHAT_LLM_MODEL` | Optional override model |
 
-Without a key, the companion still works using keyword-matched site links (no live LLM).
+Without `MINIMAX_API_KEY` (or an override key), the companion still works using keyword-matched site links (no live LLM).
 
 ## Database env (Wave 4)
 

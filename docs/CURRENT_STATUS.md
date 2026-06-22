@@ -24,7 +24,7 @@ See [AGENT_ENV.md](./AGENT_ENV.md):
 - Google OAuth, `SESSION_SECRET`
 - `ZSEND_API_KEY`, `AGENT_AUTHORIZE_FROM=pulse@ai-transformation.io`
 - `ADMIN_EMAILS` — required for compile-draft admin routes
-- `CHAT_LLM_API_KEY` (or `OPENAI_API_KEY` / `MINIMAX_API_KEY`) + optional `CHAT_LLM_BASE_URL` / `CHAT_LLM_MODEL` — for live LLM replies in sidebar companion
+- `CHAT_LLM_*` optional overrides — **default LLM:** `MINIMAX_API_KEY` + `MINIMAX_MODEL=MiniMax-M3` via `https://api.minimax.io/v1`
 
 ## Next
 

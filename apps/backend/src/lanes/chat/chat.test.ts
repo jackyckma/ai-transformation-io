@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const managedEnvKeys = ['SQLITE_PATH', 'DATABASE_URL', 'NODE_ENV', 'CHAT_LLM_API_KEY'] as const;
+const managedEnvKeys = ['SQLITE_PATH', 'DATABASE_URL', 'NODE_ENV', 'CHAT_LLM_API_KEY', 'MINIMAX_API_KEY'] as const;
 
 const originalEnv = Object.fromEntries(
   managedEnvKeys.map((key) => [key, process.env[key]]),
@@ -17,6 +17,7 @@ beforeEach(() => {
   process.env.SQLITE_PATH = path.join(tempDir, 'app.db');
   delete process.env.DATABASE_URL;
   delete process.env.CHAT_LLM_API_KEY;
+  delete process.env.MINIMAX_API_KEY;
   process.env.NODE_ENV = 'test';
 });
 
