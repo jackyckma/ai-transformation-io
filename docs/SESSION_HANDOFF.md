@@ -1,28 +1,34 @@
 # Session handoff
 
 **Date:** 2026-06-22  
-**Session:** Wave 9 — function-by-role IA (.io)
+**Session:** Sidebar chatbot v1 (.io + .org)
 
 ## Completed
 
-1. **Wave 9 shipped:**
-   - L8: Shared `FunctionPageLayout` + `apps/web-io/data/function-pages.ts`
-   - Routes: `/functions`, `/functions/executive`, `/functions/cio` (dynamic `[slug]`)
-   - `/functions` index links glossary, FAQ, use cases (playbook stubs already live)
-   - Assessment weakest-gap CTAs → role guides + "All role guides"
-   - Sitemap: `/functions` + both role slugs
-   - Footer secondary link "Role guides" (not primary nav)
-2. Removed Wave 1 placeholder `app/functions/executive/page.tsx`
-3. Docs updated: CURRENT_STATUS, project-progress, product-architecture
+1. **Sidebar companion v1 shipped:**
+   - L2: `chat_sessions`, `chat_messages`, `chat_usage` tables
+   - `GET /api/chat/session`, `POST /api/chat/session/messages`
+   - Content-grounded replies via keyword retrieval + OpenAI-compatible LLM (`CHAT_LLM_*` / `OPENAI_*` / `MINIMAX_*`); link fallback when no key
+   - Quotas: 8/day anonymous, 25/day signed-in
+   - `@ai-transformation/chat-ui` — shared `SidebarChat` panel (fixed toggle + slide-over)
+   - Wired on both `.io` and `.org` root layouts
+2. Tests: `apps/backend/src/lanes/chat/chat.test.ts` (3 cases)
+3. Docs updated: CURRENT_STATUS, POSITIONING-UX, project-progress, product-architecture
 
 ## Next
 
-- **Parallel** — Sidebar chatbot v1
 - **Wave 10** — Newsletter pilot (subscribe, send, inbound Worker)
+- **Later** — progress dashboard, streaming replies, conversation export API
 
 ## Verify locally
 
-`pnpm --filter @ai-transformation/web-io build` — passes (24 static routes)
+```bash
+pnpm --filter @ai-transformation/backend test
+pnpm --filter @ai-transformation/web-io build
+pnpm --filter @ai-transformation/web-org build
+```
+
+Optional: set `CHAT_LLM_API_KEY` + `CHAT_LLM_BASE_URL=https://hnd1.aihub.zeabur.ai/v1` on Zeabur for live LLM replies.
 
 ## Admin: compile draft
 

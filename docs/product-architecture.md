@@ -205,8 +205,8 @@ Browser (.io / .org)
 | L5 Harvest | Stories, prompts, inquiries, moderation | `newsletter_reply` ingestion (Wave 10) |
 | L6 Newsletter | **Wave 8** — issues/subscribers tables, providers, webhooks | Public send + subscribe (Wave 10) |
 | L7 Content | KB registry, curated JSON, agent content API | — |
-| L8 Web IO | Reader home, assessment secondary, for-agents, **function role guides** | Sidebar chatbot v1 |
-| L9 Web ORG | Share-first Harvest Hub, apprenticeship | Sidebar chatbot v1 |
+| L8 Web IO | Reader home, assessment secondary, for-agents, function role guides, **sidebar companion** | Your progress dashboard |
+| L9 Web ORG | Share-first Harvest Hub, apprenticeship, **sidebar companion** | Your progress dashboard |
 | L10 Agent jobs | **Wave 8** — compile-draft, cluster-replies | LLM synthesis (later) |
 | L11 Agent protocol | Wave 7 v1 — read, authorize, write | Token refresh/revoke (v1.1) |
 

@@ -7,6 +7,7 @@ import type { ContributionSource } from '@ai-transformation/shared';
 import Database from 'better-sqlite3';
 
 import { runAgentProtocolMigrations } from './agent-protocol.js';
+import { runChatMigrations, createChatDbHelpers, type ChatDbHelpers } from './chat.js';
 import { runNewsletterMigrations } from './newsletter.js';
 
 type InsertContributionInput = {
@@ -252,6 +253,7 @@ function runMigrations(db: Database.Database): void {
   });
   runAgentProtocolMigrations(db);
   runNewsletterMigrations(db);
+  runChatMigrations(db);
 }
 
 export function getDb(): Database.Database {
@@ -754,6 +756,16 @@ export function closeDbForTests(): void {
   }
   dbInstance.close();
   dbInstance = null;
+  chatHelpers = null;
+}
+
+let chatHelpers: ChatDbHelpers | null = null;
+
+export function getChatDb(): ChatDbHelpers {
+  if (!chatHelpers) {
+    chatHelpers = createChatDbHelpers(getDb());
+  }
+  return chatHelpers;
 }
 
 getDb();

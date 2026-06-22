@@ -67,6 +67,9 @@ importers:
 
   apps/web-io:
     dependencies:
+      '@ai-transformation/chat-ui':
+        specifier: workspace:*
+        version: link:../../packages/chat-ui
       '@ai-transformation/content':
         specifier: workspace:*
         version: link:../../packages/content
@@ -110,6 +113,9 @@ importers:
 
   apps/web-org:
     dependencies:
+      '@ai-transformation/chat-ui':
+        specifier: workspace:*
+        version: link:../../packages/chat-ui
       '@ai-transformation/content':
         specifier: workspace:*
         version: link:../../packages/content
@@ -147,6 +153,25 @@ importers:
       tailwindcss:
         specifier: ^4.1.8
         version: 4.3.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/chat-ui:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.7(react@19.2.7)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.1.6
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.1.5
+        version: 19.2.3(@types/react@19.2.17)
       typescript:
         specifier: ^5.8.3
         version: 5.9.3

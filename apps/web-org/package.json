@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-transformation/chat-ui": "workspace:*",
     "@ai-transformation/content": "workspace:*",
     "@ai-transformation/shared": "workspace:*",
     "next": "^15.3.3",

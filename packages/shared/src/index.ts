@@ -161,6 +161,63 @@ export const apprenticeshipInterestResponseSchema = z.object({
 
 export type ApprenticeshipInterestResponse = z.infer<typeof apprenticeshipInterestResponseSchema>;
 
+export const CHAT_QUOTA_ANONYMOUS = 8;
+export const CHAT_QUOTA_REGISTERED = 25;
+
+export const chatMessageRoleSchema = z.enum(['user', 'assistant']);
+
+export const chatLinkSchema = z.object({
+  label: z.string(),
+  href: z.string(),
+});
+
+export type ChatLink = z.infer<typeof chatLinkSchema>;
+
+export const chatMessageSchema = z.object({
+  id: z.string(),
+  role: chatMessageRoleSchema,
+  content: z.string(),
+  links: z.array(chatLinkSchema).optional(),
+  createdAt: z.string(),
+});
+
+export type ChatMessage = z.infer<typeof chatMessageSchema>;
+
+export const chatQuotaSchema = z.object({
+  limit: z.number().int(),
+  remaining: z.number().int(),
+  reset: z.string(),
+});
+
+export type ChatQuota = z.infer<typeof chatQuotaSchema>;
+
+export const chatSessionResponseSchema = z.object({
+  ok: z.literal(true),
+  session: z.object({
+    id: z.string(),
+    site: z.enum(['io', 'org']),
+    messages: z.array(chatMessageSchema),
+    quota: chatQuotaSchema,
+  }),
+});
+
+export type ChatSessionResponse = z.infer<typeof chatSessionResponseSchema>;
+
+export const chatSendMessageRequestSchema = z.object({
+  content: z.string().min(1).max(2000),
+});
+
+export type ChatSendMessageRequest = z.infer<typeof chatSendMessageRequestSchema>;
+
+export const chatSendMessageResponseSchema = z.object({
+  ok: z.literal(true),
+  userMessage: chatMessageSchema,
+  assistantMessage: chatMessageSchema,
+  quota: chatQuotaSchema,
+});
+
+export type ChatSendMessageResponse = z.infer<typeof chatSendMessageResponseSchema>;
+
 export const storyPayloadSchema = z.object({
   title: z.string().min(4).max(160),
   body: z.string().min(50).max(8000),
@@ -515,6 +572,23 @@ export function createApiClient(baseUrl: string) {
       });
       if (!res.ok) throw new Error(`Assessment session save failed: ${res.status}`);
       return assessmentSessionSaveResponseSchema.parse(await res.json());
+    },
+    async getChatSession(site: 'io' | 'org'): Promise<ChatSessionResponse> {
+      const res = await fetch(`${base}/api/chat/session?site=${site}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(`Chat session request failed: ${res.status}`);
+      return chatSessionResponseSchema.parse(await res.json());
+    },
+    async sendChatMessage(content: string): Promise<ChatSendMessageResponse> {
+      const res = await fetch(`${base}/api/chat/session/messages`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ content }),
+      });
+      if (!res.ok) throw new Error(`Chat message failed: ${res.status}`);
+      return chatSendMessageResponseSchema.parse(await res.json());
     },
   };
 }

@@ -1,0 +1,252 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+type ChatSite = 'io' | 'org';
+
+type ChatLink = {
+  label: string;
+  href: string;
+};
+
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  links?: ChatLink[];
+  createdAt: string;
+};
+
+type ChatQuota = {
+  limit: number;
+  remaining: number;
+  reset: string;
+};
+
+export type SidebarChatProps = {
+  site: ChatSite;
+  apiBase?: string;
+};
+
+const COPY: Record<
+  ChatSite,
+  { title: string; subtitle: string; placeholder: string; toggle: string }
+> = {
+  io: {
+    title: 'Companion',
+    subtitle: 'Personalized support grounded in this site.',
+    placeholder: 'Ask about frameworks, roles, or where to start…',
+    toggle: 'Ask companion',
+  },
+  org: {
+    title: 'Harvest companion',
+    subtitle: 'Learn, share, and find your next step in the community.',
+    placeholder: 'Ask about learn guides, stories, or prompts…',
+    toggle: 'Ask companion',
+  },
+};
+
+export function SidebarChat({ site, apiBase = '' }: SidebarChatProps) {
+  const copy = COPY[site];
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [quota, setQuota] = useState<ChatQuota | null>(null);
+  const [input, setInput] = useState('');
+  const [loadingSession, setLoadingSession] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    const node = listRef.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, []);
+
+  const loadSession = useCallback(async () => {
+    setLoadingSession(true);
+    setError(null);
+    try {
+      const res = await fetch(`${apiBase}/api/chat/session?site=${site}`, {
+        credentials: 'include',
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        session?: { messages: ChatMessage[]; quota: ChatQuota };
+        error?: string;
+      };
+      if (!res.ok || !data.ok || !data.session) {
+        throw new Error(data.error ?? 'Could not load chat');
+      }
+      setMessages(data.session.messages);
+      setQuota(data.session.quota);
+      setLoaded(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not load chat');
+    } finally {
+      setLoadingSession(false);
+    }
+  }, [apiBase, site]);
+
+  useEffect(() => {
+    if (open && !loaded && !loadingSession) {
+      void loadSession();
+    }
+  }, [open, loaded, loadingSession, loadSession]);
+
+  useEffect(() => {
+    if (open) {
+      scrollToBottom();
+      inputRef.current?.focus();
+    }
+  }, [open, messages, scrollToBottom]);
+
+  async function handleSend(event: React.FormEvent) {
+    event.preventDefault();
+    const trimmed = input.trim();
+    if (!trimmed || sending) return;
+
+    setSending(true);
+    setError(null);
+    setInput('');
+
+    try {
+      const res = await fetch(`${apiBase}/api/chat/session/messages`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ content: trimmed }),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        userMessage?: ChatMessage;
+        assistantMessage?: ChatMessage;
+        quota?: ChatQuota;
+        error?: string;
+      };
+      if (!res.ok || !data.ok || !data.userMessage || !data.assistantMessage) {
+        throw new Error(data.error ?? 'Could not send message');
+      }
+      setMessages((prev) => [...prev, data.userMessage!, data.assistantMessage!]);
+      if (data.quota) {
+        setQuota(data.quota);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not send message');
+      setInput(trimmed);
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="site-companion-panel"
+        onClick={() => setOpen((value) => !value)}
+        className="fixed bottom-5 right-5 z-40 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] shadow-sm transition hover:border-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+      >
+        {open ? 'Close' : copy.toggle}
+      </button>
+
+      <aside
+        id="site-companion-panel"
+        aria-hidden={!open}
+        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:top-16 ${
+          open ? 'translate-x-0' : 'translate-x-full pointer-events-none'
+        }`}
+      >
+        <header className="border-b border-[var(--border)] px-5 py-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-serif text-lg font-normal tracking-tight">{copy.title}</h2>
+              <p className="mt-1 text-sm font-light text-[var(--muted)]">{copy.subtitle}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-1 text-sm text-[var(--muted)] transition hover:text-[var(--foreground)]"
+              aria-label="Close companion panel"
+            >
+              ×
+            </button>
+          </div>
+          {quota ? (
+            <p className="mt-3 text-xs font-light text-[var(--muted)]">
+              {quota.remaining} of {quota.limit} messages left today
+            </p>
+          ) : null}
+        </header>
+
+        <div ref={listRef} className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+          {loadingSession ? (
+            <p className="text-sm text-[var(--muted)]">Loading conversation…</p>
+          ) : null}
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  message.role === 'user'
+                    ? 'bg-[var(--accent)] text-[var(--accent-fg)]'
+                    : 'border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]'
+                }`}
+              >
+                <p className="whitespace-pre-wrap">{message.content}</p>
+                {message.links && message.links.length > 0 ? (
+                  <ul className="mt-3 space-y-2 border-t border-[var(--border)] pt-3 text-sm">
+                    {message.links.map((link) => (
+                      <li key={`${message.id}-${link.href}`}>
+                        <a
+                          href={link.href}
+                          className="underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
+                          onClick={() => setOpen(false)}
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <footer className="border-t border-[var(--border)] px-5 py-4">
+          {error ? <p className="mb-3 text-sm text-[var(--accent)]">{error}</p> : null}
+          <form onSubmit={handleSend} className="space-y-3">
+            <label htmlFor="companion-input" className="sr-only">
+              Message
+            </label>
+            <textarea
+              id="companion-input"
+              ref={inputRef}
+              rows={3}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder={copy.placeholder}
+              disabled={sending || loadingSession || (quota?.remaining ?? 1) <= 0}
+              className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] disabled:opacity-60"
+            />
+            <button
+              type="submit"
+              disabled={
+                sending || loadingSession || !input.trim() || (quota?.remaining ?? 1) <= 0
+              }
+              className="inline-flex w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {sending ? 'Sending…' : 'Send'}
+            </button>
+          </form>
+        </footer>
+      </aside>
+    </>
+  );
+}

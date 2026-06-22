@@ -221,7 +221,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 - [x] `/for-agents` live on .io and .org
 - [x] Capabilities JSON returns stable v1 stub shape
 - [x] Read rate-limit middleware skeleton (implemented in Wave 7 content reads)
-- [ ] Sidebar chatbot hook (support interaction, on-site history) — post–Wave 7 UX bet
+- [x] Sidebar chatbot hook (support interaction, on-site history) — **v1 shipped** (parallel track post–Wave 9)
 
 **Locked decisions (2026-06-20, amended 2026-06-22):**
 - Home primary entry: **reader reflection paths (Option A)**, not Assessment CTA

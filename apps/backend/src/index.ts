@@ -6,6 +6,7 @@ import assessmentRouter from './lanes/assessment/index.js';
 import agentRouter from './lanes/agent/index.js';
 import agentProtocolRouter from './lanes/agent-protocol/index.js';
 import authRouter from './lanes/auth/index.js';
+import chatRouter from './lanes/chat/index.js';
 import harvestRouter from './lanes/harvest/index.js';
 import newsletterRouter from './lanes/newsletter/index.js';
 import { sessionMiddleware } from './middleware/session.js';
@@ -35,11 +36,12 @@ export function createApp() {
     c.json({
       ok: true,
       service: 'backend',
-      version: '0.1.0-wave8',
+      version: '0.1.0-chat-v1',
     }),
   );
 
   app.route('/api', harvestRouter);
+  app.route('/api', chatRouter);
   app.route('/api', newsletterRouter);
   app.route('/api/agent', agentRouter);
   app.route('/api/auth', authRouter);

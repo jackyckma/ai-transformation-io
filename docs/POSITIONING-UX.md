@@ -20,7 +20,7 @@
 
 ### North star
 
-- **Primary interaction (future):** in-site **sidebar chatbot** for personalized answers — users prefer dialogue over reading long articles.
+- **Primary interaction:** in-site **sidebar chatbot** (v1 shipped) — personalized answers grounded in site content; external agent API remains secondary.
 - **Secondary interaction:** external agents via API (`/for-agents`, L11) — already building; not the first UX bet unless data shows it is clearly easier or more effective.
 - **Content layer:** role-based reader paths + curated topics + spotlight; assessment is **SEO / secondary** (org-level Three Gaps diagnostic), not home hero.
 - **Agent panel:** stays **default visible** on home — human discovery of agent-friendly design is intentional.
@@ -89,7 +89,7 @@ Same 3-step model as .io; agents can read community metadata and (after authoriz
 | **Now (Wave 8 ✅)** | Newsletter tables, compile-draft job, webhook stubs |
 | **Wave 9** | Function-by-role IA (deferred from default home) |
 | **Wave 10** | Newsletter pilot + inbound replies |
-| **Parallel** | Sidebar chatbot v1 (primary human interaction) |
+| **Parallel ✅** | Sidebar chatbot v1 — on-site companion (.io + .org) |
 
 ---
 

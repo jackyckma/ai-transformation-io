@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Lora, Geist } from 'next/font/google';
 import { SiteJsonLd } from '@/components/site-json-ld';
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
+import { SiteCompanion } from '@/components/site-companion';
 import './globals.css';
 
 const geistSans = Geist({
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
+        <SiteCompanion />
       </body>
     </html>
   );
