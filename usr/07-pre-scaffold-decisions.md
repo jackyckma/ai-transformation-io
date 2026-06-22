@@ -1,5 +1,7 @@
 # Pre-scaffold product decisions
 
+> **Note (2026-06-22):** Historical pre-scaffold locks. UX/nav superseded by [`docs/POSITIONING-UX.md`](../docs/POSITIONING-UX.md).
+
 **Date:** 2026-06-18  
 **Status:** Confirmed by founder — use for scaffold planning
 

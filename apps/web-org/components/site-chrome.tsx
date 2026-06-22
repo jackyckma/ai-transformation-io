@@ -3,12 +3,12 @@ import { AuthNav } from '@/components/auth-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 const nav = [
+  { href: '/stories', label: 'Stories' },
+  { href: '/stories/submit', label: 'Share' },
+  { href: '/prompts', label: 'Prompts' },
   { href: '/learn', label: 'Learn' },
   { href: '/apprenticeship', label: 'Apprenticeship' },
-  { href: '/stories', label: 'Stories' },
-  { href: '/prompts', label: 'Prompts' },
   { href: '/for-agents', label: 'For agents' },
-  { href: '/join', label: 'Join' },
   { href: '/ask', label: 'Ask' },
 ];
 

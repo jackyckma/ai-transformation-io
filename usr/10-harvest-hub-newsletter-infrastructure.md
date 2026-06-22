@@ -1,5 +1,7 @@
 # Harvest Hub × Newsletter — curated switchboard & infrastructure
 
+> **Note (2026-06-22):** Infra direction still useful. Public branding: **Harvest Hub** not "Learn Together" — see [`docs/POSITIONING-UX.md`](../docs/POSITIONING-UX.md).
+
 **Date:** 2026-06-18  
 **Status:** Approved direction — build v1 infra hooks; defer send/subscribe UI  
 **Context:** Founder agrees Harvest Hub is a reasonable try; sees strong synergy with a small, curated newsletter as a two-way switchboard.

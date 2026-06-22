@@ -1,33 +1,30 @@
 # Session handoff
 
-**Date:** 2026-06-18  
-**Session:** Infrastructure setup + methodology import
+**Date:** 2026-06-22  
+**Session:** Product positioning lock + document alignment
 
 ## Completed
 
-1. Imported [ai-dev-methodologies](https://github.com/jackyckma/ai-dev-methodologies) via bootstrap script
-2. Verified connectivity: GitHub ✅, Zeabur ✅, Cloudflare ⚠️ (token IP-restricted)
-3. Created GitHub repo: https://github.com/jackyckma/ai-transformation-io
-4. Created Zeabur project on Ocean server with Git deploy
-5. Deploy live at https://ai-transformation.zeabur.app (static placeholder)
-6. Bound custom domain ai-transformation.io (awaiting DNS)
+1. Founder confirmed three product decisions — see [POSITIONING-UX.md](./POSITIONING-UX.md):
+   - .io: companion/support, weaken quiz, role paths + future progress; sidebar chatbot v1 preferred
+   - .org: Share/Stories nav first; Join removed from nav; agent = panel + `/for-agents`
+   - Spotlight: agent proposes JSON → founder approves PR
+2. Created alignment docs: `POSITIONING-UX.md`, `DOC_ALIGNMENT_AUDIT.md`, `data/curated/EDITORIAL_POLICY.md`, skill `curated-home-refresh`
+3. Updated stale docs: POSITIONING, CURRENT_STATUS, project-progress, product-architecture, ARCHITECTURE, README, AGENTS.md, curated README
+4. Added superseded-by pointers on `usr/06`, `07`, `09`, `10`
+5. Applied aligned UX: org nav reorder + remove Join; curated JSON dedup + share-first paths; agent panel copy
 
-## Blocked / needs founder action
+## Next
 
-- **Cloudflare DNS:** Update A record `@` from `167.71.58.160` → `178.104.245.43`
-  - Token blocked from agent IP (error 9109) — use dashboard or remove IP filter on token
-  - Steps in `docs/INFRA_SETUP.md`
-- **Email routing:** info@ai-transformation.io → multitude.multiplex@gmail.com (Cloudflare dashboard)
+- **Wave 7** — agent protocol v1
+- **Wave 6 remainder** — read rate-limit middleware skeleton
+- **UX (post-docs)** — `/for-agents` "For humans" section; mobile nav after desktop IA locked
+- **Chatbot** — sidebar v1 design after Wave 7; on-site chat history data model
 
-## Next session
+## Key docs
 
-Discuss website scaffold (Astro vs Next.js) and build from `knowledge-base/` content.
-
-## IDs
-
-| Resource | ID |
-|----------|-----|
-| Zeabur project | `6a33221c7cea1559991a43e5` |
-| Zeabur service | `6a3322239a194960c7edec34` |
-| GitHub repo ID | `1272745747` |
-| Ocean server | `69ea44a68736baad13c7c617` / IP `178.104.245.43` |
+| Doc | Purpose |
+|-----|---------|
+| [POSITIONING-UX.md](./POSITIONING-UX.md) | Locked product/UX |
+| [DOC_ALIGNMENT_AUDIT.md](./DOC_ALIGNMENT_AUDIT.md) | Contradiction log |
+| [CURRENT_STATUS.md](./CURRENT_STATUS.md) | Shipped state |

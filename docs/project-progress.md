@@ -1,6 +1,6 @@
 # Project progress — waves & decisions
 
-**Last updated:** 2026-06-19  
+**Last updated:** 2026-06-22  
 **Methodology:** [lane-based-development.md](../.agents/instructions/lane-based-development.md)
 
 ## Milestone summary
@@ -162,7 +162,7 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 | Cross-domain (.io / .org) | **Same `users` row** when Google account matches; **per-host** HttpOnly session cookie on first-party `/api` (combined proxy). Second domain needs one-click Google sign-in — **not** a shared cookie across TLDs |
 | Assessment save | Persist **partial answers + step index**; resume wizard; optional last score snapshot |
 | DB | **SQLite** remains for Wave 4 prod; add env-driven DB module hook for future Postgres (`DATABASE_URL`) without requiring Zeabur Postgres deploy now |
-| Sign-in UI | Header sign-in/out on **both** sites; `/join` on .org; assessment shows “save progress” when logged in |
+| Sign-in UI | Header sign-in/out on **both** sites; `/join` optional landing on .org (not nav — see POSITIONING-UX); assessment shows “save progress” when logged in |
 | Attribution | Logged-in `POST /api/inquiries` attaches `user_id` when session present |
 | Secrets | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET` in Zeabur env only — document in `docs/AGENT_ENV.md` |
 
@@ -221,13 +221,15 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 - [x] `/for-agents` live on .io and .org
 - [x] Capabilities JSON returns stable v1 stub shape
 - [ ] Read rate-limit middleware skeleton (anonymous vs registered tiers)
-- [ ] Experimental content chatbot hook (register funnel) — deferred within Wave 6/7
+- [ ] Sidebar chatbot hook (support interaction, on-site history) — post–Wave 7 UX bet
 
-**Locked decisions (2026-06-20):**
+**Locked decisions (2026-06-20, amended 2026-06-22):**
 - Home primary entry: **reader reflection paths (Option A)**, not Assessment CTA
 - Assessment remains secondary link for org-level diagnostic
 - Agent-friendly block visible on both homes + `llms.txt`
-- Curation: founder hand-edits `data/curated/*.json`
+- Curation: agent proposes JSON → **founder approves PR** ([EDITORIAL_POLICY.md](../data/curated/EDITORIAL_POLICY.md))
+- .io north star: **companion/support**, not quiz-first — see [POSITIONING-UX.md](./POSITIONING-UX.md)
+- .org nav: Share/Stories first; **Join removed** from nav; Sign in in header
 
 **Depends on:** Wave 2 DB; benefits from Wave 5 contributions for future curation sources.
 

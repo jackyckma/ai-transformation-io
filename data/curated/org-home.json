@@ -1,11 +1,23 @@
 {
   "site": "org",
-  "updatedAt": "2026-06-21",
+  "updatedAt": "2026-06-22",
   "readerEntry": {
     "headline": "What brings you to Harvest Hub?",
-    "description": "Read first, contribute when you have something real to share — experiences, not hype."
+    "description": "Share when you have something real — or read first if you're still finding your footing."
   },
   "readerPaths": [
+    {
+      "id": "share",
+      "layout": "compact",
+      "image": "/curation/path-share.jpg",
+      "label": "I have an experience to share",
+      "description": "Stories, weekly prompts, or a direct question to the community.",
+      "externalLinks": [
+        { "label": "Share a story", "href": "/stories/submit" },
+        { "label": "Weekly prompt", "href": "/prompts" },
+        { "label": "Ask anything", "href": "/ask" }
+      ]
+    },
     {
       "id": "learn",
       "layout": "compact",
@@ -20,18 +32,6 @@
       "useOrgLearnPaths": true
     },
     {
-      "id": "share",
-      "layout": "compact",
-      "image": "/curation/path-share.jpg",
-      "label": "I have an experience to share",
-      "description": "Stories, weekly prompts, or a direct question to the community.",
-      "externalLinks": [
-        { "label": "Share a story", "href": "/stories/submit" },
-        { "label": "Weekly prompt", "href": "/prompts" },
-        { "label": "Ask anything", "href": "/ask" }
-      ]
-    },
-    {
       "id": "apprenticeship",
       "layout": "compact",
       "image": "/curation/apprenticeship.jpg",
@@ -42,10 +42,10 @@
   ],
   "spotlight": [
     {
-      "slug": "what-is-ai-transformation",
+      "slug": "ai-patterns-copilots-agents-automation",
       "layout": "feature",
       "image": "/curation/cornerstone.jpg",
-      "editorNote": "Start here if transformation language is still fuzzy.",
+      "editorNote": "Patterns for copilots, agents, and automation — useful context before you share what worked.",
       "useOrgLearnPaths": true
     }
   ],

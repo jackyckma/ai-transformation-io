@@ -11,8 +11,8 @@ Claude's spec is **sound and we should adopt it**, with naming and Next.js-speci
 
 | App | Domain | Positioning |
 |-----|--------|-------------|
-| `web-io` | ai-transformation.io | **Corporate** — organized AI transformation knowledge; future consultancy hook |
-| `web-org` | ai-transformation.org | **Community** — "learn together"; encourage sharing experiences |
+| `web-io` | ai-transformation.io | **Corporate** — companion/support portal; frameworks + role paths |
+| `web-org` | ai-transformation.org | **Harvest Hub** — share experiences; moderated contributions |
 | `backend` | `/api` (internal) | Shared API — host-agnostic |
 | `combined` | Zeabur entry | Host-based reverse proxy only |
 
@@ -106,7 +106,7 @@ Three Zeabur services from same repo — update `API_BASE_URL` on frontends, reb
 
 ## Resolved
 
-- **web-org positioning** — community / learn together ([POSITIONING.md](./POSITIONING.md))
+- **web-org positioning** — Harvest Hub ([POSITIONING-UX.md](./POSITIONING-UX.md))
 - **Email** — info@ on both .io and .org → multitude.multiplex@gmail.com
 - **Theme** — light default + dark toggle; English only
 

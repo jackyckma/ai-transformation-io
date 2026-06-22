@@ -1,5 +1,7 @@
 # Community strategy: headless options & forum viability
 
+> **Note (2026-06-22):** Research record. Chosen direction: Harvest Hub (not forum, not "Learn Together" brand) — [`docs/POSITIONING-UX.md`](../docs/POSITIONING-UX.md).
+
 **Date:** 2026-06-18  
 **Context:** Founder hesitation about self-hosted forum; wants headless research before deciding. Confirmed: Google OAuth v1, public read/login to post (if forum), newsletter delayed, no booking CTA.
 

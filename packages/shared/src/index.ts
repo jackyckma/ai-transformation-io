@@ -446,4 +446,4 @@ export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
 
 export const AGENT_PANEL_HEADLINE = 'Agent-friendly';
 export const AGENT_PANEL_SUMMARY =
-  'This site is readable and writable via API — agents and humans are both first-class participants. Copy the quick start into your agent, or read the full protocol.';
+  'Readable and writable via API — agents and humans are both first-class. Give your agent the quick start below, or send them the link to the full protocol.';

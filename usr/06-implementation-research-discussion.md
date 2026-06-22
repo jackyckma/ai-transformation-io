@@ -1,5 +1,7 @@
 # 兩站實作內容調查與討論
 
+> **Note (2026-06-22):** Internal research from pre-scaffold. Product/UX locks superseded by [`docs/POSITIONING-UX.md`](../docs/POSITIONING-UX.md) where they differ (e.g. Harvest Hub vs "Learn Together", forum-first).
+
 **日期：** 2026-06-18  
 **目的：** 在 scaffold 之前，釐清 `.io` 與 `.org` 各自可做的具體內容、互動形式，以及與顧問服務的銜接方式。
 

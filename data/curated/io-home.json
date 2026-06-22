@@ -1,6 +1,6 @@
 {
   "site": "io",
-  "updatedAt": "2026-06-21",
+  "updatedAt": "2026-06-22",
   "readerEntry": {
     "headline": "What does AI transformation mean in your context?",
     "description": "Not a vendor checklist — how work, judgment, and value actually change where you sit."
@@ -47,10 +47,10 @@
   ],
   "spotlight": [
     {
-      "slug": "what-is-ai-transformation",
+      "slug": "transformation-roadmap",
       "layout": "feature",
-      "image": "/curation/cornerstone.jpg",
-      "editorNote": "The cornerstone — deployment vs operating-model change."
+      "image": "/curation/roadmap.jpg",
+      "editorNote": "Seven stages — from alignment to governed scaling, not a one-off pilot."
     }
   ],
   "topics": [

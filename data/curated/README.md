@@ -1,6 +1,9 @@
 # Curated home feeds
 
-Founder-edited JSON for `.io` and `.org` home pages and `GET /api/v1/curated`.
+Editorial JSON for `.io` and `.org` home pages and `GET /api/v1/curated`.
+
+**Policy:** [EDITORIAL_POLICY.md](./EDITORIAL_POLICY.md)  
+**Process:** Agent proposes → founder approves PR (skill: `.agents/skills/curated-home-refresh/`)
 
 | File | Site |
 |------|------|
@@ -20,9 +23,9 @@ Reusable abstract covers — **by curated topic/path**, not per knowledge-base a
 
 | File | Used for |
 |------|----------|
-| `cornerstone.jpg` | Spotlight (both sites) |
+| `cornerstone.jpg` | Cornerstone articles (paths / topics) |
 | `three-gaps.jpg` | .io topic |
-| `roadmap.jpg` | .io topic |
+| `roadmap.jpg` | .io topic / spotlight rotation |
 | `harvest-stories.jpg` | .org topic |
 | `apprenticeship.jpg` | .org topic + apprenticeship path |
 | `path-governance.jpg` | Lead / learn reader paths |
@@ -35,5 +38,7 @@ Regenerate (MiniMax `image-01`, SVG fallback if no key): `node scripts/generate-
 Assets are duplicated under both `apps/web-io/public/curation/` and `apps/web-org/public/curation/`.
 
 Edit `readerPaths`, `spotlight`, and `topics` to change home emphasis. Article slugs must exist in `knowledge-base/` (see `packages/content` registry).
+
+**Dedup:** same slug must not appear in spotlight and reader path — see EDITORIAL_POLICY.
 
 Slow cadence is intentional — no CMS required for v1.

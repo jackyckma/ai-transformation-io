@@ -10,3 +10,7 @@ Optional skills bootstrapped from [ai-dev-methodologies](https://github.com/jack
 | `deferred-shortcuts/` | Harvest `defer:` comments into a read-only ledger |
 
 Lane-specific skills live here as `lane-<name>/SKILL.md` — see `lane-based-development.md` §7.
+
+| Skill | When to load |
+|-------|--------------|
+| `curated-home-refresh/` | Propose `data/curated/*.json` changes — founder approves PR |

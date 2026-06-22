@@ -1,7 +1,9 @@
 # Product architecture — dual-domain platform
 
-**Last updated:** 2026-06-19  
+**Last updated:** 2026-06-22  
 **Status:** Approved — lane-based development with wave delivery (revised for agent-first + editorial product)
+
+**UX locks:** [POSITIONING-UX.md](./POSITIONING-UX.md)
 
 ## System overview
 
@@ -89,13 +91,13 @@ One monorepo, two public faces, one backend:
 ### Information architecture (current + target)
 
 ```
-/                               Home — learn article index + contribute links
+/                               Home — Share-first paths + curated topics + agent panel
 /learn/*                        Intro guides from knowledge-base (5 live)
-/stories, /stories/submit       Experience stories (Wave 5)
+/stories, /stories/submit       Experience stories (Wave 5) — primary CTA
 /prompts                        Weekly prompt (Wave 5)
 /ask                            Question box (live)
-/for-agents                     Shared agent hints (planned)
-/join                           Google OAuth (Wave 4)
+/for-agents                     Agent protocol + quick start
+/join                           OAuth landing (optional deep link; not primary nav)
 ```
 
 ### Harvest Hub loop
