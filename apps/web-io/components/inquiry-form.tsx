@@ -45,7 +45,7 @@ async function readJsonSafe(response: Response): Promise<unknown> {
   }
 }
 
-export function InquiryForm() {
+export function InquiryForm({ embedded = false }: { embedded?: boolean }) {
   const [values, setValues] = useState<InquiryFormValues>({
     email: '',
     name: '',
@@ -117,13 +117,17 @@ export function InquiryForm() {
   }
 
   return (
-    <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Have a question?</h1>
-      <p className="mt-3 text-[var(--muted)]">
-        Send us your question and we&apos;ll reply with practical next steps.
-      </p>
+    <section className={embedded ? '' : 'rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8'}>
+      {!embedded ? (
+        <>
+          <h1 className="font-serif text-2xl font-normal tracking-tight">Have a question?</h1>
+          <p className="mt-3 text-sm font-light text-[var(--muted)]">
+            Send us your question and we&apos;ll reply with practical next steps.
+          </p>
+        </>
+      ) : null}
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+      <form className={embedded ? 'space-y-6' : 'mt-8 space-y-6'} onSubmit={handleSubmit} noValidate>
         <div className="space-y-2">
           <label htmlFor="io-email" className="text-sm font-medium">
             Email

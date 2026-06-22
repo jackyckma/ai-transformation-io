@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildAgentQuickStart, getSiteOrigin } from '@ai-transformation/shared';
+import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
   title: 'For agents',
@@ -13,7 +14,7 @@ export default function ForAgentsPage() {
   const quickStart = buildAgentQuickStart('org', apiBase);
 
   return (
-    <article className="mx-auto max-w-2xl px-6 py-14">
+    <PageShell as="article">
       <header className="mb-10 border-b border-[var(--border)] pb-10">
         <p className="text-xs font-light tracking-wide text-[var(--muted)]">Agent protocol</p>
         <h1 className="font-serif mt-3 text-2xl font-normal leading-snug tracking-tight md:text-[1.85rem]">
@@ -61,10 +62,10 @@ export default function ForAgentsPage() {
         <a href={`${apiBase}/api/v1/curated?site=org`} className="hover:text-[var(--foreground)]">
           Curated feed JSON →
         </a>
-        <Link href="/#agent-friendly" className="hover:text-[var(--foreground)]">
-          ← Back to home
+        <Link href="/" className="hover:text-[var(--foreground)]">
+          ← Home
         </Link>
       </nav>
-    </article>
+    </PageShell>
   );
 }

@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
+import { PageIntro } from '@/components/page-intro';
+import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = { title: 'Start here' };
 
 export default function StartPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-semibold">Start here</h1>
-      <p className="mt-4 text-[var(--muted)]">
-        What AI transformation means in practice — community lens. Full content in Wave 5.
-      </p>
-    </div>
+    <PageShell width="wide">
+      <PageIntro
+        title="Start here"
+        description="What AI transformation means in practice — community lens. Full content in Wave 5."
+      />
+    </PageShell>
   );
 }

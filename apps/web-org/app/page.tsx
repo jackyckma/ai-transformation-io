@@ -1,14 +1,7 @@
-import Link from 'next/link';
 import { CompanionHomeEntry } from '@ai-transformation/chat-ui';
 import { HomeCuratedPreview, loadOrgCuratedFeed } from '@/components/curated-sections';
-
-const exploreLinks = [
-  { href: '/stories/submit', label: 'Share a story' },
-  { href: '/learn', label: 'Learn guides' },
-  { href: '/apprenticeship', label: 'Apprenticeship' },
-  { href: '/prompts', label: 'Prompts' },
-  { href: '/for-agents', label: 'For agents' },
-];
+import { HubExploreNav } from '@/components/hub-explore-nav';
+import { ORG_EXPLORE_LINKS } from '@/lib/explore-links';
 
 export default function HomePage() {
   const feed = loadOrgCuratedFeed();
@@ -27,20 +20,7 @@ export default function HomePage() {
         <CompanionHomeEntry site="org" />
       </div>
 
-      <nav
-        aria-label="Explore"
-        className="mt-10 flex flex-wrap gap-x-4 gap-y-2 border-y border-[var(--border)] py-4 text-sm font-light"
-      >
-        {exploreLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--foreground)] hover:decoration-[var(--accent)]"
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+      <HubExploreNav links={ORG_EXPLORE_LINKS} className="mt-10 border-y py-4" />
 
       <HomeCuratedPreview feed={feed} />
     </div>

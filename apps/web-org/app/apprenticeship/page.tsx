@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CompanionTopicPrompt } from '@ai-transformation/chat-ui';
 import { ApprenticeshipInterestForm } from '@/components/apprenticeship-interest-form';
 import { MarkdownBody } from '@/components/markdown-body';
+import { PageShell } from '@/components/page-shell';
 import { getApprenticeshipOverviewBody, getApprenticeshipOverviewContent } from '@/lib/apprenticeship-content';
 
 export function generateMetadata(): Metadata {
@@ -19,8 +21,8 @@ export default function ApprenticeshipPage() {
     .trim();
 
   return (
-    <article className="mx-auto max-w-2xl px-6 py-14">
-      <header className="mb-10 border-b border-[var(--border)] pb-10">
+    <PageShell as="article">
+      <header className="mb-8 border-b border-[var(--border)] pb-8">
         <p className="text-xs font-light tracking-wide text-[var(--muted)]">Program</p>
         <h1 className="font-serif mt-3 text-2xl font-normal leading-snug tracking-tight md:text-[1.85rem]">
           {title}
@@ -31,6 +33,12 @@ export default function ApprenticeshipPage() {
           assembling the first cycle.
         </p>
       </header>
+
+      <CompanionTopicPrompt
+        topic="AI-era apprenticeship"
+        message="How does the apprenticeship program work on Harvest Hub?"
+        className="mb-8"
+      />
 
       <MarkdownBody content={bodyMarkdown} />
 
@@ -103,6 +111,6 @@ export default function ApprenticeshipPage() {
           ← Back to Harvest Hub
         </Link>
       </nav>
-    </article>
+    </PageShell>
   );
 }

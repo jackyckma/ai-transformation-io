@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { StoryForm } from '@/components/story-form';
+import { HubExploreNav } from '@/components/hub-explore-nav';
+import { PageShell } from '@/components/page-shell';
+import { ORG_EXPLORE_LINKS } from '@/lib/explore-links';
 
 export const metadata: Metadata = {
   title: 'Submit a story',
@@ -8,8 +11,9 @@ export const metadata: Metadata = {
 
 export default function StorySubmitPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
+    <PageShell width="wide">
       <StoryForm />
-    </div>
+      <HubExploreNav links={ORG_EXPLORE_LINKS} className="mt-10" />
+    </PageShell>
   );
 }

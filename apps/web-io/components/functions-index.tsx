@@ -1,16 +1,19 @@
 import Link from 'next/link';
 
 import { FUNCTION_PAGES, FUNCTION_SLUGS } from '@/data/function-pages';
+import { HubExploreNav } from '@/components/hub-explore-nav';
 import { PageIntro } from '@/components/page-intro';
+import { PageShell } from '@/components/page-shell';
+import { IO_EXPLORE_LINKS } from '@/lib/explore-links';
 
 export function FunctionsIndex() {
   const roles = FUNCTION_SLUGS.map((slug) => FUNCTION_PAGES[slug]);
 
   return (
-    <div className="layout-read py-14 md:py-16">
+    <PageShell>
       <PageIntro
         title="Guides by role"
-        description="How AI transformation shows up for your lane — responsibilities, decisions, and links into frameworks and playbook. Secondary to curated home paths; not a product quiz."
+        description="How AI transformation shows up for your lane — responsibilities, decisions, and links into frameworks and playbook."
       />
 
       <section className="mt-10">
@@ -64,6 +67,8 @@ export function FunctionsIndex() {
           </li>
         </ul>
       </section>
-    </div>
+
+      <HubExploreNav links={IO_EXPLORE_LINKS} className="mt-12" />
+    </PageShell>
   );
 }

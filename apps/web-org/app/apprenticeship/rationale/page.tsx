@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CompanionTopicPrompt } from '@ai-transformation/chat-ui';
 import { MarkdownBody } from '@/components/markdown-body';
+import { PageShell } from '@/components/page-shell';
 import {
   getApprenticeshipRationaleBody,
   getApprenticeshipRationaleContent,
@@ -18,14 +20,20 @@ export default function ApprenticeshipRationalePage() {
   const { title, description } = getApprenticeshipRationaleContent();
 
   return (
-    <article className="mx-auto max-w-2xl px-6 py-14">
-      <header className="mb-10 border-b border-[var(--border)] pb-10">
+    <PageShell as="article">
+      <header className="mb-8 border-b border-[var(--border)] pb-8">
         <p className="text-xs font-light tracking-wide text-[var(--muted)]">Apprenticeship · Design rationale</p>
         <h1 className="font-serif mt-3 text-2xl font-normal leading-snug tracking-tight md:text-[1.85rem]">
           {title}
         </h1>
         <p className="mt-4 text-sm font-light leading-relaxed text-[var(--muted)]">{description}</p>
       </header>
+
+      <CompanionTopicPrompt
+        topic="apprenticeship design rationale"
+        message="Summarize the apprenticeship design rationale and who it is for."
+        className="mb-8"
+      />
 
       <MarkdownBody content={getApprenticeshipRationaleBody()} />
 
@@ -40,6 +48,6 @@ export default function ApprenticeshipRationalePage() {
           ← Harvest Hub home
         </Link>
       </nav>
-    </article>
+    </PageShell>
   );
 }

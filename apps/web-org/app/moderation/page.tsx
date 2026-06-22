@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ModerationPanel } from '@/components/moderation-panel';
+import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
   title: 'Moderation',
@@ -9,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function ModerationPage() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16">
+    <PageShell width="wide">
       <ModerationPanel />
-    </div>
+    </PageShell>
   );
 }

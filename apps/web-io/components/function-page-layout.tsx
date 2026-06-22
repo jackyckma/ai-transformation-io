@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { CompanionTopicPrompt } from '@ai-transformation/chat-ui';
 import type { FunctionPageContent } from '@/data/function-pages';
+import { PageShell } from '@/components/page-shell';
 
 type FunctionPageLayoutProps = {
   page: FunctionPageContent;
@@ -17,12 +19,18 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export function FunctionPageLayout({ page }: FunctionPageLayoutProps) {
   return (
-    <article className="layout-read py-14 md:py-16">
-      <header className="mb-10 border-b border-[var(--border)] pb-10">
+    <PageShell as="article">
+      <header className="mb-8 border-b border-[var(--border)] pb-8">
         <p className="text-xs font-light tracking-wide text-[var(--muted)]">{page.subtitle}</p>
         <h1 className="font-serif mt-3 text-2xl font-normal tracking-tight md:text-[1.85rem]">{page.title}</h1>
         <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-[var(--muted)]">{page.description}</p>
       </header>
+
+      <CompanionTopicPrompt
+        topic={page.title}
+        message={`I'm a ${page.title.toLowerCase()} looking at AI transformation. Where should I focus first?`}
+        className="mb-10"
+      />
 
       <div className="space-y-10">
         <Section title="You own">
@@ -120,6 +128,6 @@ export function FunctionPageLayout({ page }: FunctionPageLayoutProps) {
       >
         ← All role guides
       </Link>
-    </article>
+    </PageShell>
   );
 }
