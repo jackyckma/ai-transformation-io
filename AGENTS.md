@@ -42,21 +42,21 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - .io IA (v2, Wave 11+): **Library · Insights · Ask** ribbon; public Library + Insights; logged-in personal cockpit — see `docs/SITE_DESIGN_v2.md`. **Until Wave 11 ships:** legacy `/frameworks`, `/playbook`, `/functions` remain live.
 - .org IA (v2): **Knowledge · Community · Ask**; brand **Community · Knowledge commons**. **Until Wave 11:** legacy `/learn`, `/stories` remain live.
 - Curation: agent proposes `data/curated/*.json` → founder approves PR; see `data/curated/EDITORIAL_POLICY.md`.
-- Site design: content-first editorial; Ask page with modes (Ask/Capture/Submit/Find Help per site); agent-native contextual actions → on-site Ask prefill; not product-marketing chrome.
+- Site design: content-first editorial; Ask page with modes (Ask/Capture/Submit/Find Help per site); agent-native contextual actions → on-site Ask prefill; not product-marketing chrome. Mobile: hamburger + bottom ribbon; companion via `/ask` (not persistent sidebar). Distinct .io vs .org color palettes and decoration imagery.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
-- After completing shippable work (content, UI, fixes, docs tied to production), default to commit and push to `main` without asking for approval — unless the user says otherwise or the change is explicitly exploratory. Zeabur deploys from `main`.
+- After completing shippable work (content, UI, fixes, docs tied to production), default to commit, push to `main`, and Zeabur deploy without asking — unless the user says otherwise, the change is exploratory, or a critical product decision is pending.
 
 ## Learned Workspace Facts
 
-- ai-transformation.io — public Library + Insights + personal cockpit (v2); ai-transformation.org — **Community · Knowledge commons** (v2). See `docs/SITE_DESIGN_v2.md`. Apprenticeship remains a special program (`/apprenticeship`).
+- ai-transformation.io — public Library + Insights + personal cockpit (v2); ai-transformation.org — **Community · Knowledge commons** (v2). See `docs/SITE_DESIGN_v2.md`. Production URLs: ai-transformation.io / .org (not `*.zeabur.app`). Apprenticeship remains a special program (`/apprenticeship`).
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Wave 11–14 = IA + object model migration; Wave 10 newsletter pilot optional.
+- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Wave 11–14 = IA + object model migration with doc/code housekeeping; Wave 10 newsletter pilot optional.
 - Product direction: agent-first site — humans and agents are first-class participants; on-site companion (primary human UI; 8 msg/day anonymous, 25/day signed-in; MiniMax-M3 via `MINIMAX_API_KEY`) plus `/for-agents` and embedded machine-readable hints on human pages.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token.
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie).
 - Assessment shipped: 36 Three Gaps Likert questions, wizard + radar API, save/resume when authenticated. Production runtime: backend and combined use `tsx` (`packages/shared` exports `.ts`); backend `tsc` excludes `*.test.ts`.
 - Zeabur deploy: git auto-deploy can stall — use `npx zeabur@latest deploy` if needed. **zbpack must list every deploy package explicitly** (`web-io`, `web-org`, `backend`, `combined`, …); bare `turbo run build` on Zeabur may scope to only `backend` when commits touch `.orchestrate/` only → missing `.next` → 502. Orchestrate `syncStateToGit` commits on `main` trigger these broken deploys before Wave PRs merge. Turbo cache can skip `combined/dist`; zbpack uses `--force`; combined starts via `tsx src/start.ts`.
-- Google OAuth secrets (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`) live in Zeabur env only; document in `docs/AGENT_ENV.md`, never commit values.
+- Google OAuth secrets (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`) live in Zeabur env only; document in `docs/AGENT_ENV.md`, never commit values. Backend stays host-agnostic; host-based routing lives only in `apps/combined`; monorepo structured for future split (`apps/backend`, `web-io`, `web-org`; shared in `packages/shared`).
 - L6 Switchboard lane handles newsletter reply ingestion when newsletter launches.
-- Backend stays host-agnostic; host-based routing lives only in `apps/combined`; monorepo structured for future split (`apps/backend`, `web-io`, `web-org`; shared in `packages/shared`).
+- UX/UI work in web-io/web-org: load `.agents/skills/editorial-ui` + `ux-copy`; they override generic frontend-design plugins.
