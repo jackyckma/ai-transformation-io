@@ -1,0 +1,118 @@
+{
+  "$schema": "/home/ubuntu/.cursor/plugins/cache/cursor-public/9333/e46364b8be46000b7df0f260550cd712afbb8d36/skills/orchestrate/schemas/plan.schema.json",
+  "goal": "wave11-v2-ia: Ship SITE_DESIGN_v2 Wave 11 (Phase 1 IA shell + Ask modes) per docs/SITE_DESIGN_v2.md. Replace the legacy hub IA on both ai-transformation.io and .org with the v2 ribbon (io: Home · Library · Insights · Ask; org: Home · Knowledge · Community · Ask), unified Library/Knowledge views, Insights/Community placeholders, the /ask mode switcher (Ask/Capture/Submit/Find Help per the §4 matrix), logged-out vs logged-in home layouts with rule-based recommendations v0, onboarding profile fields, contextual Open-in-Ask prefills, hamburger restructure (Agent API + Settings + auth), and the §15 housekeeping: remove the old hub routes WITHOUT legacy redirects and rebrand .org to Community · Knowledge commons. Backend object model + visibility enforcement is Phase 2 (Wave 12) and out of scope here; Phase 1 is the IA shell with placeholders and stubs.",
+  "summary": "Jacky's bot: shipping SITE_DESIGN_v2 Wave 11 — v2 ribbon IA + Ask modes on .io and .org",
+  "dispatcher": { "firstName": "Jacky" },
+  "rootSlug": "wave11-v2-ia",
+  "baseBranch": "main",
+  "prBase": "main",
+  "repoUrl": "https://github.com/jackyckma/ai-transformation-io",
+  "selfAgentId": "bc-9e455eb8-0acb-4b2a-922d-4311abb268e0",
+  "syncStateToGit": true,
+  "acceptanceCriteria": [
+    "Both apps build (pnpm turbo build) on the integrated branch",
+    ".io ribbon = Home · Library · Insights · Ask; .org ribbon = Home · Knowledge · Community · Ask (labels stable logged-out/in)",
+    "Legacy hub routes removed with NO redirects: io /frameworks /playbook /functions /assessment(hub); org /learn /stories /stories/submit",
+    "/ask has a mode switcher matching the §4 matrix per site and guest/member state",
+    ".org outward brand reads 'Community · Knowledge commons' (not 'Harvest Hub' as primary)",
+    "One integrated draft PR to main"
+  ],
+  "tasks": [
+    {
+      "name": "shared-foundation",
+      "type": "worker",
+      "model": "gpt-5.5-high",
+      "scopedGoal": "Lay the shared Phase 1 foundation that BOTH site apps consume, in packages/shared and packages/content only. (1) Add a shared onboarding profile Zod schema + types (fields: role, industry, optional projectFocus) to @ai-transformation/shared, exported from its public entry. (2) Add a shared Ask-mode model: an AskMode union ('ask' | 'capture' | 'submit' | 'find-help'), per-site allowed-mode config (io guest=[ask], io member=[ask,capture]; org guest=[ask], org member=[ask,capture,submit,find-help]) per SITE_DESIGN_v2.md §4, and mode metadata (label + placeholder copy). (3) Add a small generic rule-based recommendation scorer (pure function: weighted score over simple inputs) per §9 — keep it generic v0, no LLM, no DB. (4) Migrate packages/content route pathnames for the v2 IA: in CONTENT_REGISTRY change all '/frameworks/*' and '/playbook/*' pathnames to '/library/*' (keep the trailing slug segment), and update getParamSlugMap / any helpers so '/library' resolves. Replace the .org learn rewrite (ORG_LEARN_SLUGS + getOrgLearnPages producing '/learn/<slug>') with a '/knowledge/<slug>' equivalent (rename to getOrgKnowledgePages or similar and update useOrgLearnPaths flag naming to a knowledge equivalent), keeping resolveCuratedArticles/getCuratedApiPayload working. Do NOT delete the article-loading logic — only repath. Run `pnpm --filter @ai-transformation/shared typecheck` and `pnpm --filter @ai-transformation/content typecheck` (or `tsc --noEmit` in each package) and ensure both pass. Do NOT touch apps/** or data/**; the site workers own those and will consume your exports.",
+      "brief": "Read docs/SITE_DESIGN_v2.md (§3 route map, §4 Ask modes, §9 recommendations, §10 Insights, §15 housekeeping) first. This is the dependency both site workers branch from, so keep exports clean and well-typed. Phase 1 only: placeholders/stubs, NO backend object model, NO visibility enforcement (that is Wave 12). Keep additions minimal and generic — avoid over-engineering. The same knowledge-base article is rendered on .io under /library/<slug> and on .org under /knowledge/<slug>; CONTENT_REGISTRY.pathname is the .io path, the org helper rewrites to the .org path. Code and docs stay in English (project-guidelines).",
+      "pathsAllowed": ["packages/shared/**", "packages/content/**"],
+      "pathsForbidden": ["apps/**", "data/**", "docs/**", "knowledge-base/**"],
+      "acceptance": [
+        "@ai-transformation/shared exports an onboarding profile Zod schema + types (role, industry, optional projectFocus)",
+        "@ai-transformation/shared exports an AskMode union, per-site allowed-mode config (matching §4 matrix), and per-mode label+placeholder metadata",
+        "@ai-transformation/shared exports a generic rule-based recommendation scorer (pure, no LLM/DB)",
+        "packages/content pathnames migrated: io framework/playbook slugs resolve under /library/<slug>; org articles resolve under /knowledge/<slug>; curated API payload still resolves",
+        "packages/shared and packages/content typecheck pass"
+      ]
+    },
+    {
+      "name": "web-io-ia",
+      "type": "worker",
+      "model": "claude-opus-4-8",
+      "startingRef": "orch/wave11-v2-ia/shared-foundation",
+      "dependsOn": ["shared-foundation"],
+      "scopedGoal": "Implement the ai-transformation.io Phase 1 v2 IA shell in apps/web-io (+ data/curated/io-*.json), consuming the new @ai-transformation/shared and @ai-transformation/content exports from the shared-foundation branch you are based on. Deliver: (1) Ribbon nav = Home · Library · Insights · Ask on both desktop header and mobile bottom nav; labels identical logged-out/logged-in (page content differs, labels do not). (2) /library — unified wiki-style library listing ALL knowledge-base articles (use getAllPages/getPagesByPillar), filterable by pillar/type; create app/library/[slug] to render individual articles at the new /library/<slug> pathnames; logged-in shows a 'My Library' tab placeholder. (3) /insights — placeholder per §10: curated cards (external benchmark/dataset/survey links) + short interpretation copy template; assessment lives UNDER insights as a data type (link or /insights/assessment), not a standalone nav item. (4) /ask — add a mode switcher above the input using the shared AskMode config: io guest = Ask only; io member = Ask + Capture. Capture mode = short rough input → private note STUB (client/local stub is fine; no Wave 12 object store). Mode reflected via ?mode= query param. (5) Home — logged-out = curated home + Library highlights + special pages; logged-in = Personal Transformation Dashboard using the shared rule-based recommendation scorer v0 (inputs: onboarding profile, bookmarks/recently-viewed if available, curated spotlight). (6) Onboarding profile fields (role, industry, optional project focus) captured on first login or in Settings, persisted via the simplest available mechanism (existing auth/profile API if present, else localStorage stub) using the shared schema. (7) Contextual 'Open in Ask' actions on Library/Insights items that navigate to /ask?mode=ask&context=<object-id> and prefill. (8) Hamburger restructure: Register/Sign in, Agentic Access API (link to existing /api/agent docs + /for-agents demoted here), Settings, About — NOT in the ribbon. (9) §15 housekeeping: REMOVE app/frameworks, app/playbook, app/functions, and the standalone /assessment hub route WITH NO redirects; remove DesktopNavLinks hub nav and legacy explore-links tied to old sections; update data/curated/io-home.json + io-hub-index.json CTAs/paths to the new /library + /insights routes. Keep /for-agents reachable (demoted to hamburger). Ensure `pnpm --filter @ai-transformation/web-io build` (or the repo's web-io build) succeeds.",
+      "brief": "READ FIRST: docs/SITE_DESIGN_v2.md (esp. §3.1/§3.3 io route map, §4 modes, §6 contextual actions, §9 recommendations, §10 Insights, §11 Phase 1, §15 housekeeping). LOAD the project UI skills before building UI: .agents/skills/editorial-ui/SKILL.md and .agents/skills/ux-copy/SKILL.md — they override generic frontend skills for this repo (content-first editorial, light theme default + dark toggle, English-only UI). The shared-foundation branch you start from already migrated content pathnames to /library/<slug> and added the shared schemas/Ask-mode config/recommendation scorer — import them, do not re-create. Auth/logged-in state: see components/auth-nav.tsx (client fetch of /api/auth/me). Existing chrome to reshape: components/site-chrome.tsx (DESKTOP_NAV), components/mobile-bottom-nav.tsx (TABS), components/mobile-nav-drawer.tsx (DRAWER_LINKS), lib/explore-links.ts, lib/hub-index.ts, components/hub-index-sections.tsx. Phase 1 = IA shell + placeholders/stubs only; NO backend object model or visibility enforcement (Wave 12). NO legacy URL redirects — removed routes should 404. Do not touch apps/web-org/** or packages/** (shared-foundation owns packages). If a UI interaction changed, capture a short screen recording or before/after screenshots and reference the artifact path in your handoff.",
+      "pathsAllowed": ["apps/web-io/**", "data/curated/io-home.json", "data/curated/io-hub-index.json"],
+      "pathsForbidden": ["apps/web-org/**", "packages/**", "apps/backend/**", "apps/combined/**"],
+      "acceptance": [
+        "Ribbon (desktop header + mobile bottom nav) = Home · Library · Insights · Ask; labels identical logged-out vs logged-in",
+        "/library lists all knowledge-base articles (filterable) and /library/<slug> renders individual articles; logged-in shows a My Library tab placeholder",
+        "/insights renders placeholder curated cards + interpretation copy; assessment is under Insights, not a ribbon item",
+        "/ask has a mode switcher: guest=Ask; member=Ask+Capture; Capture is a private-note stub; ?mode= reflected",
+        "Home differs logged-out (curated + library highlights) vs logged-in (recommendations via shared scorer v0)",
+        "Onboarding profile fields (role, industry, optional project focus) captured + persisted via shared schema",
+        "Contextual 'Open in Ask' actions navigate to /ask?mode=ask&context=<id> and prefill",
+        "Hamburger holds Agent API + Settings + auth; ribbon does not",
+        "app/frameworks, app/playbook, app/functions, standalone /assessment hub removed with NO redirects (404); legacy hub nav gone",
+        "data/curated/io-home.json + io-hub-index.json CTAs/paths point to /library + /insights",
+        "web-io builds"
+      ],
+      "verify": "## Setup\n- From repo root on this branch run `pnpm install` if needed, then build web-io with the repo's build (e.g. `pnpm --filter @ai-transformation/web-io build` or `pnpm turbo build --filter=web-io`).\n## Automated\n- Build must pass. Type-check web-io.\n- Assert removed routes have no app dir: app/frameworks, app/playbook, app/functions, standalone /assessment hub.\n## Manual\n- Run web-io dev, confirm ribbon labels Home·Library·Insights·Ask, /library lists articles + /library/<slug> renders, /insights placeholder, /ask mode switcher (Ask, +Capture when signed in), hamburger holds Agent API/Settings/auth.\n## Gotchas\n- No legacy redirects: old hub URLs should 404. Content pathnames already migrated in shared-foundation."
+    },
+    {
+      "name": "web-org-ia",
+      "type": "worker",
+      "model": "claude-opus-4-8",
+      "startingRef": "orch/wave11-v2-ia/shared-foundation",
+      "dependsOn": ["shared-foundation"],
+      "scopedGoal": "Implement the ai-transformation.org Phase 1 v2 IA shell in apps/web-org (+ data/curated/org-*.json), consuming the new @ai-transformation/shared and @ai-transformation/content exports from the shared-foundation branch you are based on. Deliver: (1) Ribbon nav = Home · Knowledge · Community · Ask on both desktop header and mobile bottom nav; labels identical logged-out/logged-in. (2) /knowledge — public knowledge index (auto-categories from pillar/tags) rendering the migrated articles at /knowledge/<slug> (use the shared-foundation org knowledge helper); create app/knowledge/[slug]; logged-in adds My Library / My articles+comments placeholder tabs. (3) /community — PUBLIC-ONLY highlights placeholder per §5.3 Phase 1 types (discussion, help_request, event, community_announcement) shown as static/sample highlight cards with action verbs as non-functional affordances; logged-in shows the fuller opportunity layer placeholder. No backend writes (Wave 13). (4) /ask — mode switcher using the shared AskMode config: org guest = Ask only; org member = Ask + Capture + Submit + Find Help. Capture = private note stub; Submit = contribution draft stub; Find Help = help_request stub (all client/local stubs; no Wave 12/13 object store). ?mode= reflected. (5) Home — logged-out = curated community home + special pages (e.g. apprenticeship intro link); logged-in = Personal Community Activity Dashboard using the shared recommendation scorer v0 (inputs emphasize followed topics/contributions/interactions placeholders). (6) Onboarding profile fields via shared schema (same as io). (7) Contextual actions on Knowledge/Community items → /ask prefill (Summarize/Cite for knowledge; Draft reply/Turn into field note/Submit via Agent for community). (8) Hamburger: Register/Sign in, Agentic Access API, Settings, About; /for-agents demoted to hamburger; ribbon excludes Agent API/Settings. (9) §15 housekeeping: REMOVE app/learn, app/stories, app/stories/submit as top-level sections WITH NO redirects; migrate their content into /knowledge and /community/Ask modes; remove legacy hub nav/explore-links tied to old sections; update data/curated/org-home.json + org-hub-index.json CTAs/paths. (10) Rebrand outward copy to 'Community · Knowledge commons' (replace 'Harvest Hub' as the PRIMARY brand label in user-visible UI; metadata/description may retain a transitional mention). Keep app/apprenticeship as a special page linked from Home. Keep app/moderation as-is (Wave 12 migrates it). Ensure web-org builds.",
+      "brief": "READ FIRST: docs/SITE_DESIGN_v2.md (esp. §2 .org positioning, §3.1/§3.3 org route map, §4 modes, §5 object model Phase 1 types, §6 contextual actions, §11 Phase 1, §15 housekeeping). LOAD .agents/skills/editorial-ui/SKILL.md and .agents/skills/ux-copy/SKILL.md before UI work (override generic frontend skills; English-only UI, light default + dark toggle). The shared-foundation branch you start from migrated org article paths to /knowledge/<slug> and added shared schemas/Ask-mode config/recommendation scorer — import them. Existing chrome to reshape mirrors web-io: components/site-chrome.tsx, components/mobile-bottom-nav.tsx, components/mobile-nav-drawer.tsx, lib/explore-links.ts, lib/hub-index.ts. Community Phase 1 is PLACEHOLDER highlights only — no real posting backend (Wave 13). Visibility levels are display-only hints in Phase 1 (enforcement is Wave 12). NO legacy redirects — removed routes 404. Do not touch apps/web-io/** or packages/**. Capture a short screen recording / before-after screenshots for changed interactions and reference the artifact path in your handoff.",
+      "pathsAllowed": ["apps/web-org/**", "data/curated/org-home.json", "data/curated/org-hub-index.json"],
+      "pathsForbidden": ["apps/web-io/**", "packages/**", "apps/backend/**", "apps/combined/**"],
+      "acceptance": [
+        "Ribbon (desktop header + mobile bottom nav) = Home · Knowledge · Community · Ask; labels identical logged-out vs logged-in",
+        "/knowledge lists public articles with auto-categories and /knowledge/<slug> renders; logged-in adds My Library/My articles placeholders",
+        "/community renders public-only highlight placeholders for Phase 1 types (discussion, help_request, event, community_announcement)",
+        "/ask mode switcher: guest=Ask; member=Ask+Capture+Submit+Find Help; each non-Ask mode is a stub; ?mode= reflected",
+        "Home differs logged-out (curated community) vs logged-in (activity dashboard via shared scorer v0)",
+        "Onboarding profile fields captured via shared schema",
+        "Contextual actions on Knowledge/Community items prefill /ask",
+        "Hamburger holds Agent API + Settings + auth; /for-agents demoted; ribbon excludes them",
+        "app/learn, app/stories, app/stories/submit removed with NO redirects (404); content migrated into /knowledge + /community/Ask",
+        "Outward brand reads 'Community · Knowledge commons' (Harvest Hub no longer the primary label); apprenticeship remains a linked special page",
+        "data/curated/org-home.json + org-hub-index.json CTAs/paths updated; web-org builds"
+      ],
+      "verify": "## Setup\n- Build web-org with the repo build (e.g. `pnpm --filter @ai-transformation/web-org build`).\n## Automated\n- Build + type-check must pass.\n- Assert removed route dirs gone: app/learn, app/stories, app/stories/submit.\n## Manual\n- Confirm ribbon Home·Knowledge·Community·Ask, /knowledge index + /knowledge/<slug>, /community placeholder highlights, /ask modes (Ask; +Capture/Submit/Find Help when signed in), brand 'Community · Knowledge commons', apprenticeship still linked from Home.\n## Gotchas\n- No legacy redirects (404 expected). Community is placeholder-only; no posting backend in Phase 1."
+    },
+    {
+      "name": "integrate-wave11",
+      "type": "worker",
+      "model": "gpt-5.5-high-fast",
+      "startingRef": "orch/wave11-v2-ia/web-io-ia",
+      "dependsOn": ["web-io-ia", "web-org-ia"],
+      "openPR": true,
+      "scopedGoal": "Produce the single integrated Wave 11 deliverable branch and open ONE draft PR to main. You start from the web-io-ia branch (which already includes the shared-foundation commits as common ancestor). Merge `orch/wave11-v2-ia/web-org-ia` into the current branch. Expected conflicts are minimal because web-io-ia touches apps/web-io/** + data/curated/io-*.json and web-org-ia touches apps/web-org/** + data/curated/org-*.json (disjoint), with packages/shared + packages/content shared as identical common ancestor; if conflicts arise in shared/content or docs, prefer keeping BOTH sites' consumption working (do not drop either site's needs). After merging: run `pnpm install` then `pnpm turbo build` and `pnpm --filter @ai-transformation/backend test` from repo root; fix any integration-only breakage (import drift, type mismatches between the two branches' use of shared exports). Update docs to reflect Wave 11 shipped: docs/CURRENT_STATUS.md and docs/SESSION_HANDOFF.md (note v2 IA shell live on both sites, legacy hub routes removed, Ask modes shipped, Phase 2/Wave 12 = object model + visibility next). Then commit, push exactly your branch, and open a DRAFT PR to main titled 'Wave 11: SITE_DESIGN_v2 Phase 1 IA shell + Ask modes' summarizing both sites' changes and the §15 housekeeping (removed routes, rebrand). Do NOT merge the PR or mark it ready.",
+      "brief": "This is a merge + integration + docs task (planners do not code, so this worker performs the merge). The two site branches are disjoint by directory; the main risk is divergent use of shared-foundation exports — reconcile at the type level so `pnpm turbo build` passes for BOTH web-io and web-org. Read the upstream handoffs (pasted into your prompt) to learn each site's actual branch and any deviations. Keep the merge history with both parents. English docs/code per project-guidelines. After build+test green, update docs/CURRENT_STATUS.md + docs/SESSION_HANDOFF.md, then open the draft PR via the ManagePullRequest flow against main.",
+      "pathsAllowed": ["apps/**", "packages/**", "data/**", "docs/**"],
+      "pathsForbidden": [],
+      "acceptance": [
+        "web-org-ia branch merged into the deliverable branch with both parents in history",
+        "pnpm turbo build passes for web-io and web-org",
+        "pnpm --filter @ai-transformation/backend test passes",
+        "docs/CURRENT_STATUS.md + docs/SESSION_HANDOFF.md updated to reflect Wave 11 shipped",
+        "One DRAFT PR opened to main (not merged, not marked ready) summarizing both sites + §15 housekeeping"
+      ],
+      "verify": "## Setup\n- `pnpm install` on the integrated branch.\n## Automated\n- `pnpm turbo build` (both web apps) and `pnpm --filter @ai-transformation/backend test` must pass.\n## Manual\n- Spot-check both sites' ribbons, /library + /knowledge, /ask modes, and that legacy hub routes 404.\n## Gotchas\n- Merge must preserve both sites' use of shared exports; no legacy redirects."
+    },
+    {
+      "name": "verify-wave11",
+      "type": "verifier",
+      "model": "claude-opus-4-8",
+      "verifies": "integrate-wave11",
+      "scopedGoal": "Verify the integrated Wave 11 branch against the planner acceptance criteria and SITE_DESIGN_v2.md Phase 1. Build both web apps and run the backend test suite. Confirm: (a) io ribbon Home·Library·Insights·Ask and org ribbon Home·Knowledge·Community·Ask with labels stable across auth state; (b) /library (io) and /knowledge (org) list articles and render individual <slug> pages; /insights (io) and /community (org) render placeholders; (c) /ask mode switcher matches the §4 matrix for guest vs member on each site; (d) legacy hub routes are GONE with no redirects (io: /frameworks /playbook /functions /assessment-hub; org: /learn /stories /stories/submit) — confirm the app route dirs are removed and the URLs are not redirected; (e) org outward brand reads 'Community · Knowledge commons'; (f) hamburger holds Agent API + Settings + auth on both. Report execution evidence per criterion; do not pattern-match. If the env blocks a live UI check, run the build + route-existence checks and mark unit-test-verified or verifier-blocked honestly.",
+      "acceptance": [
+        "Verification section includes execution evidence (build/test output + route checks) for every integrate-wave11 acceptance criterion and the planner-level §4 ribbon/mode matrix"
+      ]
+    }
+  ]
+}

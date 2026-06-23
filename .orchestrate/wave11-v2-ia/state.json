@@ -1,0 +1,121 @@
+{
+  "rootSlug": "wave11-v2-ia",
+  "tasks": [
+    {
+      "name": "shared-foundation",
+      "type": "worker",
+      "branch": "orch/wave11-v2-ia/shared-foundation",
+      "startingRef": "main",
+      "dependsOn": [],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": "2026-06-23T21:58:18.921Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-23T21:58:18.921Z",
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null,
+      "attempts": 1
+    },
+    {
+      "name": "web-io-ia",
+      "type": "worker",
+      "branch": "orch/wave11-v2-ia/web-io-ia",
+      "startingRef": "orch/wave11-v2-ia/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "web-org-ia",
+      "type": "worker",
+      "branch": "orch/wave11-v2-ia/web-org-ia",
+      "startingRef": "orch/wave11-v2-ia/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "integrate-wave11",
+      "type": "worker",
+      "branch": "orch/wave11-v2-ia/integrate-wave11",
+      "startingRef": "orch/wave11-v2-ia/web-io-ia",
+      "dependsOn": [
+        "web-io-ia",
+        "web-org-ia"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "verify-wave11",
+      "type": "verifier",
+      "branch": "orch/wave11-v2-ia/verify-wave11",
+      "startingRef": "orch/wave11-v2-ia/integrate-wave11",
+      "dependsOn": [
+        "integrate-wave11"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    }
+  ],
+  "attention": []
+}
