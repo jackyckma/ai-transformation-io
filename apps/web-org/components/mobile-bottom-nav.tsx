@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 
 const TABS = [
   { href: '/', label: 'Home', icon: HomeIcon },
-  { href: '/learn', label: 'Learn', icon: LearnIcon },
-  { href: '/stories/submit', label: 'Share', icon: ShareIcon },
+  { href: '/knowledge', label: 'Knowledge', icon: KnowledgeIcon },
+  { href: '/community', label: 'Community', icon: CommunityIcon },
   { href: '/ask', label: 'Ask', icon: AskIcon },
 ] as const;
 
@@ -18,7 +18,7 @@ function HomeIcon({ active }: { active: boolean }) {
   );
 }
 
-function LearnIcon({ active }: { active: boolean }) {
+function KnowledgeIcon({ active }: { active: boolean }) {
   return (
     <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M5 5.5h14v13H5z" className={active ? 'fill-current/10' : undefined} />
@@ -27,11 +27,12 @@ function LearnIcon({ active }: { active: boolean }) {
   );
 }
 
-function ShareIcon({ active }: { active: boolean }) {
+function CommunityIcon({ active }: { active: boolean }) {
   return (
     <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M12 5v10M8 9l4-4 4 4" className={active ? 'stroke-[var(--accent)]' : undefined} />
-      <path d="M6 19h12" />
+      <circle cx="8" cy="9" r="2.5" className={active ? 'fill-current/10' : undefined} />
+      <circle cx="16" cy="9" r="2.5" className={active ? 'fill-current/10' : undefined} />
+      <path d="M3.5 18c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M12.5 18c.2-2.2 2-3.4 4-3.4 2.2 0 3.5 1.4 3.5 3.4" />
     </svg>
   );
 }

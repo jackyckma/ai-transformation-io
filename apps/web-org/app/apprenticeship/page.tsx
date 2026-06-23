@@ -36,7 +36,7 @@ export default function ApprenticeshipPage() {
 
       <CompanionTopicPrompt
         topic="AI-era apprenticeship"
-        message="How does the apprenticeship program work on Harvest Hub?"
+        message="How does the apprenticeship program work in this community?"
         className="mb-8"
       />
 
@@ -46,8 +46,8 @@ export default function ApprenticeshipPage() {
         <h2 className="font-serif text-lg font-normal tracking-tight">How this fits .org and .io</h2>
         <div className="markdown-body mt-4">
           <p>
-            This apprenticeship lives on <strong>ai-transformation.org</strong> — the Harvest Hub community face of
-            this work — because it is about formation, judgment, and experience shared in the open. It is not a
+            This apprenticeship lives on <strong>ai-transformation.org</strong> — the community knowledge commons face
+            of this work — because it is about formation, judgment, and experience shared in the open. It is not a
             corporate product or a credential funnel.
           </p>
           <p>
@@ -108,7 +108,7 @@ export default function ApprenticeshipPage() {
           Design rationale →
         </Link>
         <Link href="/" className="hover:text-[var(--foreground)]">
-          ← Back to Harvest Hub
+          ← Back to home
         </Link>
       </nav>
     </PageShell>

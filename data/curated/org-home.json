@@ -1,25 +1,25 @@
 {
   "site": "org",
-  "updatedAt": "2026-06-22",
+  "updatedAt": "2026-06-23",
   "readerEntry": {
-    "headline": "What brings you to Harvest Hub?",
-    "description": "Share when you have something real — or read first if you're still finding your footing."
+    "headline": "What brings you to the community?",
+    "description": "Read the knowledge commons, join the conversation, or contribute when you have something real."
   },
   "readerPaths": [
     {
-      "id": "share",
+      "id": "contribute",
       "layout": "compact",
       "image": "/curation/path-share.jpg",
       "label": "I have an experience to share",
-      "description": "Stories, weekly prompts, or a direct question to the community.",
+      "description": "Draft a contribution, reply to a discussion, or ask the companion.",
       "externalLinks": [
-        { "label": "Share a story", "href": "/stories/submit" },
+        { "label": "Draft a contribution", "href": "/ask?mode=submit" },
         { "label": "Weekly prompt", "href": "/prompts" },
         { "label": "Ask anything", "href": "/ask" }
       ]
     },
     {
-      "id": "learn",
+      "id": "knowledge",
       "layout": "compact",
       "image": "/curation/harvest-stories.jpg",
       "label": "I want to learn the basics",
@@ -29,7 +29,7 @@
         "transformation-roadmap",
         "common-pitfalls"
       ],
-      "useOrgLearnPaths": true
+      "useOrgKnowledgePaths": true
     },
     {
       "id": "apprenticeship",
@@ -45,20 +45,20 @@
       "slug": "ai-patterns-copilots-agents-automation",
       "layout": "feature",
       "image": "/curation/path-share.jpg",
-      "editorNote": "Patterns for copilots, agents, and automation — useful context before you share what worked.",
-      "useOrgLearnPaths": true
+      "editorNote": "Patterns for copilots, agents, and automation — useful context before you contribute what worked.",
+      "useOrgKnowledgePaths": true
     }
   ],
   "topics": [
     {
-      "id": "harvest-stories",
+      "id": "community-highlights",
       "layout": "topic-row",
       "image": "/curation/harvest-stories.jpg",
-      "title": "Field experiences",
-      "summary": "Wins, failures, and surprises from people doing the work.",
-      "externalHref": "/stories",
+      "title": "Community highlights",
+      "summary": "Discussions, help requests, and events from people doing the work.",
+      "externalHref": "/community",
       "relatedSlugs": ["common-pitfalls"],
-      "useOrgLearnPaths": true
+      "useOrgKnowledgePaths": true
     },
     {
       "id": "apprenticeship",
@@ -78,25 +78,25 @@
   ],
   "homeTiles": [
     {
-      "id": "share",
-      "title": "Share a story",
-      "summary": "Submit a moderated field experience — wins, failures, or surprises from doing AI transformation work, not vendor slides.",
-      "href": "/stories/submit",
-      "image": "/curation/path-share.jpg"
-    },
-    {
-      "id": "learn",
-      "title": "Learn guides",
-      "summary": "Intro articles on transformation basics, patterns, and pitfalls — read before you contribute if you are still finding your footing.",
-      "href": "/learn",
+      "id": "knowledge",
+      "title": "Knowledge commons",
+      "summary": "Durable, contributed knowledge — frameworks, patterns, and references. Read before you contribute if you are still finding your footing.",
+      "href": "/knowledge",
       "image": "/curation/path-governance.jpg"
     },
     {
-      "id": "stories",
-      "title": "Read stories",
-      "summary": "Browse approved community stories and see what practitioners are sharing this month.",
-      "href": "/stories",
+      "id": "community",
+      "title": "Community highlights",
+      "summary": "Discussions, help requests, events, and announcements from practitioners navigating AI transformation.",
+      "href": "/community",
       "image": "/curation/harvest-stories.jpg"
+    },
+    {
+      "id": "contribute",
+      "title": "Draft a contribution",
+      "summary": "Describe a field experience — wins, failures, or surprises — and shape it into a draft with the companion.",
+      "href": "/ask?mode=submit",
+      "image": "/curation/path-share.jpg"
     },
     {
       "id": "apprenticeship",
@@ -115,7 +115,7 @@
     {
       "id": "agent-entry",
       "title": "README for agent visitors",
-      "summary": "Holistic text entry for agents — Harvest Hub intro, API version, and how to read or submit on behalf of a human.",
+      "summary": "Holistic text entry for agents — community intro, API version, and how to read or submit on behalf of a human.",
       "href": "/api/agent",
       "image": "/curation/path-explore.jpg"
     }

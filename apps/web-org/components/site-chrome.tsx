@@ -1,18 +1,9 @@
 import Link from 'next/link';
 
-import { DesktopNavLinks } from '@/components/hub-index-sections';
+import { DesktopNavLinks } from '@/components/desktop-nav-links';
 import { MobileNavDrawer } from '@/components/mobile-nav-drawer';
-import { AuthNav } from '@/components/auth-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-const DESKTOP_NAV = [
-  { href: '/stories/submit', label: 'Share' },
-  { href: '/stories', label: 'Stories' },
-  { href: '/learn', label: 'Learn' },
-  { href: '/apprenticeship', label: 'Apprenticeship' },
-  { href: '/prompts', label: 'Prompts' },
-  { href: '/for-agents', label: 'For agents' },
-] as const;
+import { ORG_RIBBON } from '@/lib/nav';
 
 export function SiteHeader() {
   return (
@@ -28,20 +19,18 @@ export function SiteHeader() {
           </Link>
 
           <div className="relative z-40 flex shrink-0 items-center gap-2 sm:gap-3">
-            <div className="hidden items-center gap-2 sm:gap-3 lg:flex">
-              <AuthNav />
+            <nav
+              aria-label="Primary"
+              className="hidden flex-wrap items-center gap-x-5 text-sm lg:flex"
+            >
+              <DesktopNavLinks links={ORG_RIBBON} />
+            </nav>
+            <div className="hidden items-center lg:flex">
               <ThemeToggle />
             </div>
             <MobileNavDrawer />
           </div>
         </div>
-
-        <nav
-          aria-label="Primary"
-          className="mt-3 hidden flex-wrap items-center gap-x-4 gap-y-2 text-sm lg:mt-4 lg:flex"
-        >
-          <DesktopNavLinks links={DESKTOP_NAV} />
-        </nav>
       </div>
     </header>
   );
@@ -51,7 +40,7 @@ export function SiteFooter() {
   return (
     <footer className="hidden shrink-0 border-t border-[var(--border)] py-6 text-center text-sm font-normal text-[var(--secondary)] lg:block">
       <p>
-        Harvest Hub — share experiences, not hype.{' '}
+        Community · Knowledge commons — share experiences, not hype.{' '}
         <a href="/api/agent" className="underline hover:text-[var(--foreground)]">
           Agent entry
         </a>

@@ -4,7 +4,7 @@ import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
   title: 'Moderation',
-  description: 'Review and curate community stories for Harvest Hub.',
+  description: 'Review and curate community contributions for the knowledge commons.',
   robots: { index: false, follow: false },
 };
 

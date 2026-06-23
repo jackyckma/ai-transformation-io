@@ -171,7 +171,7 @@ export function PromptReply() {
   return (
     <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
       <header className="border-b border-[var(--border)] pb-6">
-        <p className="text-xs font-light tracking-wide text-[var(--muted)]">Harvest Hub</p>
+        <p className="text-xs font-light tracking-wide text-[var(--muted)]">Community</p>
         <h1 className="mt-3 font-serif text-3xl font-normal tracking-tight md:text-4xl">
           Weekly prompt
         </h1>

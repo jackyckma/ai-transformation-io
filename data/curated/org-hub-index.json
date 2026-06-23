@@ -1,17 +1,17 @@
 {
-  "learn": {
-    "title": "Learn",
-    "description": "Foundational guides from our knowledge base — read before you contribute if you are still finding your footing.",
+  "knowledge": {
+    "title": "Knowledge commons",
+    "description": "Durable, contributed knowledge for the community — start with the foundations, then go deeper by topic.",
     "sections": [
       {
-        "id": "basics",
-        "title": "Transformation basics",
-        "orgLearnSlugs": ["what-is-ai-transformation", "transformation-roadmap", "common-pitfalls"]
+        "id": "foundations",
+        "title": "Foundations",
+        "orgKnowledgeSlugs": ["what-is-ai-transformation", "transformation-roadmap", "common-pitfalls"]
       },
       {
         "id": "patterns",
         "title": "Patterns & FAQ",
-        "orgLearnSlugs": ["ai-patterns-copilots-agents-automation", "faq"]
+        "orgKnowledgeSlugs": ["ai-patterns-copilots-agents-automation", "faq"]
       }
     ]
   }
