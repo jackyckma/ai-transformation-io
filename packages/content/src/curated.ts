@@ -22,6 +22,7 @@ export type CuratedReaderPath = {
   image?: string;
   articleSlugs?: string[];
   externalLinks?: CuratedExternalLink[];
+  useOrgKnowledgePaths?: boolean;
   useOrgLearnPaths?: boolean;
 };
 
@@ -30,6 +31,7 @@ export type CuratedSpotlight = {
   editorNote: string;
   layout?: CuratedLayout;
   image?: string;
+  useOrgKnowledgePaths?: boolean;
   useOrgLearnPaths?: boolean;
 };
 
@@ -42,6 +44,7 @@ export type CuratedTopic = {
   anchorSlug?: string;
   relatedSlugs?: string[];
   externalHref?: string;
+  useOrgKnowledgePaths?: boolean;
   useOrgLearnPaths?: boolean;
 };
 
@@ -58,6 +61,7 @@ export type CuratedHomeTile = {
   href?: string;
   slug?: string;
   image?: string;
+  useOrgKnowledgePaths?: boolean;
   useOrgLearnPaths?: boolean;
   external?: boolean;
 };
