@@ -97,7 +97,17 @@ export type ContentListEntry = {
   description: string;
   pillar: string;
   pathname: string;
+  api_url: string;
+  human_url: string;
 };
+
+function contentUrls(site: 'io' | 'org', slug: string, pathname: string): Pick<ContentListEntry, 'api_url' | 'human_url'> {
+  const origin = site === 'org' ? 'https://ai-transformation.org' : 'https://ai-transformation.io';
+  return {
+    api_url: `${origin}/api/v1/content/${slug}?site=${site}`,
+    human_url: `${origin}${pathname}`,
+  };
+}
 
 export type ContentDocument = ContentListEntry & {
   markdown: string;
@@ -118,6 +128,7 @@ export function listContent(site: 'io' | 'org'): ContentListEntry[] {
         description: entry.description ?? extractDescription(markdown, title),
         pillar: entry.pillar,
         pathname,
+        ...contentUrls(site, slug, pathname),
       },
     ];
   });
@@ -140,6 +151,7 @@ export function getContent(slug: string, site: 'io' | 'org'): ContentDocument | 
     description: entry.description ?? extractDescription(markdown, title),
     pillar: entry.pillar,
     pathname,
+    ...contentUrls(site, slug, pathname),
     markdown,
   };
 }

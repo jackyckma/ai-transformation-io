@@ -94,6 +94,22 @@ describe('Wave 7 agent protocol', () => {
     expect(payload.errors.shape.ok).toBe(false);
   });
 
+  it('resolves org site from host header', async () => {
+    const app = await loadBackend();
+    const response = await app.request('http://localhost/api/v1/capabilities', {
+      headers: { host: 'ai-transformation.org' },
+    });
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as {
+      site: string;
+      documentation: { human: string };
+      write_payloads: { inquiry: { scope: string } };
+    };
+    expect(payload.site).toBe('ai-transformation.org');
+    expect(payload.documentation.human).toBe('https://ai-transformation.org/for-agents');
+    expect(payload.write_payloads.inquiry.scope).toBe('write:inquiry');
+  });
+
   it('resolves org site from x-forwarded-host when host is internal', async () => {
     const app = await loadBackend();
     const response = await app.request('http://localhost/api/v1/capabilities', {
@@ -112,9 +128,18 @@ describe('Wave 7 agent protocol', () => {
     const app = await loadBackend();
     const listResponse = await app.request('http://localhost/api/v1/content?site=io');
     expect(listResponse.status).toBe(200);
-    const listPayload = (await listResponse.json()) as { ok: boolean; count: number };
+    const listPayload = (await listResponse.json()) as {
+      ok: boolean;
+      count: number;
+      origin: string;
+      articles: Array<{ slug: string; api_url: string; human_url: string }>;
+    };
     expect(listPayload.ok).toBe(true);
     expect(listPayload.count).toBeGreaterThan(0);
+    expect(listPayload.origin).toBe('https://ai-transformation.io');
+    expect(listPayload.articles[0]?.api_url).toContain('/api/v1/content/');
+    expect(listPayload.articles[0]?.api_url).toContain('site=io');
+    expect(listPayload.articles[0]?.human_url).toContain('https://ai-transformation.io');
 
     const readResponse = await app.request(
       'http://localhost/api/v1/content/what-is-ai-transformation?site=io',
@@ -124,10 +149,27 @@ describe('Wave 7 agent protocol', () => {
     expect(readResponse.headers.get('X-RateLimit-Limit')).toBe('3');
     const readPayload = (await readResponse.json()) as {
       ok: boolean;
-      article: { slug: string; markdown: string };
+      article: { slug: string; markdown: string; api_url: string };
     };
     expect(readPayload.article.slug).toBe('what-is-ai-transformation');
+    expect(readPayload.article.api_url).toContain('what-is-ai-transformation');
     expect(readPayload.article.markdown.length).toBeGreaterThan(100);
+  });
+
+  it('lists org content index with org api_url values', async () => {
+    const app = await loadBackend();
+    const listResponse = await app.request('http://localhost/api/v1/content?site=org', {
+      headers: { host: 'ai-transformation.org' },
+    });
+    expect(listResponse.status).toBe(200);
+    const listPayload = (await listResponse.json()) as {
+      site_domain: string;
+      articles: Array<{ api_url: string; human_url: string }>;
+    };
+    expect(listPayload.site_domain).toBe('ai-transformation.org');
+    expect(listPayload.articles[0]?.api_url).toContain('ai-transformation.org');
+    expect(listPayload.articles[0]?.api_url).toContain('site=org');
+    expect(listPayload.articles[0]?.human_url).toContain('/learn/');
   });
 
   it('issues write token after authorize confirm', async () => {

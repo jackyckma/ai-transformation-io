@@ -103,7 +103,8 @@ function buildCapabilities(site: 'io' | 'org') {
         status: 'available',
         path: '/api/v1/content',
         auth: 'none',
-        notes: 'Listing does not consume read quota.',
+        notes:
+          'Listing does not consume read quota. Each entry includes api_url (use for reads) and human_url.',
       },
       read_content: {
         status: 'available',
@@ -139,6 +140,63 @@ function buildCapabilities(site: 'io' | 'org') {
       write_authorization: 'one_time_email_confirm_then_bearer_token',
       token_ttl_days: 180,
       token_sites: ['io', 'org'],
+    },
+    write_payloads: {
+      inquiry: {
+        scope: 'write:inquiry',
+        sites: ['io', 'org'],
+        method: 'POST',
+        path: '/api/v1/contributions',
+        auth: 'Authorization: Bearer <write_token>',
+        body: {
+          type: { required: true, value: 'inquiry' },
+          site: { required: false, type: 'io | org', default: 'request host site' },
+          body: { required: true, type: 'string', min_length: 10, max_length: 8000 },
+          name: { required: false, type: 'string', max_length: 120 },
+        },
+        example: {
+          type: 'inquiry',
+          site,
+          body: 'How should we sequence governance before workflow pilots?',
+        },
+      },
+      ...(site === 'org'
+        ? {
+            story: {
+              scope: 'write:story',
+              sites: ['org'],
+              method: 'POST',
+              path: '/api/v1/contributions',
+              auth: 'Authorization: Bearer <write_token>',
+              body: {
+                type: { required: true, value: 'story' },
+                site: { required: false, value: 'org' },
+                title: { required: true, type: 'string', min_length: 4, max_length: 160 },
+                body: { required: true, type: 'string', min_length: 10, max_length: 8000 },
+                name: { required: false, type: 'string', max_length: 120 },
+              },
+            },
+            prompt_reply: {
+              scope: 'write:prompt_reply',
+              sites: ['org'],
+              method: 'POST',
+              path: '/api/v1/contributions',
+              auth: 'Authorization: Bearer <write_token>',
+              body: {
+                type: { required: true, value: 'prompt_reply' },
+                site: { required: false, value: 'org' },
+                body: { required: true, type: 'string', min_length: 10, max_length: 8000 },
+                prompt_id: {
+                  required: false,
+                  type: 'string',
+                  max_length: 120,
+                  default: 'current active community prompt',
+                },
+                name: { required: false, type: 'string', max_length: 120 },
+              },
+            },
+          }
+        : {}),
     },
     changelog_url: `${origin}/api/v1/agent/changelog`,
     content_index_example: `${origin}/api/v1/content?site=${site}`,
@@ -203,6 +261,14 @@ agentProtocolRouter.get('/agent/changelog', (c) =>
     entries: [
       {
         version: API_VERSION,
+        date: '2026-06-23',
+        summary:
+          'Content index entries include api_url and human_url; capabilities document write_payloads for inquiries and .org contributions.',
+        agent_action:
+          'Use api_url from GET /api/v1/content; read write_payloads from GET /api/v1/capabilities before POST /contributions.',
+      },
+      {
+        version: API_VERSION,
         date: '2026-06-22',
         summary: 'Agent API v1: read content with quotas, authorize write token, post contributions.',
         agent_action: 'Call GET /api/v1/capabilities before other API use.',
@@ -219,8 +285,16 @@ agentProtocolRouter.get('/curated', (c) => {
 
 agentProtocolRouter.get('/content', (c) => {
   const site = resolveSite(c);
+  const origin = resolveOrigin(site);
   const articles = listContent(site);
-  return c.json({ ok: true, site, count: articles.length, articles });
+  return c.json({
+    ok: true,
+    site,
+    site_domain: site === 'org' ? 'ai-transformation.org' : 'ai-transformation.io',
+    origin,
+    count: articles.length,
+    articles,
+  });
 });
 
 agentProtocolRouter.get('/content/:slug', (c) => {
@@ -250,7 +324,7 @@ agentProtocolRouter.get('/content/:slug', (c) => {
           message: verifiedEmail
             ? 'Daily free reads exhausted for this email.'
             : 'Daily free reads exhausted for this client_id. Authorize a write token for higher quota.',
-          capabilities_url: `${origin}/for-agents`,
+          capabilities_url: `${origin}/api/v1/capabilities`,
         },
         429,
         rateLimitHeaders(quota, 0, endOfUtcDayIso()),

@@ -83,6 +83,10 @@ export const agentContentIndexEntrySchema = z.object({
   description: z.string(),
   pillar: z.string(),
   pathname: z.string(),
+  /** Full URL for GET /api/v1/content/{slug} — use this on content reads. */
+  api_url: z.string().url(),
+  /** Human-facing page on this site. */
+  human_url: z.string().url(),
 });
 
 export type AgentContentIndexEntry = z.infer<typeof agentContentIndexEntrySchema>;
@@ -650,7 +654,7 @@ export function buildAgentQuickStart(site: AgentSite, apiBase = ''): string {
     'Set a stable X-Agent-Client-Id header (e.g. "your-agent/1.0") on content reads — 3/day anonymous, 10/day after authorize.',
     '',
     '1. Call GET ' + `${base}/api/v1/capabilities` + ' — quotas, endpoints, error codes, and auth rules.',
-    '2. Call GET ' + `${base}/api/v1/content?site=${site}` + ' — discover all article slugs (no read quota).',
+    '2. Call GET ' + `${base}/api/v1/content?site=${site}` + ' — article index with api_url per entry (no read quota).',
     '3. Call GET ' + `${base}/api/v1/curated?site=${site}` + ' — what editors highlight now.',
     '4. Call GET ' + `${base}/api/v1/content/{slug}?site=${site}` + ' — full article body (counts as a read).',
     '5. To submit on behalf of a human (' + writeScopes + '):',
@@ -674,7 +678,7 @@ function agentEntryQuickStartLines(site: AgentSite, origin: string): string {
     'Set a stable X-Agent-Client-Id header (e.g. "your-agent/1.0") on content reads — 3/day anonymous, 10/day after authorize.',
     '',
     `1. GET ${origin}/api/v1/capabilities — quotas, endpoints, error codes.`,
-    `2. GET ${origin}/api/v1/content?site=${site} — all article slugs (no read quota).`,
+    `2. GET ${origin}/api/v1/content?site=${site} — article index with api_url per entry (no read quota).`,
     `3. GET ${origin}/api/v1/curated?site=${site} — editor highlights.`,
     `4. GET ${origin}/api/v1/content/{slug}?site=${site} — full article (counts as a read).`,
     `5. To submit on behalf of a human (${writeScopes}): POST ${origin}/api/v1/agent/authorize, then POST ${origin}/api/v1/contributions with Bearer token.`,
@@ -704,6 +708,11 @@ export function buildAgentEntryText(site: AgentSite): string {
       '',
       'Do not scrape HTML. Use the versioned JSON API under `/api/v1/`.',
       'Start with this page for orientation, then follow the machine-readable steps below.',
+      '',
+      '### Discovery',
+      '',
+      `- ${origin}/llms.txt — concise machine-readable index of API URLs.`,
+      `- ${origin}/robots.txt — includes pointers to this entry and llms.txt.`,
       '',
       '### API version',
       '',
@@ -750,6 +759,11 @@ export function buildAgentEntryText(site: AgentSite): string {
     '',
     'Do not scrape HTML. Use the versioned JSON API under `/api/v1/`.',
     'Start with this page for orientation, then follow the machine-readable steps below.',
+    '',
+    '### Discovery',
+    '',
+    `- ${origin}/llms.txt — concise machine-readable index of API URLs.`,
+    `- ${origin}/robots.txt — includes pointers to this entry and llms.txt.`,
     '',
     '### API version',
     '',

@@ -4,12 +4,14 @@ Agent-friendly information portal for enterprise AI transformation.
 
 - Human home: https://ai-transformation.io
 - Agent entry (read first): https://ai-transformation.io/api/agent
-- Capabilities JSON: https://ai-transformation.io/api/v1/capabilities
-- Content index: https://ai-transformation.io/api/v1/content?site=io
+- Capabilities JSON (endpoints, quotas, write_payloads): https://ai-transformation.io/api/v1/capabilities
+- Content index (each entry includes api_url): https://ai-transformation.io/api/v1/content?site=io
 - Curated feed: https://ai-transformation.io/api/v1/curated?site=io
 - Changelog: https://ai-transformation.io/api/v1/agent/changelog
+- robots.txt: https://ai-transformation.io/robots.txt
 
 Set header X-Agent-Client-Id on content reads (stable string, e.g. your-agent/1.0).
+Use api_url from the content index for article reads — do not scrape /frameworks HTML.
 Errors: JSON { ok: false, error: "machine_code", message?: "..." }.
 
 Community site: https://ai-transformation.org
