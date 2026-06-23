@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { ContentPageMeta } from '@ai-transformation/content';
 
-import { libraryAskActions, OpenInAsk } from '@/components/open-in-ask';
+import { OpenInAsk } from '@/components/open-in-ask';
+import { libraryAskActions } from '@/lib/ask-actions';
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useRecentlyViewed } from '@/lib/recently-viewed';
 import type { LibraryCollection } from '@/lib/library-index';

@@ -4,8 +4,9 @@ import { CompanionTopicPrompt } from '@ai-transformation/chat-ui';
 import { ArticleViewTracker } from '@/components/article-view-tracker';
 import { CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
 import { MarkdownBody } from '@/components/markdown-body';
-import { libraryAskActions, OpenInAsk } from '@/components/open-in-ask';
+import { OpenInAsk } from '@/components/open-in-ask';
 import { PageShell } from '@/components/page-shell';
+import { libraryAskActions } from '@/lib/ask-actions';
 
 type ContentPageLayoutProps = {
   doc: ContentDocument;

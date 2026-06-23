@@ -1,4 +1,5 @@
-import { insightAskActions, OpenInAsk } from '@/components/open-in-ask';
+import { OpenInAsk } from '@/components/open-in-ask';
+import { insightAskActions } from '@/lib/ask-actions';
 import { INSIGHT_KIND_LABEL, IO_INSIGHTS } from '@/lib/insights-data';
 
 export function InsightsCards() {

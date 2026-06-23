@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import type { ContentPageMeta } from '@ai-transformation/content';
 
-import { libraryAskActions, OpenInAsk } from '@/components/open-in-ask';
+import { OpenInAsk } from '@/components/open-in-ask';
 import { OnboardingFields } from '@/components/onboarding-fields';
+import { libraryAskActions } from '@/lib/ask-actions';
 import { useOnboardingProfile } from '@/lib/onboarding-profile';
 import { rankArticles } from '@/lib/recommendations';
 import { useRecentlyViewed } from '@/lib/recently-viewed';
