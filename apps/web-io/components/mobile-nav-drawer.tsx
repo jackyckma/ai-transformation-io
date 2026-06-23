@@ -6,17 +6,25 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { AuthNav } from '@/components/auth-nav';
-import { ThemeToggle } from '@/components/theme-toggle';
 
-const DRAWER_LINKS = [
-  { href: '/frameworks', label: 'Frameworks' },
-  { href: '/playbook', label: 'Playbook' },
-  { href: '/functions', label: 'Roles' },
-  { href: '/assessment', label: 'Assessment' },
-  { href: '/for-agents', label: 'For agents' },
-  { href: '/progress', label: 'Your progress' },
+type MenuLink = {
+  href: string;
+  label: string;
+  description?: string;
+  external?: boolean;
+};
+
+const MENU_LINKS: MenuLink[] = [
+  { href: '/settings', label: 'Settings', description: 'Onboarding profile and preferences' },
+  { href: '/progress', label: 'Your progress', description: 'Saved assessment when signed in' },
+  {
+    href: '/for-agents',
+    label: 'Agentic access API',
+    description: 'Read and contribute via the agent API',
+  },
+  { href: '/api/agent', label: 'Agent entry', external: true },
   { href: 'https://ai-transformation.org', label: 'Community on .org', external: true },
-] as const;
+];
 
 export function MobileNavDrawer() {
   const [open, setOpen] = useState(false);
@@ -57,7 +65,7 @@ export function MobileNavDrawer() {
               <button
                 type="button"
                 aria-label="Close menu overlay"
-                className="fixed inset-0 z-[100] bg-black/25 lg:hidden"
+                className="fixed inset-0 z-[100] bg-black/25"
                 onClick={() => setOpen(false)}
               />
             ) : null}
@@ -65,34 +73,53 @@ export function MobileNavDrawer() {
             <aside
               id="mobile-nav-drawer"
               aria-hidden={!open}
-              className={`fixed inset-y-0 right-0 z-[110] w-[min(100vw,18rem)] border-l border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out lg:hidden ${
+              className={`fixed inset-y-0 right-0 z-[110] w-[min(100vw,20rem)] border-l border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out ${
                 open ? 'translate-x-0' : 'pointer-events-none translate-x-full'
               }`}
             >
               <div className="flex h-full flex-col overflow-y-auto p-5 pt-[max(1.25rem,env(safe-area-inset-top))]">
-                <p className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]">Menu</p>
-                <nav aria-label="Mobile menu" className="mt-4 flex flex-col gap-3 text-sm font-normal">
-                  {DRAWER_LINKS.map((item) =>
-                    'external' in item && item.external ? (
+                <p className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]">
+                  Account
+                </p>
+                <div className="mt-4">
+                  <AuthNav />
+                </div>
+
+                <p className="mt-8 text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]">
+                  Menu
+                </p>
+                <nav aria-label="Menu" className="mt-4 flex flex-col gap-4 text-sm font-normal">
+                  {MENU_LINKS.map((item) =>
+                    item.external ? (
                       <a
                         key={item.href}
                         href={item.href}
-                        className="text-[var(--foreground)]"
+                        className="group"
                         rel="noopener noreferrer"
                       >
-                        {item.label}
+                        <span className="text-[var(--foreground)] group-hover:text-[var(--accent)]">
+                          {item.label}
+                        </span>
+                        {item.description ? (
+                          <span className="mt-0.5 block text-xs font-light text-[var(--muted)]">
+                            {item.description}
+                          </span>
+                        ) : null}
                       </a>
                     ) : (
-                      <Link key={item.href} href={item.href} className="text-[var(--foreground)]">
-                        {item.label}
+                      <Link key={item.href} href={item.href} className="group">
+                        <span className="text-[var(--foreground)] group-hover:text-[var(--accent)]">
+                          {item.label}
+                        </span>
+                        {item.description ? (
+                          <span className="mt-0.5 block text-xs font-light text-[var(--muted)]">
+                            {item.description}
+                          </span>
+                        ) : null}
                       </Link>
                     ),
                   )}
                 </nav>
-                <div className="mt-8 flex flex-col gap-3 border-t border-[var(--border)] pt-6">
-                  <AuthNav />
-                  <ThemeToggle />
-                </div>
               </div>
             </aside>
           </>,
@@ -108,7 +135,7 @@ export function MobileNavDrawer() {
         aria-controls="mobile-nav-drawer"
         aria-label={open ? 'Close menu' : 'Open menu'}
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--accent)]/35 bg-[var(--card)] text-[var(--foreground)] shadow-sm lg:hidden"
+        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--accent)]/35 bg-[var(--card)] text-[var(--foreground)] shadow-sm"
       >
         <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           {open ? (

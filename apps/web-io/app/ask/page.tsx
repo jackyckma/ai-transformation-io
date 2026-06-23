@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { AskChat } from '@/components/ask-chat';
+import { AskWorkspace } from '@/components/ask-workspace';
 import { InquiryForm } from '@/components/inquiry-form';
 import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
   title: 'Ask',
-  description: 'Ask the companion for grounded answers from frameworks and playbook content.',
+  description: 'Ask the companion for grounded answers, or capture private notes when signed in.',
 };
 
 export default function AskPage() {
@@ -16,12 +16,12 @@ export default function AskPage() {
         <p className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]">Companion</p>
         <h1 className="font-serif mt-2 text-2xl font-normal tracking-tight md:text-[1.75rem]">Ask</h1>
         <p className="mt-3 max-w-2xl text-sm font-normal leading-relaxed text-[var(--muted)]">
-          Grounded answers from frameworks and playbook — no sign-in required.
+          Grounded answers from the library and insights. Sign in to capture private notes.
         </p>
       </header>
 
       <Suspense fallback={<p className="text-sm text-[var(--muted)]">Loading companion…</p>}>
-        <AskChat />
+        <AskWorkspace />
       </Suspense>
 
       <section className="mt-10 border-t border-[var(--border)] pt-8">

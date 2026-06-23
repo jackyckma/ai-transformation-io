@@ -45,7 +45,7 @@ export default function ApprenticeshipRationalePage() {
           ← Back to apprenticeship overview
         </Link>
         <Link href="/" className="hover:text-[var(--foreground)]">
-          ← Harvest Hub home
+          ← Community home
         </Link>
       </nav>
     </PageShell>

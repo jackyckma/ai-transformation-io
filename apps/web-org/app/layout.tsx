@@ -19,26 +19,36 @@ const lora = Lora({
   weight: ['400', '500'],
 });
 
+const SITE_DESCRIPTION =
+  'A community knowledge commons for AI transformation — contributed knowledge and community highlights (formerly Harvest Hub).';
+
 export const metadata: Metadata = {
   title: {
-    default: 'AI Transformation · Harvest Hub',
+    default: 'AI Transformation · Community · Knowledge commons',
     template: '%s · AI Transformation',
   },
-  description: 'Community space to share AI transformation experiences — stories, prompts, and curated learning.',
+  description: SITE_DESCRIPTION,
   metadataBase: new URL('https://ai-transformation.org'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: '/',
     siteName: 'AI Transformation',
-    title: 'AI Transformation · Harvest Hub',
-    description: 'Community space to share AI transformation experiences — stories, prompts, and curated learning.',
-    images: [{ url: '/curation/cornerstone.jpg', width: 1200, height: 630, alt: 'AI Transformation Harvest Hub' }],
+    title: 'AI Transformation · Community · Knowledge commons',
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: '/curation/cornerstone.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'AI Transformation Community · Knowledge commons',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Transformation · Harvest Hub',
-    description: 'Community space to share AI transformation experiences — stories, prompts, and curated learning.',
+    title: 'AI Transformation · Community · Knowledge commons',
+    description: SITE_DESCRIPTION,
     images: ['/curation/cornerstone.jpg'],
   },
 };

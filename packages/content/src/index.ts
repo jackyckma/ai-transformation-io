@@ -29,67 +29,67 @@ export const CONTENT_REGISTRY: Record<
   'what-is-ai-transformation': {
     file: 'what-is-ai-transformation.md',
     pillar: 'framework',
-    pathname: '/frameworks/what-is-ai-transformation',
+    pathname: '/library/what-is-ai-transformation',
     description: 'Beyond deployment — operating model change for enterprise AI.',
   },
   'ai-transformation-vs-digital-transformation': {
     file: 'ai-transformation-vs-digital-transformation.md',
     pillar: 'framework',
-    pathname: '/frameworks/vs-digital-transformation',
+    pathname: '/library/vs-digital-transformation',
     description: 'How AI transformation differs from digitizing existing processes.',
   },
   'transformation-roadmap': {
     file: 'transformation-roadmap.md',
     pillar: 'framework',
-    pathname: '/frameworks/roadmap',
+    pathname: '/library/roadmap',
     description: 'Seven stages from business alignment to governed scaling.',
   },
   'governance-and-operating-model': {
     file: 'governance-and-operating-model.md',
     pillar: 'framework',
-    pathname: '/frameworks/governance',
+    pathname: '/library/governance',
     description: 'Autonomy boundaries, accountability, and operating model design.',
   },
   'measuring-ai-value': {
     file: 'measuring-ai-value.md',
     pillar: 'framework',
-    pathname: '/frameworks/measuring-value',
+    pathname: '/library/measuring-value',
     description: 'ROI, Return on Autonomy, and board-ready measurement.',
   },
   'use-cases-by-industry': {
     file: 'use-cases-by-industry.md',
     pillar: 'resource',
-    pathname: '/playbook/use-cases',
+    pathname: '/library/use-cases',
     description: 'Industry and function examples to ground your roadmap.',
   },
   'ai-patterns-copilots-agents-automation': {
     file: 'ai-patterns-copilots-agents-automation.md',
     pillar: 'resource',
-    pathname: '/playbook/patterns',
+    pathname: '/library/patterns',
     description: 'Copilot, RAG, agent, and automation patterns — when to use each.',
   },
   'common-pitfalls': {
     file: 'common-pitfalls.md',
     pillar: 'resource',
-    pathname: '/playbook/common-pitfalls',
+    pathname: '/library/common-pitfalls',
     description: 'Why AI transformation stalls — and how to avoid pilot purgatory.',
   },
   glossary: {
     file: 'glossary.md',
     pillar: 'resource',
-    pathname: '/playbook/glossary',
+    pathname: '/library/glossary',
     description: 'Definitions for autonomy, RoA, workflow redesign, and more.',
   },
   faq: {
     file: 'faq.md',
     pillar: 'resource',
-    pathname: '/playbook/faq',
+    pathname: '/library/faq',
     description: 'Answers to the questions leaders ask first.',
   },
 };
 
-/** Curated intro articles for .org /learn (SEO + community visitors). */
-export const ORG_LEARN_SLUGS = [
+/** Curated intro articles for .org /knowledge (SEO + community visitors). */
+export const ORG_KNOWLEDGE_SLUGS = [
   'what-is-ai-transformation',
   'transformation-roadmap',
   'common-pitfalls',
@@ -112,11 +112,11 @@ export function getPagesByPillar(pillar: ContentPageMeta['pillar']): ContentPage
   return getAllPages().filter((page) => page.pillar === pillar);
 }
 
-export function getOrgLearnPages(): ContentPageMeta[] {
-  return ORG_LEARN_SLUGS.flatMap((slug) => {
+export function getOrgKnowledgePages(): ContentPageMeta[] {
+  return ORG_KNOWLEDGE_SLUGS.flatMap((slug) => {
     const page = getAllPages().find((p) => p.slug === slug);
     if (!page) return [];
-    return [{ ...page, pathname: `/learn/${slug}` }];
+    return [{ ...page, pathname: `/knowledge/${slug}` }];
   });
 }
 
@@ -184,10 +184,10 @@ export type ResolvedCuratedArticle = {
 
 function resolveCuratedSlug(
   slug: string,
-  useOrgLearnPaths: boolean | undefined,
+  useOrgKnowledgePaths: boolean | undefined,
 ): ResolvedCuratedArticle | null {
-  if (useOrgLearnPaths) {
-    const page = getOrgLearnPages().find((entry) => entry.slug === slug);
+  if (useOrgKnowledgePaths) {
+    const page = getOrgKnowledgePages().find((entry) => entry.slug === slug);
     if (!page) return null;
     return {
       slug: page.slug,
@@ -209,21 +209,31 @@ function resolveCuratedSlug(
 
 export function resolveCuratedArticles(
   slugs: string[],
-  useOrgLearnPaths?: boolean,
+  useOrgKnowledgePaths?: boolean,
 ): ResolvedCuratedArticle[] {
   return slugs.flatMap((slug) => {
-    const resolved = resolveCuratedSlug(slug, useOrgLearnPaths);
+    const resolved = resolveCuratedSlug(slug, useOrgKnowledgePaths);
     return resolved ? [resolved] : [];
   });
+}
+
+type OrgKnowledgePathFlag = {
+  useOrgKnowledgePaths?: boolean;
+  useOrgLearnPaths?: boolean;
+};
+
+function shouldUseOrgKnowledgePaths(value: OrgKnowledgePathFlag): boolean {
+  return Boolean(value.useOrgKnowledgePaths ?? value.useOrgLearnPaths);
 }
 
 export function getCuratedApiPayload(site: 'io' | 'org') {
   const feed = getCuratedHomeFeed(site);
   const resolveTopic = (topic: CuratedTopic) => {
+    const useOrgKnowledgePaths = shouldUseOrgKnowledgePaths(topic);
     const anchor = topic.anchorSlug
-      ? resolveCuratedSlug(topic.anchorSlug, topic.useOrgLearnPaths)
+      ? resolveCuratedSlug(topic.anchorSlug, useOrgKnowledgePaths)
       : null;
-    const related = resolveCuratedArticles(topic.relatedSlugs ?? [], topic.useOrgLearnPaths);
+    const related = resolveCuratedArticles(topic.relatedSlugs ?? [], useOrgKnowledgePaths);
     return {
       id: topic.id,
       title: topic.title,
@@ -241,11 +251,14 @@ export function getCuratedApiPayload(site: 'io' | 'org') {
     readerEntry: feed.readerEntry,
     readerPaths: feed.readerPaths.map((pathEntry) => ({
       ...pathEntry,
-      articles: resolveCuratedArticles(pathEntry.articleSlugs ?? [], pathEntry.useOrgLearnPaths),
+      articles: resolveCuratedArticles(
+        pathEntry.articleSlugs ?? [],
+        shouldUseOrgKnowledgePaths(pathEntry),
+      ),
     })),
     spotlight: feed.spotlight.map((item) => ({
       ...item,
-      article: resolveCuratedSlug(item.slug, item.useOrgLearnPaths),
+      article: resolveCuratedSlug(item.slug, shouldUseOrgKnowledgePaths(item)),
     })),
     topics: feed.topics.map(resolveTopic),
     secondaryLinks: feed.secondaryLinks,

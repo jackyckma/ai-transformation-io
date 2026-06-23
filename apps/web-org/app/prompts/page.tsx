@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { PromptReply } from '@/components/prompt-reply';
 import { HubExploreNav } from '@/components/hub-explore-nav';
 import { PageShell } from '@/components/page-shell';
-import { ORG_EXPLORE_LINKS } from '@/lib/explore-links';
+import { ORG_EXPLORE_LINKS } from '@/lib/nav';
 
 export const metadata: Metadata = {
   title: 'Weekly prompts',
-  description: 'Respond to this week’s Harvest Hub reflection prompt.',
+  description: 'Respond to this week’s community reflection prompt.',
 };
 
 export default function PromptsPage() {

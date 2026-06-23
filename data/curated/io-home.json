@@ -77,22 +77,22 @@
     {
       "label": "Organizational diagnostic (36 questions)",
       "description": "For teams leading AI transformation — Three Gaps radar, not a personal quiz.",
-      "href": "/assessment"
+      "href": "/insights/assessment"
     }
   ],
   "homeTiles": [
     {
-      "id": "playbook",
-      "title": "Playbook",
-      "summary": "Practical moves and patterns for implementation teams — copilots, agents, industry use cases, and common pitfalls.",
-      "href": "/playbook",
+      "id": "library",
+      "title": "The library",
+      "summary": "Every framework, playbook, and reference article in one place — filterable by type and collection.",
+      "href": "/library",
       "image": "/curation/path-playbook.jpg"
     },
     {
       "id": "three-gaps",
-      "title": "Three Gaps Assessment",
-      "summary": "36-question organizational diagnostic across work redesign, governance, and value measurement. Secondary to reading — run when you need a baseline.",
-      "href": "/assessment",
+      "title": "Three Gaps assessment",
+      "summary": "36-question organizational diagnostic across work redesign, governance, and value measurement. Lives under Insights — run when you need a baseline.",
+      "href": "/insights/assessment",
       "image": "/curation/three-gaps.jpg"
     },
     {
@@ -103,10 +103,10 @@
       "image": "/curation/roadmap.jpg"
     },
     {
-      "id": "roles",
-      "title": "Guides by role",
-      "summary": "Executive lenses for CIO, COO, CHRO, and other sponsors — what changes in your function, not generic AI hype.",
-      "href": "/functions",
+      "id": "insights",
+      "title": "Insights",
+      "summary": "External benchmarks, datasets, and surveys with a short read on what each means for enterprise leaders.",
+      "href": "/insights",
       "image": "/curation/path-governance.jpg"
     },
     {

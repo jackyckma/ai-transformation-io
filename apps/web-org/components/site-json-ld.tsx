@@ -1,8 +1,8 @@
 const SITE = {
-  name: 'AI Transformation — Harvest Hub',
+  name: 'AI Transformation — Community · Knowledge commons',
   url: 'https://ai-transformation.org',
   description:
-    'Community stories, prompts, and learning paths for people navigating AI transformation — share experiences, not hype.',
+    'A community knowledge commons for people navigating AI transformation — contributed knowledge and community highlights, not hype.',
 };
 
 export function SiteJsonLd() {

@@ -5,7 +5,7 @@ import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
   title: 'Join',
-  description: 'Join Harvest Hub to share stories and save your reflections.',
+  description: 'Join the community to contribute knowledge and save your reflections.',
 };
 
 export default function JoinPage() {
@@ -13,7 +13,7 @@ export default function JoinPage() {
     <PageShell>
       <PageIntro
         title="Join the community"
-        description="Sign in to post field stories, save reflections, and continue the conversation with peers navigating enterprise AI change."
+        description="Sign in to contribute knowledge, save reflections, and continue the conversation with peers navigating enterprise AI change."
       />
 
       <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
@@ -30,12 +30,12 @@ export default function JoinPage() {
       </section>
 
       <nav className="mt-10 text-sm font-light text-[var(--muted)]">
-        <Link href="/stories" className="hover:text-[var(--foreground)]">
-          Read community stories
+        <Link href="/community" className="hover:text-[var(--foreground)]">
+          Browse community highlights
         </Link>
         <span className="mx-3">·</span>
-        <Link href="/stories/submit" className="hover:text-[var(--foreground)]">
-          Share your own
+        <Link href="/ask?mode=submit" className="hover:text-[var(--foreground)]">
+          Draft a contribution
         </Link>
       </nav>
     </PageShell>

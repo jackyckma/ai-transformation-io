@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+export * from './ask-modes';
+export * from './onboarding';
+export * from './recommendation';
+
 export const healthResponseSchema = z.object({
   ok: z.boolean(),
   service: z.string(),

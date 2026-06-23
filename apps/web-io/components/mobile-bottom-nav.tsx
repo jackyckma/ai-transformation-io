@@ -3,14 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const TABS = [
-  { href: '/', label: 'Home', icon: HomeIcon },
-  { href: '/frameworks', label: 'Read', icon: ReadIcon },
-  { href: '/ask', label: 'Ask', icon: AskIcon },
-  { href: '/progress', label: 'You', icon: YouIcon },
-] as const;
+import { IO_RIBBON } from '@/lib/nav';
 
-function HomeIcon({ active }: { active: boolean }) {
+type IconProps = { active: boolean };
+
+function HomeIcon({ active }: IconProps) {
   return (
     <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path
@@ -21,16 +18,24 @@ function HomeIcon({ active }: { active: boolean }) {
   );
 }
 
-function ReadIcon({ active }: { active: boolean }) {
+function LibraryIcon({ active }: IconProps) {
   return (
     <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M5 5.5h14v13H5z" className={active ? 'fill-current/10' : undefined} />
-      <path d="M8 9h8M8 12.5h8M8 16h5" />
+      <path d="M5 4.5h5v15H5z" className={active ? 'fill-current/10' : undefined} />
+      <path d="M11.5 4.5h3l3 14.4-2.9.6z" className={active ? 'fill-current/10' : undefined} />
     </svg>
   );
 }
 
-function AskIcon({ active }: { active: boolean }) {
+function InsightsIcon({ active }: IconProps) {
+  return (
+    <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M5 19V10M10 19V5M15 19v-6M20 19v-9" strokeLinecap="round" className={active ? 'stroke-2' : undefined} />
+    </svg>
+  );
+}
+
+function AskIcon({ active }: IconProps) {
   return (
     <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path
@@ -41,14 +46,12 @@ function AskIcon({ active }: { active: boolean }) {
   );
 }
 
-function YouIcon({ active }: { active: boolean }) {
-  return (
-    <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="12" cy="9" r="3.5" className={active ? 'fill-current/10' : undefined} />
-      <path d="M6 19.5c1.5-3 3.3-4.5 6-4.5s4.5 1.5 6 4.5" />
-    </svg>
-  );
-}
+const ICONS: Record<string, (props: IconProps) => React.ReactElement> = {
+  '/': HomeIcon,
+  '/library': LibraryIcon,
+  '/insights': InsightsIcon,
+  '/ask': AskIcon,
+};
 
 export function MobileBottomNav() {
   const pathname = usePathname();
@@ -59,17 +62,18 @@ export function MobileBottomNav() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--background)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul className="grid grid-cols-4">
-        {TABS.map((tab) => {
+        {IO_RIBBON.map((tab) => {
           const active =
             tab.href === '/'
               ? pathname === '/'
               : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
-          const Icon = tab.icon;
+          const Icon = ICONS[tab.href] ?? HomeIcon;
 
           return (
             <li key={tab.href}>
               <Link
                 href={tab.href}
+                aria-current={active ? 'page' : undefined}
                 className={`flex flex-col items-center gap-1 px-2 py-2.5 text-[10px] font-normal transition ${
                   active ? 'text-[var(--foreground)]' : 'text-[var(--secondary)]'
                 }`}
