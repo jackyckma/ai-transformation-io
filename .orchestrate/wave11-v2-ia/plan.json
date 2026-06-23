@@ -21,7 +21,7 @@
     {
       "name": "shared-foundation",
       "type": "worker",
-      "model": "gpt-5.5-high",
+      "model": "gpt-5.3-codex-high-fast",
       "scopedGoal": "Lay the shared Phase 1 foundation that BOTH site apps consume, in packages/shared and packages/content only. (1) Add a shared onboarding profile Zod schema + types (fields: role, industry, optional projectFocus) to @ai-transformation/shared, exported from its public entry. (2) Add a shared Ask-mode model: an AskMode union ('ask' | 'capture' | 'submit' | 'find-help'), per-site allowed-mode config (io guest=[ask], io member=[ask,capture]; org guest=[ask], org member=[ask,capture,submit,find-help]) per SITE_DESIGN_v2.md §4, and mode metadata (label + placeholder copy). (3) Add a small generic rule-based recommendation scorer (pure function: weighted score over simple inputs) per §9 — keep it generic v0, no LLM, no DB. (4) Migrate packages/content route pathnames for the v2 IA: in CONTENT_REGISTRY change all '/frameworks/*' and '/playbook/*' pathnames to '/library/*' (keep the trailing slug segment), and update getParamSlugMap / any helpers so '/library' resolves. Replace the .org learn rewrite (ORG_LEARN_SLUGS + getOrgLearnPages producing '/learn/<slug>') with a '/knowledge/<slug>' equivalent (rename to getOrgKnowledgePages or similar and update useOrgLearnPaths flag naming to a knowledge equivalent), keeping resolveCuratedArticles/getCuratedApiPayload working. Do NOT delete the article-loading logic — only repath. Run `pnpm --filter @ai-transformation/shared typecheck` and `pnpm --filter @ai-transformation/content typecheck` (or `tsc --noEmit` in each package) and ensure both pass. Do NOT touch apps/** or data/**; the site workers own those and will consume your exports.",
       "brief": "Read docs/SITE_DESIGN_v2.md (§3 route map, §4 Ask modes, §9 recommendations, §10 Insights, §15 housekeeping) first. This is the dependency both site workers branch from, so keep exports clean and well-typed. Phase 1 only: placeholders/stubs, NO backend object model, NO visibility enforcement (that is Wave 12). Keep additions minimal and generic — avoid over-engineering. The same knowledge-base article is rendered on .io under /library/<slug> and on .org under /knowledge/<slug>; CONTENT_REGISTRY.pathname is the .io path, the org helper rewrites to the .org path. Code and docs stay in English (project-guidelines).",
       "pathsAllowed": ["packages/shared/**", "packages/content/**"],
@@ -87,7 +87,7 @@
     {
       "name": "integrate-wave11",
       "type": "worker",
-      "model": "gpt-5.5-high-fast",
+      "model": "gpt-5.3-codex-high-fast",
       "startingRef": "orch/wave11-v2-ia/web-io-ia",
       "dependsOn": ["web-io-ia", "web-org-ia"],
       "openPR": true,
