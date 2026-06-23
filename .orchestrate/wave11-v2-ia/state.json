@@ -41,11 +41,11 @@
       "finishedAt": "2026-06-23T22:27:26.927Z",
       "lastUpdate": "2026-06-23T22:27:28.481Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "live-ui-verified",
-      "attempts": 1
+      "verification": "live-ui-verified"
     },
     {
       "name": "web-org-ia",
@@ -65,11 +65,11 @@
       "finishedAt": "2026-06-23T22:28:16.752Z",
       "lastUpdate": "2026-06-23T22:28:18.126Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "live-ui-verified",
-      "attempts": 1
+      "verification": "live-ui-verified"
     },
     {
       "name": "integrate-wave11",
@@ -88,13 +88,13 @@
       "handoffPath": "handoffs/integrate-wave11.md",
       "startedAt": "2026-06-23T22:28:18.678Z",
       "finishedAt": "2026-06-23T22:32:32.794Z",
-      "lastUpdate": "2026-06-23T22:32:35.909Z",
+      "lastUpdate": "2026-06-23T22:38:31.964Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "live-ui-verified"
     },
     {
       "name": "verify-wave11",
@@ -114,11 +114,11 @@
       "finishedAt": "2026-06-23T22:38:28.905Z",
       "lastUpdate": "2026-06-23T22:38:28.905Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
@@ -145,6 +145,10 @@
     {
       "at": "2026-06-23T22:32:35.910Z",
       "message": "integrate-wave11: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-23T22:38:31.964Z",
+      "message": "integrate-wave11: verification recorded (live-ui-verified) by verifier verify-wave11"
     }
   ]
 }
