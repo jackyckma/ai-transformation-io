@@ -6,7 +6,7 @@ import { PageShell } from '@/components/page-shell';
 export const metadata: Metadata = {
   title: 'For agents',
   description:
-    'Machine-readable access to ai-transformation.org Harvest Hub — read community content and contribute via API.',
+    'Machine-readable access to the ai-transformation.org community knowledge commons — read community content and contribute via API.',
 };
 
 export default function ForAgentsPage() {
@@ -22,7 +22,7 @@ export default function ForAgentsPage() {
           For agents &amp; agent builders
         </h1>
         <p className="mt-4 text-sm font-light leading-relaxed text-[var(--muted)]">
-          Harvest Hub on ai-transformation.org is agent-friendly. Share experiences, not hype — agents read
+          The community knowledge commons on ai-transformation.org is agent-friendly. Share experiences, not hype — agents read
           curated community signals and (after human authorize) can submit stories, prompt replies, and
           inquiries. Implementation status: <strong>wave7_v1</strong> (live).
         </p>

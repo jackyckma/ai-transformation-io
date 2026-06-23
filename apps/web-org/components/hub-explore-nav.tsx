@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import type { ExploreLink } from '@/lib/explore-links';
+import type { NavLink } from '@/lib/nav';
 
 type HubExploreNavProps = {
-  links: ExploreLink[];
+  links: readonly NavLink[];
   className?: string;
 };
 

@@ -7,12 +7,16 @@ import {
 } from '@ai-transformation/content';
 import { FeatureSpotlightCard, CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
 
+function useKnowledgePaths(value: { useOrgKnowledgePaths?: boolean; useOrgLearnPaths?: boolean }): boolean {
+  return Boolean(value.useOrgKnowledgePaths ?? value.useOrgLearnPaths);
+}
+
 function resolveTileHref(tile: CuratedHomeTile): string | null {
   if (tile.href) {
     return tile.href;
   }
   if (tile.slug) {
-    const article = resolveCuratedArticles([tile.slug], tile.useOrgLearnPaths)[0];
+    const article = resolveCuratedArticles([tile.slug], useKnowledgePaths(tile))[0];
     return article?.pathname ?? null;
   }
   return null;
@@ -31,12 +35,12 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
       {spotlight ? (
         <section aria-labelledby="home-spotlight-heading">
           <h1 id="home-spotlight-heading" className="sr-only">
-            Harvest Hub
+            Community · Knowledge commons
           </h1>
           {(() => {
             const article = resolveCuratedArticles(
               [spotlight.slug],
-              spotlight.useOrgLearnPaths,
+              useKnowledgePaths(spotlight),
             )[0];
             if (!article) return null;
             return (
