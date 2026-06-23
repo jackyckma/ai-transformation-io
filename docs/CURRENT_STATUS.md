@@ -1,12 +1,12 @@
 # Current status
 
-**Last updated:** 2026-06-22
+**Last updated:** 2026-06-23
 
 ## Summary
 
-Wave 0–9 ✅ · **Sidebar chatbot v1 ✅** — on-site companion on .io + .org · **Positioning locked** in [POSITIONING-UX.md](./POSITIONING-UX.md)
+Wave 0–9 ✅ · Sidebar/mobile shell ✅ · Agent API v1 ✅ · **Product direction:** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) (approved 2026-06-23)
 
-## What works
+## What works (production — pre-v2 IA)
 
 - https://ai-transformation.io — layered home, `/for-agents`, frameworks, playbook, `/functions`, **sidebar companion**, `/assessment` (secondary), `/ask`
 - https://ai-transformation.org — Share-first home, Harvest Hub, apprenticeship, **sidebar companion**, `/for-agents`, `/ask`
@@ -28,11 +28,13 @@ See [AGENT_ENV.md](./AGENT_ENV.md):
 
 ## Next
 
-- **Wave 10** — Newsletter pilot (subscribe UI, send issue, inbound Worker)
-- **Later** — "Your progress" dashboard; conversation export API
+- **Site design v2 (approved):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — Wave 11+ north star; **current UI still pre-v2 routes** until Wave 11 ships
+- **Wave 10** — Newsletter pilot (optional trigger)
+- **Wave 11** — IA shell: Library / Knowledge / Insights / Community ribbon, Ask modes, onboarding, **remove legacy hub routes**
 
 ## Docs
 
+- [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — product & IA spec (draft)
 - [POSITIONING-UX.md](./POSITIONING-UX.md)
 - [project-progress.md](./project-progress.md)
 - [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md)

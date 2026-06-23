@@ -1,29 +1,26 @@
 # Site positioning
 
-**Last updated:** 2026-06-22
+**Last updated:** 2026-06-23
 
-**Full UX locks:** [POSITIONING-UX.md](./POSITIONING-UX.md)
+**Canonical product & IA (Wave 11+):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)  
+**Historical UX (Waves 0–10):** [POSITIONING-UX.md](./POSITIONING-UX.md)
 
 ## Two sites, one platform
 
 | | **ai-transformation.io** | **ai-transformation.org** |
 |--|--------------------------|---------------------------|
 | **App** | `web-io` | `web-org` |
-| **Audience** | Corporate / enterprise leaders | Practitioners & contributors |
-| **Core idea** | **Companion / support** for AI transformation — role paths + progress, not quiz-first | **Harvest Hub** — share field experiences |
-| **Primary metric** | Engagement via paths + (future) chatbot / progress | **Approved stories per month** |
-| **Future** | Sidebar chatbot; optional consultancy when mature | Moderated contributions, apprenticeship |
+| **Audience** | Enterprise professionals | Practitioners & community members |
+| **Core idea (v2)** | Public Library + Insights; logged-in **personal cockpit** | Public **Knowledge commons** + **Community** opportunity layer |
+| **Primary interaction (v2)** | Ask (modes) + contextual agent actions | Ask (modes) + agent-assisted contribution |
+| **Ribbon (v2)** | Home · Library · Insights · Ask | Home · Knowledge · Community · Ask |
 
-## UX (confirmed)
+## Still true (infra & voice)
 
 - Default: **light** theme with **dark mode toggle**
-- **English only** at launch
-- Agent-friendly panel on both homes; agent nav = panel + `/for-agents` (not Join)
-
-## Voice
-
-**web-io:** Authoritative, frameworks, anti-hype, editorial  
-**web-org:** Open, experience-driven, warmer tone — "we" on apprenticeship
+- **English only** at launch (user may chat in Cantonese; agents respond 繁體中文 per project-guidelines)
+- **Google OAuth** human auth; one account across both domains
+- Editorial voice — not product-marketing chrome
 
 ---
 

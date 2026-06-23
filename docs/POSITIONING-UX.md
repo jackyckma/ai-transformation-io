@@ -1,9 +1,10 @@
-# Positioning & UX — locked decisions
+# Positioning & UX — locked decisions (Waves 0–10)
+
+> **Superseded for Wave 11+ product & IA** by **[SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)** (approved 2026-06-23).  
+> Keep this file as the **historical record** for what shipped through Wave 9–10 (companion-first home, Harvest Hub era, function pages, curation rules). Do not use it for new navigation or feature design.
 
 **Last updated:** 2026-06-22  
-**Status:** Founder-approved — supersedes scattered notes in `usr/*` and older positioning lines where they conflict.
-
-**Related:** [POSITIONING.md](./POSITIONING.md) (short table) · [product-architecture.md](./product-architecture.md) (IA) · [DOC_ALIGNMENT_AUDIT.md](./DOC_ALIGNMENT_AUDIT.md) (contradiction log)
+**Status:** Historical — Waves 0–10 only
 
 ---
 

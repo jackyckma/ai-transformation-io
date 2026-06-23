@@ -1,90 +1,73 @@
 # Document alignment audit
 
-**Last updated:** 2026-06-22  
-**Trigger:** Founder locked companion/.org nav/spotlight/chatbot decisions — scan for outdated or contradictory docs.
+**Last updated:** 2026-06-23  
+**Trigger:** Founder approved [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — full doc pass + archive outdated plans.
 
-**Canonical UX locks:** [POSITIONING-UX.md](./POSITIONING-UX.md)
+**Canonical product & IA (Wave 11+):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)  
+**Historical UX (Waves 0–10):** [POSITIONING-UX.md](./POSITIONING-UX.md)
+
+---
+
+## v2 alignment pass (2026-06-23)
+
+| Action | Files |
+|--------|-------|
+| **Approved spec** | `SITE_DESIGN_v2.md` — status → Approved; §15 housekeeping for implementation |
+| **Deprecation banners** | `POSITIONING-UX.md`, `product-architecture.md` (IA sections) |
+| **Rewritten pointers** | `POSITIONING.md`, `docs/README.md`, `CURRENT_STATUS.md`, `SESSION_HANDOFF.md` |
+| **Wave map updated** | `project-progress.md` — Wave 11–14 = v2 |
+| **Archived** | `SCAFFOLD_PLAN.md` → [archive/SCAFFOLD_PLAN.md](./archive/SCAFFOLD_PLAN.md) |
+| **Agent entry points** | `AGENTS.md`, `project-guidelines.md`, lane skills — v2 pointers |
 
 ---
 
 ## Summary
 
-| Category | Count | Action |
-|----------|-------|--------|
-| Updated in this pass | 8 | See § Fixed below |
-| Historical — pointer only | 5 | `usr/*` — do not rewrite; superseded where noted |
-| Orchestrate handoffs | 2 | Historical wave artifacts — no edit |
-| Scaffold / early plans | 1 | Low priority — note only |
+| Category | Action |
+|----------|--------|
+| Active — follow for new work | `SITE_DESIGN_v2.md`, `CURRENT_STATUS.md`, `project-progress.md`, technical ops docs |
+| Historical — do not extend | `POSITIONING-UX.md`, `product-architecture.md` § shipped IA |
+| Archive | `docs/archive/*` — early scaffold & superseded plans |
+| Internal research | `usr/*` — keep; add note where Harvest Hub branding superseded |
+| Orchestrate handoffs | `.orchestrate/wave*/**` — wave artifacts; never edit for pivots |
 
 ---
 
-## Fixed in this pass
+## Contradiction themes (grep periodically)
 
-| File | Was wrong | Fix applied |
-|------|-----------|-------------|
-| `docs/POSITIONING.md` | "Learn together" for .org; missing companion .io | Rewritten; links to POSITIONING-UX |
-| `docs/CURRENT_STATUS.md` | Stale date; missing Phase B images, skills, nav lock | Updated |
-| `docs/project-progress.md` | "Founder hand-edits JSON"; register-funnel chatbot | Agent-propose + approve; chatbot-as-support |
-| `docs/product-architecture.md` | `/join` in nav IA; old home description | Pointer to POSITIONING-UX; nav/auth note |
-| `docs/ARCHITECTURE.md` | "learn together" domain row | Harvest Hub + link |
-| `docs/README.md` | Missing new docs in index | Added POSITIONING-UX, audit, EDITORIAL_POLICY |
-| `data/curated/README.md` | "Founder-edited" only | Agent-propose workflow + EDITORIAL_POLICY link |
-| `AGENTS.md` | Chatbot as "registration hook"; missing 2026-06-22 locks | Updated Learned Preferences |
+1. **Harvest Hub** as primary .org brand vs **Community · Knowledge commons** (v2)
+2. **`/frameworks` `/learn` `/stories`** vs **`/library` `/knowledge`**
+3. **Sidebar / home agent panel primary** vs **Ask modes + contextual actions** (v2)
+4. **Function-primary or Share-first nav** vs **fixed v2 ribbon**
+5. **POSITIONING-UX** cited for new IA — should cite **SITE_DESIGN_v2** instead
 
----
+```bash
+rg -i "harvest hub|/frameworks|/learn/|POSITIONING-UX|function-primary|share-first" docs .agents AGENTS.md README.md --glob '*.md'
+```
 
-## Remaining known gaps (not blocking)
-
-| File | Issue | Recommended action |
-|------|-------|-------------------|
-| `docs/EMAIL_NEWSLETTER.md` | List name `org_learn` described as "Learn Together" | When newsletter ships, rename list label to **Harvest Hub** in copy only; infra ID can stay |
-| `docs/SCAFFOLD_PLAN.md` | Early scaffold; "readiness quiz" wording | Historical — ignore unless someone uses it for greenfield |
-| `.orchestrate/wave4-auth/handoffs/*` | Documents adding `/join` nav | Historical Wave 4 artifact — superseded by POSITIONING-UX nav lock |
-| `apps/web-org/app/join/page.tsx` | OAuth landing still exists | OK as deep link; nav removed; consider redirect copy update later |
-| `docs/traceability-index.md` | May lag new skills | Add `curated-home-refresh` on next traceability pass |
+Compare hits against [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md).
 
 ---
 
 ## Historical internal strategy (`usr/`)
 
-These files informed early direction. **Do not delete** — they record research. Where they conflict with [POSITIONING-UX.md](./POSITIONING-UX.md), the UX doc wins.
+Do not delete — research record. Where branding or IA conflicts with v2, **v2 wins** for new work.
 
-| File | Stale element | Status |
-|------|---------------|--------|
-| `usr/06-implementation-research-discussion.md` | Forum-first, "Learn Together" home | Historical — Harvest Hub chosen over forum |
-| `usr/07-pre-scaffold-decisions.md` | Learn Together newsletter naming | Historical — defer newsletter |
-| `usr/09-community-strategy-alternatives.md` | Learn Together narrative | Historical — see POSITIONING-UX |
-| `usr/10-harvest-hub-newsletter-infrastructure.md` | "Learn Together" list branding | Mostly aligned on Harvest; rename when L6 ships |
-| `usr/11-agent-first-api-v1.md` | Agent API spec | **Still authoritative** for Wave 7 — aligns with decisions |
+| File | Note |
+|------|------|
+| `usr/09-community-strategy-alternatives.md` | Harvest Hub Phase 1 choice — still valid history |
+| `usr/10-harvest-hub-newsletter-infrastructure.md` | Infra still useful; rename list copy when newsletter ships |
+| `usr/11-agent-first-api-v1.md` | API spec — align with v2 Ask/API parity in Wave 13 |
 
 ---
 
-## Code ↔ doc contradictions (resolved or tracked)
+## Code ↔ doc (Wave 11 cleanup tracked in v2 §15)
 
-| Location | Issue | Resolution |
-|----------|-------|------------|
-| `apps/web-org/components/site-chrome.tsx` | `Join` in primary nav | **Removed** — Sign in in header |
-| `data/curated/io-home.json` | Spotlight = explore path cornerstone | **Deduped** — spotlight uses different slug |
-| `data/curated/org-home.json` | Learn before Share in paths | **Reordered** — Share path first |
-| `packages/shared` agent panel copy | Missing human "give link to agent" | **Updated** summary string |
-| `.agents/skills/lane-web-io/SKILL.md` | (Was) function-primary IA | Already says reader paths + curation first |
+Shipped code still reflects Waves 0–9 IA until Wave 11 lands. Do not update docs to pretend routes already changed.
 
----
-
-## Contradiction themes (for future scans)
-
-1. **"Learn Together"** vs **Harvest Hub** — grep periodically.
-2. **Quiz / assessment as hero** vs **companion + secondary diagnostic**.
-3. **Founder-only JSON edits** vs **agent-propose + founder PR approve**.
-4. **Join nav** vs **Sign in only**.
-5. **Chatbot as register funnel** vs **chatbot as primary support interaction**.
-
----
-
-## How to re-run this audit
-
-```bash
-rg -i "learn together|/join|quiz-first|hand-edit|register funnel" docs usr data .agents --glob '*.md'
-```
-
-Compare hits against [POSITIONING-UX.md](./POSITIONING-UX.md).
+| Shipped (today) | v2 target |
+|-----------------|-----------|
+| `/frameworks`, `/playbook`, `/functions` | `/library` |
+| `/learn`, `/stories` | `/knowledge`, `/community` |
+| Mobile ribbon Home/Read/Ask/You | v2 ribbon per site |
+| Home agent panel + `/for-agents` | Hamburger + contextual Ask prefill |

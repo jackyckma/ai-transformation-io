@@ -11,12 +11,12 @@ Claude's spec is **sound and we should adopt it**, with naming and Next.js-speci
 
 | App | Domain | Positioning |
 |-----|--------|-------------|
-| `web-io` | ai-transformation.io | **Corporate** — companion/support portal; frameworks + role paths |
-| `web-org` | ai-transformation.org | **Harvest Hub** — share experiences; moderated contributions |
+| `web-io` | ai-transformation.io | **Professional cockpit** — Library, Insights, Ask ([SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)) |
+| `web-org` | ai-transformation.org | **Community · Knowledge commons** ([SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)) |
 | `backend` | `/api` (internal) | Shared API — host-agnostic |
 | `combined` | Zeabur entry | Host-based reverse proxy only |
 
-See [POSITIONING.md](./POSITIONING.md) for voice and UX decisions.
+See [POSITIONING.md](./POSITIONING.md) and [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) for product direction.
 
 ## UX (confirmed)
 

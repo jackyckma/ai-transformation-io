@@ -10,7 +10,8 @@ Propose changes to `data/curated/io-home.json` and `org-home.json` — **do not 
 ## Required reading
 
 1. `data/curated/EDITORIAL_POLICY.md`
-2. `docs/POSITIONING-UX.md` (CTA priority, dedup, .org share-first)
+2. `docs/SITE_DESIGN_v2.md` (home curation role in v2 IA)
+3. `docs/POSITIONING-UX.md` — historical Waves 0–10 only
 
 ## Workflow
 

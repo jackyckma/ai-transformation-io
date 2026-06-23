@@ -9,7 +9,7 @@ Read **`.agents/instructions/`** before non-trivial work:
 5. `.agents/instructions/session-handoff.md` — when resuming or ending a session
 6. `.agents/instructions/framework-adoption.md` — when bootstrapping or syncing methodology
 
-When **resuming**, read `docs/SESSION_HANDOFF.md` first.
+When **resuming**, read `docs/SESSION_HANDOFF.md` first, then **`docs/SITE_DESIGN_v2.md`** for product/IA work.
 
 Optional: `.agents/instructions/lane-based-development.md` for multi-module products.
 
@@ -39,19 +39,19 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - .org Apprenticeship program: separate product line from enterprise .io consulting (AI-era judgment/formation training); public pages use "we" voice (`apprenticeship-overview-EN.md`); founder first-person thesis stays in `usr/13` as internal source.
 - .org community: public read, login required to post; prefer Harvest Hub contribution model over a self-hosted discussion forum.
 - Site UI language: English-only; light theme default with dark mode toggle. User may converse in Cantonese/Traditional Chinese; agents respond in Traditional Chinese per project-guidelines; docs and code stay English.
-- .io IA: **companion/support** north star — **companion-first home** (starter questions, explore links, compact curated preview); Assessment **secondary** for org-level diagnostic; on-site **companion** primary human interaction (no login required; on-site chat history); external agent API secondary unless data proves otherwise; function role guides at `/functions/*` (footer secondary, not header nav). .org home: **Share-first** + same companion-first home pattern; **Join removed from nav** (Sign in in header); agent entry = `/for-agents` only.
-- Curation spotlight v1: agent proposes `data/curated/*.json` → founder approves PR; see `data/curated/EDITORIAL_POLICY.md` and `docs/POSITIONING-UX.md`.
-- Research output: internal strategy in `usr/`, public website ideas in `knowledge-base/`; prioritize enriching both sites from knowledge-base before interaction features.
-- Site design: content-first editorial; companion-first home (starter prompts + explore links + compact curated preview); curated JSON via agent-propose + founder PR approve, slow cadence; Phase B topic covers in `/curation/`. Mobile companion as bottom sheet; sticky two-row header (auth row + nav row, no overlap). Not product-marketing (no oversized bold sans titles, pill CTAs, or subscribe funnels); refined elegant typography — serif titles with light sans body. Agent-first via companion, `/for-agents`, embedded hints — not shouty marketing.
+- .io IA (v2, Wave 11+): **Library · Insights · Ask** ribbon; public Library + Insights; logged-in personal cockpit — see `docs/SITE_DESIGN_v2.md`. **Until Wave 11 ships:** legacy `/frameworks`, `/playbook`, `/functions` remain live.
+- .org IA (v2): **Knowledge · Community · Ask**; brand **Community · Knowledge commons**. **Until Wave 11:** legacy `/learn`, `/stories` remain live.
+- Curation: agent proposes `data/curated/*.json` → founder approves PR; see `data/curated/EDITORIAL_POLICY.md`.
+- Site design: content-first editorial; Ask page with modes (Ask/Capture/Submit/Find Help per site); agent-native contextual actions → on-site Ask prefill; not product-marketing chrome.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
 - After completing shippable work (content, UI, fixes, docs tied to production), default to commit and push to `main` without asking for approval — unless the user says otherwise or the change is explicitly exploratory. Zeabur deploys from `main`.
 
 ## Learned Workspace Facts
 
-- ai-transformation.io is a corporate-facing executive info portal; ai-transformation.org is community Harvest Hub plus AI-era Apprenticeship (`/apprenticeship`, `/apprenticeship/rationale`, `POST /api/apprenticeship/interest`; brand as AI Transformation · Harvest Hub, not "Learn Together"). Apprenticeship is formation/judgment training, not enterprise consulting.
+- ai-transformation.io — public Library + Insights + personal cockpit (v2); ai-transformation.org — **Community · Knowledge commons** (v2). See `docs/SITE_DESIGN_v2.md`. Apprenticeship remains a special program (`/apprenticeship`).
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–9 production-verified; Wave 7 agent protocol v1; Wave 8 newsletter infra + compile-draft jobs; Wave 9 function IA (`/functions/*` role guides); Wave 10 newsletter pilot; sidebar companion v1 shipped on .io/.org; L11 split from L10 internal jobs.
+- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Wave 11–14 = IA + object model migration; Wave 10 newsletter pilot optional.
 - Product direction: agent-first site — humans and agents are first-class participants; on-site companion (primary human UI; 8 msg/day anonymous, 25/day signed-in; MiniMax-M3 via `MINIMAX_API_KEY`) plus `/for-agents` and embedded machine-readable hints on human pages.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token.
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie).

@@ -11,14 +11,14 @@ Visual and layout work for **content-first editorial portals**, not product-mark
 
 **Also load:** `lane-web-io` or `lane-web-org`, plus `ux-copy` when changing visible text.
 
-**Authority:** `AGENTS.md` (Site design, .io IA, .org home) wins over any global Cursor `frontend-design` plugin skill.
+**Authority:** `docs/SITE_DESIGN_v2.md` (Wave 11+) wins for IA/nav; `AGENTS.md` for infra preferences. Historical: `docs/POSITIONING-UX.md` (Waves 0–10 only).
 
 ## Product shape (do not fight this)
 
 | Site | Role | Home entry |
 |------|------|------------|
 | `.io` | Enterprise info portal | Reader reflection paths (Option A) → curated topics → agent panel; Assessment **secondary** |
-| `.org` | Harvest Hub + Apprenticeship | Read / share / apprenticeship paths → curation; not a flat article index |
+| `.org` | Community · Knowledge commons (v2) | Home / Knowledge / Community / Ask — see `docs/SITE_DESIGN_v2.md` |
 
 Agent-first is **visible but quiet**: Agent-friendly block, `/for-agents`, `llms.txt` — not shouty “AI product” chrome.
 

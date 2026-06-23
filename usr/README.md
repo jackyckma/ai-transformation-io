@@ -1,6 +1,7 @@
 # usr/ — Internal Strategy Documents
 
-> Private working documents for the ai-transformation.io team. Not for public website publication.
+> Private working documents for the ai-transformation.io team. Not for public website publication.  
+> **Public product/IA (Wave 11+):** [docs/SITE_DESIGN_v2.md](../docs/SITE_DESIGN_v2.md) supersedes branding/IA assumptions in older usr notes (e.g. Harvest Hub as primary .org label).
 
 ## Documents
 

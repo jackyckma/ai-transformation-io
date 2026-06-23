@@ -14,7 +14,7 @@ Customize this file for **ai-transformation.io**. Shared methodologies live in `
 | Name | AI Transformation (ai-transformation.io) |
 | Purpose | Website about enterprise AI transformation — frameworks, roadmaps, governance, value measurement |
 | Content sources | `knowledge-base/` (public content), `usr/` (internal strategy) |
-| Phase | Wave 1 in progress — .io content MVP |
+| Phase | Wave 11+ — see `docs/SITE_DESIGN_v2.md`; Waves 0–9 shipped |
 | Architecture | See `docs/ARCHITECTURE.md` |
 
 ## Stack
@@ -81,12 +81,15 @@ Load Zeabur agent skills when doing deploy/log/env operations.
 
 ## Documentation to read before non-trivial work
 
-1. `docs/README.md`
-2. `docs/CURRENT_STATUS.md`
-3. `docs/SESSION_HANDOFF.md` (when resuming)
-4. `docs/AGENT_ENV.md`
-5. `knowledge-base/README.md` — website content index
-6. `usr/README.md` — internal strategy index
+1. **`docs/SITE_DESIGN_v2.md`** — product & IA for Wave 11+ (approved)
+2. `docs/README.md`
+3. `docs/CURRENT_STATUS.md`
+4. `docs/SESSION_HANDOFF.md` (when resuming)
+5. `docs/AGENT_ENV.md`
+6. `knowledge-base/README.md` — website content index
+7. `usr/README.md` — internal strategy index
+
+Historical only (do not extend): `docs/POSITIONING-UX.md` shipped UX for Waves 0–10.
 
 Update status docs in the same session when behavior or capabilities change materially.
 

@@ -1,9 +1,11 @@
 # Product architecture — dual-domain platform
 
-**Last updated:** 2026-06-22  
-**Status:** Approved — lane-based development with wave delivery (revised for agent-first + editorial product)
+**Last updated:** 2026-06-23  
+**Status:** Lane map + **shipped** IA (Waves 0–9) below; **target IA** in [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)
 
-**UX locks:** [POSITIONING-UX.md](./POSITIONING-UX.md)
+> **Wave 11+:** Do not extend § Site design routes below. Implement [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) and remove legacy hub routes during migration (see v2 §15 housekeeping).
+
+**Historical UX locks (Waves 0–10):** [POSITIONING-UX.md](./POSITIONING-UX.md)
 
 ## System overview
 
@@ -31,6 +33,9 @@ One monorepo, two public faces, one backend:
 ---
 
 ## Site design — ai-transformation.io
+
+> **Target (Wave 11+):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — `/`, `/library`, `/insights`, `/ask`.  
+> **Below:** shipped routes as of Wave 9 (to be removed in Wave 11; no redirects).
 
 **Audience:** Enterprise / corporate leaders — **information portal**, not product marketing  
 **Voice:** Editorial, anti-hype, content-first (serif titles, light sans body)  
@@ -84,7 +89,10 @@ One monorepo, two public faces, one backend:
 
 ## Site design — ai-transformation.org
 
-**Audience:** Practitioners and visitors — **Harvest Hub** community on twin domain  
+> **Target (Wave 11+):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — `/`, `/knowledge`, `/community`, `/ask`. Brand: **Community · Knowledge commons**.  
+> **Below:** shipped routes as of Wave 9 (to be removed in Wave 11; no redirects).
+
+**Audience:** Practitioners and visitors — community on twin domain  
 **Voice:** Open, editorial, experience-driven — content before contribute  
 **Organizing principle:** **Learn articles** + low-key contribution paths (not forum)  
 **Brand:** AI Transformation · Harvest Hub (not "Learn Together")

@@ -4,8 +4,10 @@ Dual-domain platform for enterprise AI transformation knowledge and community le
 
 | Domain | App | Role |
 |--------|-----|------|
-| [ai-transformation.io](https://ai-transformation.io) | `apps/web-io` | Corporate — frameworks, assessment, playbooks |
-| [ai-transformation.org](https://ai-transformation.org) | `apps/web-org` | Community — Harvest Hub (stories, prompts) |
+| [ai-transformation.io](https://ai-transformation.io) | `apps/web-io` | Library, Insights, Ask — personal cockpit when logged in |
+| [ai-transformation.org](https://ai-transformation.org) | `apps/web-org` | Knowledge commons + Community |
+
+**Product spec (Wave 11+):** [docs/SITE_DESIGN_v2.md](docs/SITE_DESIGN_v2.md)
 
 ## Monorepo
 

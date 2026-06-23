@@ -312,6 +312,10 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 
 **Goal:** Curated switchboard newsletter — small pilot list only.
 
+**Status:** Optional — **not required for Site design v2.** Proceed only when triggers fire.
+
+**v2 alignment:** When sending, link to `/knowledge/*` (post–Wave 11), not legacy `/learn` or `/stories`. Subscribe UI remains low-key / deferred on home per product preference.
+
 **Triggers (any):**
 - 10+ contributions in DB
 - Agent draft quality acceptable with <30% edit
@@ -330,14 +334,21 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 
 ---
 
-### Wave 11+ — Future (not scheduled)
+### Wave 11+ — Site design v2 (north star)
 
-- Full forum (Foru.ms / Discourse) when trigger metrics met
-- Consultation brief internal dashboard
-- LinkedIn harvest automation
-- Newsletter public archive pages
-- Low-key AI guide on human pages (post–agent API v1)
-- Agent credits top-up ($5 minimum, Phase B)
+**Authoritative spec:** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) (draft until founder-approved)
+
+**Replaces** the old Wave 11+ bullets (forum, credits-only list). Incremental migration from Waves 0–9 shell — no big-bang rewrite.
+
+| Wave | Focus |
+|------|--------|
+| **11** | IA shell — ribbon routes (`/library`, `/knowledge`, `/insights`, `/community`), Ask modes, onboarding profile, Home logged-in dashboards, drop old hub nav (no legacy redirects) |
+| **12** | Object model + visibility; My Library; Capture/notes; assessment under Insights; auto-moderation + publish settings |
+| **13** | Community Phase 1 types (`discussion`, `help_request`, `event`, `community_announcement`); Ask ↔ Agent API write parity |
+| **14** | Phase 2 community types; matching experiments; optional LLM ranking |
+| **15+** | Newsletter archive pages; agent credits top-up (if desired) |
+
+**Deprioritized:** Full forum (Discourse); function-primary nav; Harvest Hub as primary .org brand.
 
 ---
 
@@ -366,10 +377,12 @@ Wave 8 (newsletter + L10 jobs) ✅
     ↓
 Wave 9 (function pages / IA expansion) ✅
     ↓
-Wave 10 (newsletter pilot) — optional trigger                    ← NEXT
+Wave 10 (newsletter pilot) — optional trigger                    ← NEXT (optional)
+    ↓
+Wave 11–14 (Site design v2 — see SITE_DESIGN_v2.md)             ← IA + object model
 ```
 
-Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. Wave 10 pilot needs Wave 8 infra.
+Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. Wave 10 pilot needs Wave 8 infra. **Wave 11+ follows [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)** — may run in parallel with Wave 10 if newsletter triggers are not met.
 
 ---
 

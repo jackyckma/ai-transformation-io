@@ -1,6 +1,6 @@
 # Traceability index — lanes → packages → skills
 
-**Last updated:** 2026-06-22
+**Last updated:** 2026-06-23
 
 | Lane | Name | Package / path | INTERFACE | Agent skill | Simulator fixtures |
 |------|------|----------------|-----------|-------------|-------------------|
@@ -35,7 +35,8 @@
 
 ## Cross-references
 
-- Product IA: [product-architecture.md](./product-architecture.md)
+- **Product & IA (Wave 11+):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)
+- Product IA (shipped): [product-architecture.md](./product-architecture.md)
 - Wave schedule: [project-progress.md](./project-progress.md)
 - Agent protocol v1: [usr/11-agent-first-api-v1.md](../usr/11-agent-first-api-v1.md)
 - Harvest + newsletter: [usr/10-harvest-hub-newsletter-infrastructure.md](../usr/10-harvest-hub-newsletter-infrastructure.md)
