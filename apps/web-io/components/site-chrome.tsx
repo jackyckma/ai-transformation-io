@@ -1,17 +1,9 @@
 import Link from 'next/link';
 
-import { AuthNav } from '@/components/auth-nav';
-import { DesktopNavLinks } from '@/components/hub-index-sections';
 import { MobileNavDrawer } from '@/components/mobile-nav-drawer';
+import { RibbonNav } from '@/components/ribbon-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-const DESKTOP_NAV = [
-  { href: '/frameworks', label: 'Frameworks' },
-  { href: '/playbook', label: 'Playbook' },
-  { href: '/functions', label: 'Roles' },
-  { href: '/assessment', label: 'Assessment' },
-  { href: '/for-agents', label: 'For agents' },
-] as const;
+import { IO_RIBBON } from '@/lib/nav';
 
 export function SiteHeader() {
   return (
@@ -20,26 +12,23 @@ export function SiteHeader() {
         <div className="flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="min-w-0 max-w-[calc(100%-3rem)] truncate font-serif text-xl font-normal tracking-tight text-[var(--foreground)] md:max-w-none md:text-[1.35rem]"
+            className="min-w-0 max-w-[calc(100%-6rem)] truncate font-serif text-xl font-normal tracking-tight text-[var(--foreground)] md:max-w-none md:text-[1.35rem]"
           >
             AI Transformation
             <span className="ml-1 font-sans text-sm font-normal text-[var(--secondary)]">.io</span>
           </Link>
 
           <div className="relative z-40 flex shrink-0 items-center gap-2 sm:gap-3">
-            <div className="hidden items-center gap-2 sm:gap-3 lg:flex">
-              <AuthNav />
-              <ThemeToggle />
-            </div>
+            <ThemeToggle />
             <MobileNavDrawer />
           </div>
         </div>
 
         <nav
           aria-label="Primary"
-          className="mt-3 hidden flex-wrap items-center gap-x-4 gap-y-2 text-sm lg:mt-4 lg:flex"
+          className="mt-3 hidden flex-wrap items-center gap-x-5 gap-y-2 text-sm lg:mt-4 lg:flex"
         >
-          <DesktopNavLinks links={DESKTOP_NAV} />
+          <RibbonNav tabs={IO_RIBBON} />
         </nav>
       </div>
     </header>
@@ -55,12 +44,12 @@ export function SiteFooter() {
           Agent entry
         </a>
         {' · '}
-        <Link href="/frameworks" className="underline hover:text-[var(--foreground)]">
-          Frameworks
+        <Link href="/library" className="underline hover:text-[var(--foreground)]">
+          Library
         </Link>
         {' · '}
-        <Link href="/progress" className="underline hover:text-[var(--foreground)]">
-          Your progress
+        <Link href="/insights" className="underline hover:text-[var(--foreground)]">
+          Insights
         </Link>
         {' · '}
         <a href="https://ai-transformation.org" className="underline hover:text-[var(--foreground)]">

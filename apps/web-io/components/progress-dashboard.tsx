@@ -22,16 +22,16 @@ type AssessmentSessionPayload = {
 
 const WEAKEST_GAP_LINKS: Record<AssessmentGapId, { label: string; href: string }[]> = {
   work_redesign: [
-    { label: 'CIO guide', href: '/functions/cio' },
-    { label: 'Roadmap framework', href: '/frameworks/roadmap' },
+    { label: 'Transformation roadmap', href: '/library/roadmap' },
+    { label: 'AI patterns', href: '/library/patterns' },
   ],
   governance: [
-    { label: 'Executive guide', href: '/functions/executive' },
-    { label: 'Governance framework', href: '/frameworks/governance' },
+    { label: 'Governance & operating model', href: '/library/governance' },
+    { label: 'Common pitfalls', href: '/library/common-pitfalls' },
   ],
   value_measurement: [
-    { label: 'Measuring value', href: '/frameworks/measuring-value' },
-    { label: 'Executive guide', href: '/functions/executive' },
+    { label: 'Measuring AI value', href: '/library/measuring-value' },
+    { label: 'Transformation roadmap', href: '/library/roadmap' },
   ],
 };
 
@@ -136,7 +136,7 @@ export function ProgressDashboard() {
               No saved assessment yet — start the org-level diagnostic when you are ready.
             </p>
             <Link
-              href="/assessment"
+              href="/insights/assessment"
               className="mt-5 inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90"
             >
               Start assessment
@@ -151,7 +151,7 @@ export function ProgressDashboard() {
               {new Date(session.updatedAt).toLocaleDateString()}.
             </p>
             <Link
-              href="/assessment"
+              href="/insights/assessment"
               className="mt-5 inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90"
             >
               Continue assessment
@@ -170,7 +170,7 @@ export function ProgressDashboard() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/assessment"
+                href="/insights/assessment"
                 className="inline-flex min-h-9 items-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-light transition hover:border-[var(--accent)]"
               >
                 Retake assessment

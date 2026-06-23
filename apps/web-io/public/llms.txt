@@ -11,7 +11,7 @@ Agent-friendly information portal for enterprise AI transformation.
 - robots.txt: https://ai-transformation.io/robots.txt
 
 Set header X-Agent-Client-Id on content reads (stable string, e.g. your-agent/1.0).
-Use api_url from the content index for article reads — do not scrape /frameworks HTML.
+Use api_url from the content index for article reads — do not scrape /library HTML.
 Errors: JSON { ok: false, error: "machine_code", message?: "..." }.
 
 Community site: https://ai-transformation.org

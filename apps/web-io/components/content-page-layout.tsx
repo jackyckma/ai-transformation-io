@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import type { ContentDocument } from '@ai-transformation/content';
 import { CompanionTopicPrompt } from '@ai-transformation/chat-ui';
+import { ArticleViewTracker } from '@/components/article-view-tracker';
 import { CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
 import { MarkdownBody } from '@/components/markdown-body';
+import { libraryAskActions, OpenInAsk } from '@/components/open-in-ask';
 import { PageShell } from '@/components/page-shell';
 
 type ContentPageLayoutProps = {
@@ -13,17 +15,18 @@ type ContentPageLayoutProps = {
 
 const PILLAR_LABEL: Record<ContentDocument['pillar'], string> = {
   framework: 'Framework',
-  function: 'Function',
+  function: 'Role guide',
   resource: 'Playbook',
 };
 
 export function ContentPageLayout({
   doc,
-  backHref = '/',
-  backLabel = '← Home',
+  backHref = '/library',
+  backLabel = '← All library',
 }: ContentPageLayoutProps) {
   return (
     <PageShell as="article">
+      <ArticleViewTracker slug={doc.slug} title={doc.title} pathname={doc.pathname} />
       <header className="mb-8 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
         <CuratedVisual
           seed={doc.slug}
@@ -38,6 +41,7 @@ export function ContentPageLayout({
             {doc.title}
           </h1>
           <p className="mt-4 text-sm font-light leading-relaxed text-[var(--muted)]">{doc.description}</p>
+          <OpenInAsk contextId={doc.slug} actions={libraryAskActions(doc.title)} className="mt-5" />
         </div>
       </header>
 

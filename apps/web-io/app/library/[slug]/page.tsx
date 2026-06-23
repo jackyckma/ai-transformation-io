@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getPage, getParamSlugMap } from '@ai-transformation/content';
 import { ContentPageLayout } from '@/components/content-page-layout';
 
-const SLUG_BY_PARAM = getParamSlugMap('/playbook');
+const SLUG_BY_PARAM = getParamSlugMap('/library');
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function PlaybookPage({ params }: PageProps) {
+export default async function LibraryArticlePage({ params }: PageProps) {
   const { slug } = await params;
   const contentSlug = SLUG_BY_PARAM[slug];
   if (!contentSlug) notFound();
@@ -32,5 +32,5 @@ export default async function PlaybookPage({ params }: PageProps) {
   const doc = getPage(contentSlug);
   if (!doc) notFound();
 
-  return <ContentPageLayout doc={doc} backHref="/playbook" backLabel="← AI Transformation Playbook" />;
+  return <ContentPageLayout doc={doc} backHref="/library" backLabel="← All library" />;
 }

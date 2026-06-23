@@ -51,17 +51,16 @@ type GapCta = { label: string; href: string; internal: boolean };
 
 const WEAKEST_GAP_CTAS: Record<AssessmentGapId, GapCta[]> = {
   work_redesign: [
-    { label: 'CIO / technology guide', href: '/functions/cio', internal: true },
-    { label: 'Transformation roadmap framework', href: '/frameworks/roadmap', internal: true },
-    { label: 'AI patterns playbook', href: '/playbook/patterns', internal: true },
+    { label: 'Transformation roadmap', href: '/library/roadmap', internal: true },
+    { label: 'AI patterns', href: '/library/patterns', internal: true },
   ],
   governance: [
-    { label: 'Executive / board guide', href: '/functions/executive', internal: true },
-    { label: 'Governance & operating model framework', href: '/frameworks/governance', internal: true },
+    { label: 'Governance & operating model', href: '/library/governance', internal: true },
+    { label: 'Common pitfalls', href: '/library/common-pitfalls', internal: true },
   ],
   value_measurement: [
-    { label: 'Executive value narrative guide', href: '/functions/executive', internal: true },
-    { label: 'Measuring value framework', href: '/frameworks/measuring-value', internal: true },
+    { label: 'Measuring AI value', href: '/library/measuring-value', internal: true },
+    { label: 'Transformation roadmap', href: '/library/roadmap', internal: true },
   ],
 };
 
@@ -817,10 +816,10 @@ function ResultsView({
             Message our team
           </Link>
           <Link
-            href="/functions"
+            href="/library"
             className="inline-flex items-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:border-[var(--accent)]"
           >
-            All role guides
+            Browse the library
           </Link>
           <a
             href="https://ai-transformation.org"
