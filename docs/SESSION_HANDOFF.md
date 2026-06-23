@@ -1,37 +1,42 @@
 # Session handoff
 
 **Date:** 2026-06-23  
-**Session:** Site design v2 approved + documentation alignment
+**Session:** Wave 11 integration — SITE_DESIGN_v2 Phase 1 IA shell + Ask modes
 
 ## Completed
 
-1. **[SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)** — founder-approved Wave 11+ product & IA spec
-2. **Wave alignment** — `project-progress.md` Wave 11–14 mapped to v2; Wave 10 remains optional
-3. **Doc housekeeping:**
-   - Deprecation banners on `POSITIONING-UX.md`, `product-architecture.md` IA sections
-   - Rewrote `POSITIONING.md`, `docs/README.md`, `DOC_ALIGNMENT_AUDIT.md`
-   - Archived `SCAFFOLD_PLAN.md` → `docs/archive/`
-   - Updated `AGENTS.md`, `project-guidelines.md`, lane skill pointers
-4. **v2 §15** — implementation housekeeping checklist (routes/code to remove during Wave 11)
+1. Integrated both Wave 11 site branches on one deliverable branch:
+   - Base: `orch/wave11-v2-ia/web-io-ia`
+   - Merged: `orch/wave11-v2-ia/web-org-ia`
+   - Merge commit preserved both parents (no squash/rebase)
+2. Confirmed Wave 11 Phase 1 IA shell is present across both sites:
+   - `.io` ribbon: Home · Library · Insights · Ask
+   - `.org` ribbon: Home · Knowledge · Community · Ask
+   - `/ask` mode switchers shipped per matrix (guest vs member)
+   - Logged-out vs logged-in home layouts and onboarding profile fields shipped
+3. §15 housekeeping shipped in app routes:
+   - Removed `.io` legacy hubs: `/frameworks`, `/playbook`, `/functions`, `/assessment` (top-level)
+   - Removed `.org` legacy hubs: `/learn`, `/stories`, `/stories/submit`
+   - No legacy redirects added
+4. Integration-level compatibility fix:
+   - Updated `apps/backend/tsconfig.json` to align with workspace module resolution so shared exports compile consistently with both Next.js apps and backend build
+5. Updated status docs (`docs/CURRENT_STATUS.md`, this file) to mark Wave 11 shipped and set Wave 12 as next-phase scope.
 
-## Shipped before this session (still live)
+## Verification
 
-- Waves 0–9 + sidebar/mobile shell + Agent API v1 + chat companion
-- **Current routes** still pre-v2 (`/frameworks`, `/learn`, etc.) until Wave 11 implementation
+```bash
+pnpm install
+pnpm turbo build
+pnpm --filter @ai-transformation/backend test
+```
+
+All commands pass on the integrated branch.
 
 ## Next
 
-1. **Wave 11** — IA shell per SITE_DESIGN_v2 §11 + §15 cleanup in same PRs
-2. **Wave 10** — Newsletter pilot (optional; parallel OK)
-3. Read **SITE_DESIGN_v2.md** before any nav/feature work — not POSITIONING-UX
-
-## Verify locally
-
-```bash
-pnpm --filter @ai-transformation/backend test
-pnpm turbo build
-./scripts/agent-verify.sh   # if present
-```
+1. **Wave 12 (Phase 2):** object model + visibility enforcement; replace local stubs for My Library / notes / capture / submit with persisted APIs.
+2. Expand moderation/publish pipeline around typed contribution/community objects.
+3. Keep using `docs/SITE_DESIGN_v2.md` as the source of truth for IA/product decisions.
 
 ## Resume checklist for agents
 
