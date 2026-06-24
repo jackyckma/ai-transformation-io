@@ -44,6 +44,35 @@ type DbUnifiedInteractionRow = {
   updatedAt: string;
 };
 
+type ExtendedCommunityInteractionKind =
+  | Exclude<CommunityInteractionKind, 'follow'>
+  | 'request_mentor'
+  | 'ask_for_intro'
+  | 'apply'
+  | 'collaborate';
+
+type DbExtendedInteractionRow = {
+  id: string;
+  userId: string;
+  site: Site;
+  objectId: string;
+  kind: ExtendedCommunityInteractionKind;
+  body: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type DbMatchFeedbackRow = {
+  id: string;
+  userId: string;
+  site: Site;
+  objectId: string;
+  candidateObjectId: string;
+  verdict: 'up' | 'down';
+  createdAt: string;
+  updatedAt: string;
+};
+
 function makeCursor(createdAt: string, id: string): string {
   return `${createdAt}|${id}`;
 }
@@ -92,6 +121,28 @@ function toUnifiedInteractionRecord(row: DbUnifiedInteractionRow): CommunityInte
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   });
+}
+
+function toExtendedInteractionRecord(row: DbExtendedInteractionRow): {
+  id: string;
+  objectId: string;
+  userId: string;
+  site: Site;
+  kind: ExtendedCommunityInteractionKind;
+  body?: string;
+  createdAt: string;
+  updatedAt: string;
+} {
+  return {
+    id: row.id,
+    objectId: row.objectId,
+    userId: row.userId,
+    site: row.site,
+    kind: row.kind,
+    body: row.body ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
 }
 
 function getFollowById(db: Database.Database, id: string): CommunityInteractionRecord | null {
@@ -169,6 +220,41 @@ export function runCommunityMigrations(db: Database.Database): void {
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_community_interactions_site_object_kind
     ON community_interactions (site, object_id, kind);
+  `);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS community_match_feedback (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      site TEXT NOT NULL,
+      object_id TEXT NOT NULL,
+      candidate_object_id TEXT NOT NULL,
+      verdict TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `);
+  db.exec(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_community_match_feedback_user_pair
+    ON community_match_feedback (user_id, object_id, candidate_object_id);
+  `);
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_community_match_feedback_site_object
+    ON community_match_feedback (site, object_id, candidate_object_id);
+  `);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS community_match_runs (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      site TEXT NOT NULL,
+      object_id TEXT NOT NULL,
+      candidate_count INTEGER NOT NULL,
+      metadata TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT NOT NULL
+    );
+  `);
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_community_match_runs_user_object
+    ON community_match_runs (user_id, object_id, created_at DESC);
   `);
 }
 
@@ -348,6 +434,136 @@ export function upsertCommunityInteraction(input: {
   return interaction;
 }
 
+function getExtendedInteractionById(
+  db: Database.Database,
+  id: string,
+): {
+  id: string;
+  objectId: string;
+  userId: string;
+  site: Site;
+  kind: ExtendedCommunityInteractionKind;
+  body?: string;
+  createdAt: string;
+  updatedAt: string;
+} | null {
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        user_id AS userId,
+        site,
+        object_id AS objectId,
+        kind,
+        body,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+      FROM community_interactions
+      WHERE id = @id`,
+    )
+    .get({ id }) as DbExtendedInteractionRow | undefined;
+  return row ? toExtendedInteractionRecord(row) : null;
+}
+
+export function upsertCommunityAction(input: {
+  userId: string;
+  site: Site;
+  objectId: string;
+  kind: Exclude<ExtendedCommunityInteractionKind, 'follow'>;
+  body?: string;
+}): {
+  id: string;
+  objectId: string;
+  userId: string;
+  site: Site;
+  kind: Exclude<ExtendedCommunityInteractionKind, 'follow'>;
+  body?: string;
+  createdAt: string;
+  updatedAt: string;
+} {
+  const db = getDb();
+  const now = new Date().toISOString();
+  const id = db.transaction(() => {
+    const existing = db
+      .prepare(
+        `SELECT id, body
+        FROM community_interactions
+        WHERE user_id = @userId
+          AND object_id = @objectId
+          AND kind = @kind`,
+      )
+      .get({
+        userId: input.userId,
+        objectId: input.objectId,
+        kind: input.kind,
+      }) as { id: string; body: string | null } | undefined;
+
+    if (existing) {
+      db.prepare(
+        `UPDATE community_interactions
+        SET site = @site,
+            body = @body,
+            updated_at = @updatedAt
+        WHERE id = @id`,
+      ).run({
+        id: existing.id,
+        site: input.site,
+        body: input.body ?? existing.body ?? null,
+        updatedAt: now,
+      });
+      return existing.id;
+    }
+
+    const createdId = randomUUID();
+    db.prepare(
+      `INSERT INTO community_interactions (
+        id,
+        user_id,
+        site,
+        object_id,
+        kind,
+        body,
+        created_at,
+        updated_at
+      ) VALUES (
+        @id,
+        @userId,
+        @site,
+        @objectId,
+        @kind,
+        @body,
+        @createdAt,
+        @updatedAt
+      )`,
+    ).run({
+      id: createdId,
+      userId: input.userId,
+      site: input.site,
+      objectId: input.objectId,
+      kind: input.kind,
+      body: input.body ?? null,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return createdId;
+  })();
+
+  const interaction = getExtendedInteractionById(db, id);
+  if (!interaction) {
+    throw new Error('Failed to load community action interaction');
+  }
+  return interaction as {
+    id: string;
+    objectId: string;
+    userId: string;
+    site: Site;
+    kind: Exclude<ExtendedCommunityInteractionKind, 'follow'>;
+    body?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
 export function removeCommunityInteraction(input: {
   userId: string;
   objectId: string;
@@ -388,7 +604,7 @@ export function listInteractionsForUser(input: {
   const request = communityInteractionListRequestSchema.parse(input.request);
   const limit = request.limit ?? 30;
   const followWhere: string[] = ['f.user_id = @userId'];
-  const interactionWhere: string[] = ['i.user_id = @userId'];
+  const interactionWhere: string[] = ['i.user_id = @userId', `i.kind IN ('offer_help', 'join')`];
   const outerWhere: string[] = [];
   const params: Record<string, unknown> = {
     userId: input.userId,
@@ -473,5 +689,155 @@ export function listInteractionsForUser(input: {
   return {
     interactions,
     nextCursor: hasMore && last ? makeCursor(last.createdAt, last.id) : null,
+  };
+}
+
+export function recordMatchRun(input: {
+  userId: string;
+  site: Site;
+  objectId: string;
+  candidateCount: number;
+  metadata?: Record<string, unknown>;
+}): void {
+  const db = getDb();
+  db.prepare(
+    `INSERT INTO community_match_runs (
+      id,
+      user_id,
+      site,
+      object_id,
+      candidate_count,
+      metadata,
+      created_at
+    ) VALUES (
+      @id,
+      @userId,
+      @site,
+      @objectId,
+      @candidateCount,
+      @metadata,
+      @createdAt
+    )`,
+  ).run({
+    id: randomUUID(),
+    userId: input.userId,
+    site: input.site,
+    objectId: input.objectId,
+    candidateCount: input.candidateCount,
+    metadata: JSON.stringify(input.metadata ?? {}),
+    createdAt: new Date().toISOString(),
+  });
+}
+
+export function upsertMatchFeedback(input: {
+  userId: string;
+  site: Site;
+  objectId: string;
+  candidateObjectId: string;
+  verdict: 'up' | 'down';
+}): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  const existing = db
+    .prepare(
+      `SELECT id
+      FROM community_match_feedback
+      WHERE user_id = @userId
+        AND object_id = @objectId
+        AND candidate_object_id = @candidateObjectId`,
+    )
+    .get({
+      userId: input.userId,
+      objectId: input.objectId,
+      candidateObjectId: input.candidateObjectId,
+    }) as { id: string } | undefined;
+
+  if (existing) {
+    db.prepare(
+      `UPDATE community_match_feedback
+      SET site = @site,
+          verdict = @verdict,
+          updated_at = @updatedAt
+      WHERE id = @id`,
+    ).run({
+      id: existing.id,
+      site: input.site,
+      verdict: input.verdict,
+      updatedAt: now,
+    });
+    return;
+  }
+
+  db.prepare(
+    `INSERT INTO community_match_feedback (
+      id,
+      user_id,
+      site,
+      object_id,
+      candidate_object_id,
+      verdict,
+      created_at,
+      updated_at
+    ) VALUES (
+      @id,
+      @userId,
+      @site,
+      @objectId,
+      @candidateObjectId,
+      @verdict,
+      @createdAt,
+      @updatedAt
+    )`,
+  ).run({
+    id: randomUUID(),
+    userId: input.userId,
+    site: input.site,
+    objectId: input.objectId,
+    candidateObjectId: input.candidateObjectId,
+    verdict: input.verdict,
+    createdAt: now,
+    updatedAt: now,
+  });
+}
+
+export function getMatchFeedback(input: {
+  userId: string;
+  objectId: string;
+  candidateObjectId: string;
+}): {
+  id: string;
+  userId: string;
+  objectId: string;
+  candidateObjectId: string;
+  verdict: 'up' | 'down';
+} | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        user_id AS userId,
+        object_id AS objectId,
+        candidate_object_id AS candidateObjectId,
+        verdict
+      FROM community_match_feedback
+      WHERE user_id = @userId
+        AND object_id = @objectId
+        AND candidate_object_id = @candidateObjectId`,
+    )
+    .get({
+      userId: input.userId,
+      objectId: input.objectId,
+      candidateObjectId: input.candidateObjectId,
+    }) as DbMatchFeedbackRow | undefined;
+  if (!row) {
+    return null;
+  }
+  return {
+    id: row.id,
+    userId: row.userId,
+    objectId: row.objectId,
+    candidateObjectId: row.candidateObjectId,
+    verdict: row.verdict,
   };
 }

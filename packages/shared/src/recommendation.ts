@@ -1,8 +1,28 @@
-export type RecommendationSignals<TSignal extends string = string> = Partial<
+export const recommendationSignalNames = [
+  'profileAlignment',
+  'assessmentAlignment',
+  'recentlyViewedAffinity',
+  'bookmarkAffinity',
+  'curatedSpotlightBoost',
+] as const;
+
+export type RecommendationSignalName = (typeof recommendationSignalNames)[number];
+
+export const DEFAULT_RECOMMENDATION_WEIGHTS: RecommendationWeights<RecommendationSignalName> = {
+  profileAlignment: 0.35,
+  assessmentAlignment: 0.25,
+  recentlyViewedAffinity: 0.15,
+  bookmarkAffinity: 0.15,
+  curatedSpotlightBoost: 0.1,
+};
+
+export type RecommendationSignals<TSignal extends string = RecommendationSignalName> = Partial<
   Record<TSignal, number | null | undefined>
 >;
 
-export type RecommendationWeights<TSignal extends string = string> = Partial<Record<TSignal, number>>;
+export type RecommendationWeights<TSignal extends string = RecommendationSignalName> = Partial<
+  Record<TSignal, number>
+>;
 
 export type RecommendationScoreResult<TSignal extends string = string> = {
   score: number;

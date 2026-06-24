@@ -76,15 +76,24 @@ export default function ForAgentsPage() {
             the shared Agentic Access API supports the same contracts used by .org.
           </li>
           <li>
+            <strong>Phase 2 opportunity types are active</strong> — <code>question</code>,{' '}
+            <code>mentorship_request</code>, <code>project_request</code>, <code>collaboration_offer</code>, and{' '}
+            <code>apprenticeship_opportunity</code> now support real fields, create/submit/list/detail, and
+            type-appropriate actions through the shared API.
+          </li>
+          <li>
+            <strong>Experimental matching</strong> — call <code>POST /api/v1/community/match</code> for ranked
+            candidates + reasons, and <code>POST /api/v1/community/match/feedback</code> for thumbs feedback
+            persistence (same behavior as session-based .org UI).
+          </li>
+          <li>
             <strong>Changelog</strong> — <code>GET /api/v1/agent/changelog</code> returns versioned entries
             when the API changes.
           </li>
         </ul>
         <p>
-          Phase 2 community types are reserved in the shared schema (
-          <code>question</code>, <code>mentorship_request</code>, <code>project_request</code>,{' '}
-          <code>collaboration_offer</code>, <code>apprenticeship_opportunity</code>) with a forward-compatible{' '}
-          <code>POST /api/v1/community/match</code> stub.
+          Matching remains clearly labeled as experimental while the rule-based scorer and feedback loop are
+          calibrated.
         </p>
 
         <h2>Client identity</h2>

@@ -1,3 +1,5 @@
+import type { AssessmentGapId } from '@ai-transformation/shared';
+
 export type InsightKind = 'benchmark' | 'dataset' | 'survey';
 
 export type InsightCard = {
@@ -9,6 +11,8 @@ export type InsightCard = {
   summary: string;
   /** "What this means for {role}" — Phase 1 interpretation template (§10). */
   interpretation: string;
+  /** Three Gaps dimensions this insight speaks to — feeds §10 personal reorder. */
+  gaps: AssessmentGapId[];
 };
 
 export const INSIGHT_KIND_LABEL: Record<InsightKind, string> = {
@@ -32,6 +36,7 @@ export const IO_INSIGHTS: InsightCard[] = [
       'Adoption keeps rising, but value concentrates in organizations that redesign workflows and govern autonomy — not those that bolt copilots onto existing processes.',
     interpretation:
       'If most teams report adoption without measurable value, treat the gap as a work-redesign problem before a tooling one.',
+    gaps: ['work_redesign', 'value_measurement'],
   },
   {
     id: 'stanford-ai-index',
@@ -43,6 +48,7 @@ export const IO_INSIGHTS: InsightCard[] = [
       'Capability benchmarks improve faster than enterprise readiness. Model performance is rarely the binding constraint for transformation outcomes.',
     interpretation:
       'Use capability trendlines to set ambition, but anchor your roadmap to governance and value measurement maturity.',
+    gaps: ['governance', 'value_measurement'],
   },
   {
     id: 'oecd-ai-policy',
@@ -54,6 +60,7 @@ export const IO_INSIGHTS: InsightCard[] = [
       'Cross-country indicators on AI investment, skills, and policy — useful for sizing where your industry and region sit relative to peers.',
     interpretation:
       'Benchmark your sector against regional baselines to pressure-test whether your pace matches the competitive context.',
+    gaps: ['governance', 'value_measurement'],
   },
 ];
 

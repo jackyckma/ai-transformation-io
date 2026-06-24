@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   getCommunityActions,
-  isCommunityPhase2ReservedType,
   type Comment,
   type CommunityActionVerb,
   type CommunityObjectRecord,
+  type CommunityObjectType,
+  type MatchCandidate,
 } from '@ai-transformation/shared';
 
 import { getApiClient } from '@/lib/api-client';
@@ -20,15 +21,25 @@ import { SaveButton } from '@/components/save-button';
 import {
   COMMUNITY_TYPE_LABEL,
   VISIBILITY_LABEL,
+  communityTypeFieldEntries,
   communityVerbLabel,
   formatDate,
+  isMatchEligible,
   objectTarget,
   objectTitle,
 } from '@/lib/object-display';
 
 type LoadState = 'loading' | 'ready' | 'not-found' | 'error';
 
-const ASK_VERBS: CommunityActionVerb[] = ['draft_reply', 'turn_into_field_note', 'draft_via_ask'];
+/** Verbs handled by routing to the on-site Ask companion with a prefilled prompt (§6). */
+const ASK_VERBS: CommunityActionVerb[] = [
+  'draft_reply',
+  'turn_into_field_note',
+  'draft_via_ask',
+  'apply',
+  'request_mentor',
+  'ask_for_intro',
+];
 
 function askLinkFor(verb: CommunityActionVerb, title: string, typeLabel: string, id: string) {
   switch (verb) {
@@ -40,6 +51,16 @@ function askLinkFor(verb: CommunityActionVerb, title: string, typeLabel: string,
       );
     case 'draft_via_ask':
       return askPrefillHref('ask', `Help me draft a response to "${title}" and submit it via the agent.`, id);
+    case 'apply':
+      return askPrefillHref('ask', `Help me apply to "${title}" — draft a short expression of interest.`, id);
+    case 'request_mentor':
+      return askPrefillHref(
+        'ask',
+        `Help me request mentorship on "${title}" — draft a short note about what I'm looking for.`,
+        id,
+      );
+    case 'ask_for_intro':
+      return askPrefillHref('ask', `Help me ask for an introduction related to "${title}".`, id);
     default:
       return askPrefillHref('ask', `Draft a thoughtful reply to the community ${typeLabel} "${title}".`, id);
   }
@@ -125,9 +146,10 @@ export function CommunityObjectView({ id }: { id: string }) {
   const title = objectTitle(object);
   const target = objectTarget(object);
   const typeLabel = COMMUNITY_TYPE_LABEL[object.type] ?? object.type;
-  const reserved = isCommunityPhase2ReservedType(object.type);
   const verbs = getCommunityActions(object.type);
   const askLinks = verbs.filter((verb) => ASK_VERBS.includes(verb));
+  const fieldEntries = communityTypeFieldEntries(object.type, object.metadata);
+  const matchEligible = isMatchEligible(object.type);
 
   return (
     <PageShell as="article">
@@ -139,33 +161,26 @@ export function CommunityObjectView({ id }: { id: string }) {
           <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
             {VISIBILITY_LABEL[object.visibility]}
           </span>
-          {reserved ? (
-            <span className="rounded-full border border-[var(--border)] px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
-              Reserved
-            </span>
-          ) : null}
         </div>
         <h1 className="font-serif mt-3 text-2xl font-normal leading-snug tracking-tight md:text-[1.85rem]">
           {title}
         </h1>
         <p className="mt-3 text-xs font-light text-[var(--secondary)]">Updated {formatDate(object.updatedAt)}</p>
 
-        {reserved ? (
-          <ReservedActions verbs={verbs} />
-        ) : (
-          <ActiveActions
-            verbs={verbs}
-            askLinks={askLinks}
-            title={title}
-            typeLabel={typeLabel}
-            objectId={object.id}
-            isMember={isMember}
-            isLoadingAuth={isLoading}
-            target={target}
-            bookmarks={bookmarks}
-            interactions={interactions}
-          />
-        )}
+        {fieldEntries.length > 0 ? <TypeFields entries={fieldEntries} /> : null}
+
+        <ActiveActions
+          verbs={verbs}
+          askLinks={askLinks}
+          title={title}
+          typeLabel={typeLabel}
+          objectId={object.id}
+          isMember={isMember}
+          isLoadingAuth={isLoading}
+          target={target}
+          bookmarks={bookmarks}
+          interactions={interactions}
+        />
 
         {bookmarks.error ? (
           <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-200">
@@ -185,11 +200,21 @@ export function CommunityObjectView({ id }: { id: string }) {
         </p>
       </div>
 
-      {!reserved && verbs.includes('reply') ? (
+      {matchEligible ? (
+        <MatchPanel
+          objectId={object.id}
+          type={object.type}
+          typeLabel={typeLabel}
+          isMember={isMember}
+          isLoadingAuth={isLoading}
+        />
+      ) : null}
+
+      {verbs.includes('reply') ? (
         <ReplyComposer objectId={object.id} isMember={isMember} onPosted={addReply} />
       ) : null}
 
-      {!reserved && verbs.includes('offer_help') ? (
+      {verbs.includes('offer_help') ? (
         <OfferHelpComposer
           isMember={isMember}
           offered={interactions.isDone('offer_help')}
@@ -198,7 +223,7 @@ export function CommunityObjectView({ id }: { id: string }) {
         />
       ) : null}
 
-      <RepliesList replies={replies} reserved={reserved} />
+      <RepliesList replies={replies} />
 
       <BackLink />
     </PageShell>
@@ -216,25 +241,33 @@ function BackLink() {
   );
 }
 
-function ReservedActions({ verbs }: { verbs: readonly CommunityActionVerb[] }) {
+function TypeFields({ entries }: { entries: ReturnType<typeof communityTypeFieldEntries> }) {
   return (
-    <div className="mt-5 border-t border-[var(--border)] pt-4">
-      <p className="text-xs font-light text-[var(--secondary)]">
-        This community type is reserved. These actions are coming soon and are not active yet.
-      </p>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {verbs.map((verb) => (
-          <span
-            key={verb}
-            aria-disabled="true"
-            title="Reserved · coming soon"
-            className="cursor-default rounded-full border border-dashed border-[var(--border)] px-3 py-1 text-xs font-light text-[var(--muted)]/70"
-          >
-            {communityVerbLabel(verb)} · coming soon
-          </span>
-        ))}
-      </div>
-    </div>
+    <dl className="mt-4 grid gap-x-6 gap-y-2 border-t border-[var(--border)] pt-4 sm:grid-cols-[auto_1fr]">
+      {entries.map((entry) => (
+        <div key={entry.key} className="contents">
+          <dt className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)] sm:pt-0.5">
+            {entry.label}
+          </dt>
+          <dd className="text-sm font-light text-[var(--foreground)]">
+            {entry.key === 'tags' || entry.values.length > 1 ? (
+              <span className="flex flex-wrap gap-1.5">
+                {entry.values.map((value) => (
+                  <span
+                    key={value}
+                    className="rounded-full border border-[var(--border)] px-2 py-0.5 text-xs font-light text-[var(--muted)]"
+                  >
+                    {value}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              <span className="whitespace-pre-wrap">{entry.values[0]}</span>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -348,6 +381,211 @@ function InteractionButton({
       }`}
     >
       {pending ? 'Saving…' : active ? activeLabel : idleLabel}
+    </button>
+  );
+}
+
+function MatchPanel({
+  objectId,
+  type,
+  typeLabel,
+  isMember,
+  isLoadingAuth,
+}: {
+  objectId: string;
+  type: CommunityObjectType;
+  typeLabel: string;
+  isMember: boolean;
+  isLoadingAuth: boolean;
+}) {
+  const [state, setState] = useState<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle');
+  const [candidates, setCandidates] = useState<MatchCandidate[]>([]);
+  const [note, setNote] = useState('');
+
+  const runMatch = useCallback(async () => {
+    setState('loading');
+    try {
+      const response = await getApiClient().community.match({ site: 'org', objectId, type, limit: 5 });
+      setCandidates(response.candidates);
+      setNote(response.note ?? '');
+      setState(response.candidates.length > 0 ? 'ready' : 'empty');
+    } catch {
+      setState('error');
+    }
+  }, [objectId, type]);
+
+  return (
+    <section
+      className="mt-10 rounded-xl border border-dashed border-[var(--accent)]/50 bg-[var(--accent)]/5 p-5 md:p-6"
+      aria-labelledby="community-match"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <h2 id="community-match" className="font-serif text-lg font-normal tracking-tight">
+          Find matches
+        </h2>
+        <span className="rounded-full border border-[var(--accent)]/50 bg-[var(--accent)]/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--accent)]">
+          Experimental
+        </span>
+      </div>
+      <p className="mt-2 max-w-2xl text-sm font-light leading-relaxed text-[var(--muted)]">
+        Rule-based suggestions — we rank other community items by shared tags, skills, and type
+        compatibility, with a plain-language reason for each. Not a vetted recommendation; use your
+        judgment.
+      </p>
+
+      {!isMember ? (
+        !isLoadingAuth ? (
+          <p className="mt-4 text-sm font-light text-[var(--muted)]">
+            <Link href="/join" className="text-[var(--accent)] underline underline-offset-4">
+              Sign in
+            </Link>{' '}
+            to find matches for this {typeLabel.toLowerCase()}.
+          </p>
+        ) : null
+      ) : (
+        <>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void runMatch()}
+              disabled={state === 'loading'}
+              className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {state === 'loading'
+                ? 'Finding matches…'
+                : state === 'idle'
+                  ? 'Find matches'
+                  : 'Refresh matches'}
+            </button>
+            {state === 'error' ? (
+              <span role="alert" className="text-sm text-red-700 dark:text-red-200">
+                Could not run matching right now. Try again shortly.
+              </span>
+            ) : null}
+          </div>
+
+          {state === 'empty' ? (
+            <p className="mt-4 text-sm font-light text-[var(--muted)]">
+              No candidate matches yet. As more community items are posted, suggestions will appear here.
+            </p>
+          ) : null}
+
+          {state === 'ready' ? (
+            <>
+              {note ? (
+                <p className="mt-4 text-xs font-light italic text-[var(--secondary)]">{note}</p>
+              ) : null}
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {candidates.map((candidate) => (
+                  <MatchCandidateCard key={candidate.objectId} objectId={objectId} candidate={candidate} />
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </>
+      )}
+    </section>
+  );
+}
+
+function MatchCandidateCard({
+  objectId,
+  candidate,
+}: {
+  objectId: string;
+  candidate: MatchCandidate;
+}) {
+  const [verdict, setVerdict] = useState<'up' | 'down' | null>(null);
+  const candidateTypeLabel = COMMUNITY_TYPE_LABEL[candidate.type] ?? candidate.type;
+  const scorePct = Math.round(candidate.score * 100);
+
+  const sendFeedback = useCallback(
+    async (next: 'up' | 'down') => {
+      setVerdict(next);
+      try {
+        await getApiClient().community.matchFeedback({
+          site: 'org',
+          objectId,
+          candidateObjectId: candidate.objectId,
+          verdict: next,
+        });
+      } catch {
+        // Feedback is best-effort; keep the optimistic state so the user isn't nagged.
+      }
+    },
+    [objectId, candidate.objectId],
+  );
+
+  return (
+    <li className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
+          {candidateTypeLabel}
+        </span>
+        <span className="text-[11px] font-normal text-[var(--accent)]">{scorePct}% match</span>
+      </div>
+      <h3 className="font-serif mt-1 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
+        <Link href={`/community/${encodeURIComponent(candidate.objectId)}`} className="hover:text-[var(--accent)]">
+          {candidate.title}
+        </Link>
+      </h3>
+      {candidate.reasons.length > 0 ? (
+        <ul className="mt-2 flex-1 space-y-1 text-sm font-light text-[var(--muted)]">
+          {candidate.reasons.map((reason) => (
+            <li key={reason} className="flex gap-1.5">
+              <span aria-hidden className="text-[var(--accent)]">
+                •
+              </span>
+              <span>{reason}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div className="mt-3 flex items-center gap-2 border-t border-[var(--border)] pt-3">
+        <span className="text-xs font-light text-[var(--secondary)]">Was this useful?</span>
+        <FeedbackButton
+          label="Mark match helpful"
+          symbol="👍"
+          active={verdict === 'up'}
+          onClick={() => void sendFeedback('up')}
+        />
+        <FeedbackButton
+          label="Mark match unhelpful"
+          symbol="👎"
+          active={verdict === 'down'}
+          onClick={() => void sendFeedback('down')}
+        />
+      </div>
+    </li>
+  );
+}
+
+function FeedbackButton({
+  label,
+  symbol,
+  active,
+  onClick,
+}: {
+  label: string;
+  symbol: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      aria-label={label}
+      title={label}
+      className={`rounded-full border px-2.5 py-1 text-xs transition ${
+        active
+          ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]'
+          : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)]'
+      }`}
+    >
+      {symbol}
     </button>
   );
 }
@@ -501,16 +739,14 @@ function OfferHelpComposer({
   );
 }
 
-function RepliesList({ replies, reserved }: { replies: Comment[]; reserved: boolean }) {
+function RepliesList({ replies }: { replies: Comment[] }) {
   return (
     <section className="mt-10 border-t border-[var(--border)] pt-8" aria-labelledby="community-replies">
       <h2 id="community-replies" className="font-serif text-lg font-normal tracking-tight">
         Replies
       </h2>
       {replies.length === 0 ? (
-        <p className="mt-3 text-sm font-light text-[var(--muted)]">
-          {reserved ? 'Replies open when this type ships.' : 'No replies yet.'}
-        </p>
+        <p className="mt-3 text-sm font-light text-[var(--muted)]">No replies yet.</p>
       ) : (
         <ul className="mt-4 space-y-3">
           {replies.map((reply) => (
