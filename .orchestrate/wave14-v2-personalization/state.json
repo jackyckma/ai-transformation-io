@@ -17,11 +17,11 @@
       "finishedAt": "2026-06-24T16:44:02.177Z",
       "lastUpdate": "2026-06-24T16:44:03.794Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "type-check-only",
-      "attempts": 1
+      "verification": "type-check-only"
     },
     {
       "name": "backend-wave14",
@@ -41,11 +41,11 @@
       "finishedAt": "2026-06-24T16:56:04.335Z",
       "lastUpdate": "2026-06-24T16:56:05.557Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "web-org-wave14",
@@ -65,11 +65,11 @@
       "finishedAt": "2026-06-24T17:09:23.087Z",
       "lastUpdate": "2026-06-24T17:09:26.220Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "type-check-only",
-      "attempts": 1
+      "verification": "type-check-only"
     },
     {
       "name": "web-io-wave14",
@@ -89,11 +89,11 @@
       "finishedAt": "2026-06-24T16:53:31.780Z",
       "lastUpdate": "2026-06-24T16:53:34.994Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "integrate-wave14",
@@ -115,11 +115,11 @@
       "finishedAt": "2026-06-24T17:13:34.202Z",
       "lastUpdate": "2026-06-24T17:13:35.416Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 8,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-wave14",
@@ -139,11 +139,11 @@
       "finishedAt": "2026-06-24T17:19:42.917Z",
       "lastUpdate": "2026-06-24T17:19:42.917Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
