@@ -87,12 +87,12 @@
       "handoffPath": "handoffs/web-io-personal.md",
       "startedAt": "2026-06-24T10:18:04.718Z",
       "finishedAt": "2026-06-24T10:44:19.628Z",
-      "lastUpdate": "2026-06-24T10:44:19.629Z",
+      "lastUpdate": "2026-06-24T10:44:22.707Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "type-check-only",
       "attempts": 1
     },
     {
@@ -133,17 +133,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-24T10:44:24.999Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-24T10:44:24.999Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     },
     {
       "name": "verify-wave12",
@@ -193,6 +194,10 @@
     {
       "at": "2026-06-24T10:34:19.938Z",
       "message": "web-org-personal: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-24T10:44:22.707Z",
+      "message": "web-io-personal: verification self-reported (type-check-only)"
     }
   ]
 }
