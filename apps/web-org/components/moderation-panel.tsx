@@ -1,54 +1,34 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import type {
+  LifecycleStatus,
+  ModerationQueueItem,
+  ModerationTransitionRequest,
+} from '@ai-transformation/shared';
 
-type StoryStatus = 'reviewed' | 'published' | 'featured' | 'archived' | 'spam';
+import { getApiClient } from '@/lib/api-client';
+import {
+  VISIBILITY_LABEL,
+  formatDate,
+  objectExcerpt,
+  subtypeLabel,
+} from '@/lib/object-display';
 
-type ModerationStory = {
-  id: string;
-  title: string;
-  body: string;
-  name?: string | null;
-  email: string;
-  status: StoryStatus;
-  publishedSlug?: string | null;
-  createdAt: string;
-};
+type TransitionStatus = ModerationTransitionRequest['status'];
 
-type ModerationResponse = {
-  ok: true;
-  stories: ModerationStory[];
-};
+const GROUP_ORDER: LifecycleStatus[] = ['draft', 'pending', 'published', 'featured', 'archived', 'rejected'];
 
-type StoryPatchResponse = {
-  ok?: boolean;
-  story?: ModerationStory;
-  error?: string;
-};
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
-
-const STATUS_LABELS: Record<StoryStatus, string> = {
-  reviewed: 'Reviewed',
+const GROUP_LABELS: Record<string, string> = {
+  draft: 'Drafts',
+  pending: 'In review',
   published: 'Published',
   featured: 'Featured',
   archived: 'Archived',
-  spam: 'Spam',
+  rejected: 'Rejected',
 };
 
-const STATUS_ORDER: StoryStatus[] = ['reviewed', 'published', 'featured', 'archived', 'spam'];
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(date);
-}
+const ACCESS_DENIED = /\b40[13]\b/;
 
 function slugify(text: string): string {
   const normalized = text
@@ -59,116 +39,75 @@ function slugify(text: string): string {
     .replace(/-+/g, '-')
     .slice(0, 72)
     .replace(/^-+|-+$/g, '');
-  return normalized || 'story';
+  return normalized || 'contribution';
+}
+
+function itemHeading(item: ModerationQueueItem): string {
+  return item.title?.trim() || item.subject?.trim() || objectExcerpt(item.body, 80);
 }
 
 export function ModerationPanel() {
-  const [stories, setStories] = useState<ModerationStory[]>([]);
+  const [items, setItems] = useState<ModerationQueueItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [accessDenied, setAccessDenied] = useState(false);
-  const [actingStoryId, setActingStoryId] = useState<string | null>(null);
+  const [actingId, setActingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
 
-  async function loadModerationQueue() {
+  async function loadQueue() {
     setIsLoading(true);
     setError('');
     setAccessDenied(false);
-
     try {
-      const authResponse = await fetch(`${API_BASE}/api/auth/me`, {
-        credentials: 'include',
-      });
-      if (authResponse.ok) {
-        await authResponse.json().catch(() => null);
-      }
-
-      const response = await fetch(`${API_BASE}/api/stories/moderation`, {
-        credentials: 'include',
-      });
-
-      if (response.status === 401 || response.status === 403) {
+      const response = await getApiClient().moderation.list();
+      setItems(response.items);
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : '';
+      if (ACCESS_DENIED.test(message)) {
         setAccessDenied(true);
-        setStories([]);
-        return;
+        setItems([]);
+      } else {
+        setError('Unable to load the moderation queue right now. Please try again shortly.');
       }
-
-      if (!response.ok) {
-        setError('Unable to load moderation queue right now. Please try again shortly.');
-        return;
-      }
-
-      const payload = (await response.json()) as ModerationResponse;
-      setStories(payload.stories ?? []);
-    } catch {
-      setError('Unable to reach the server. Please try again shortly.');
     } finally {
       setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadModerationQueue();
+    void loadQueue();
   }, []);
 
-  const groupedStories = useMemo(() => {
-    const groups: Record<StoryStatus, ModerationStory[]> = {
-      reviewed: [],
-      published: [],
-      featured: [],
-      archived: [],
-      spam: [],
-    };
-
-    for (const story of stories) {
-      groups[story.status].push(story);
+  const grouped = useMemo(() => {
+    const groups = new Map<string, ModerationQueueItem[]>();
+    for (const item of items) {
+      const bucket = groups.get(item.status) ?? [];
+      bucket.push(item);
+      groups.set(item.status, bucket);
     }
-
     return groups;
-  }, [stories]);
+  }, [items]);
 
-  async function updateStatus(story: ModerationStory, status: StoryStatus) {
-    setActingStoryId(story.id);
+  async function transition(item: ModerationQueueItem, status: TransitionStatus) {
+    setActingId(item.id);
     setActionError('');
-
     try {
-      const patchBody: { status: StoryStatus; publishedSlug?: string } = { status };
+      const payload: ModerationTransitionRequest = { status };
       if (status === 'published' || status === 'featured') {
-        patchBody.publishedSlug = story.publishedSlug ?? slugify(story.title);
+        payload.publishedSlug = item.publishedSlug ?? slugify(itemHeading(item));
       }
-
-      const response = await fetch(`${API_BASE}/api/stories/${story.id}`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(patchBody),
-      });
-
-      if (response.status === 401 || response.status === 403) {
+      const response = await getApiClient().moderation.transition(item.id, payload);
+      const next = response.item;
+      setItems((prev) => prev.map((current) => (current.id === item.id ? next : current)));
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : '';
+      if (ACCESS_DENIED.test(message)) {
         setAccessDenied(true);
         return;
       }
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as StoryPatchResponse | null;
-        setActionError(payload?.error ?? 'Failed to update story status. Please try again.');
-        return;
-      }
-
-      const payload = (await response.json()) as StoryPatchResponse;
-      if (!payload.ok || !payload.story) {
-        setActionError('Failed to update story status. Please try again.');
-        return;
-      }
-
-      const nextStory = payload.story;
-      setStories((prev) => prev.map((item) => (item.id === story.id ? nextStory : item)));
-    } catch {
-      setActionError('Unable to reach the server. Please try again shortly.');
+      setActionError('Failed to update this item. Please try again.');
     } finally {
-      setActingStoryId(null);
+      setActingId(null);
     }
   }
 
@@ -178,7 +117,8 @@ export function ModerationPanel() {
         <p className="text-xs font-light tracking-wide text-[var(--muted)]">Community</p>
         <h1 className="mt-3 font-serif text-3xl font-normal tracking-tight md:text-4xl">Moderation</h1>
         <p className="mt-4 max-w-2xl text-sm font-light leading-relaxed text-[var(--muted)]">
-          Review submissions, curate what is highlighted, and keep the hub useful for everyone.
+          Review draft and pending contributions and objects across the commons. Publish, feature,
+          archive, or reject — visibility is enforced by the server.
         </p>
       </header>
 
@@ -198,7 +138,7 @@ export function ModerationPanel() {
             </p>
             <button
               type="button"
-              onClick={() => void loadModerationQueue()}
+              onClick={() => void loadQueue()}
               className="inline-flex items-center rounded-full border border-[var(--border)] px-4 py-2 text-sm font-light text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               Retry
@@ -214,82 +154,105 @@ export function ModerationPanel() {
               </p>
             ) : null}
 
-            {STATUS_ORDER.map((status) => {
-              const items = groupedStories[status];
-              return (
-                <section key={status} className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-[var(--border)] pb-2">
-                    <h2 className="font-serif text-xl font-normal tracking-tight">{STATUS_LABELS[status]}</h2>
-                    <span className="text-xs font-light tracking-wide text-[var(--muted)]">
-                      {items.length}
-                    </span>
-                  </div>
-
-                  {items.length === 0 ? (
-                    <p className="text-sm font-light text-[var(--muted)]">No stories in this status.</p>
-                  ) : (
+            {items.length === 0 ? (
+              <p className="text-sm font-light text-[var(--muted)]">
+                The queue is empty. New drafts and pending items will appear here.
+              </p>
+            ) : (
+              GROUP_ORDER.map((status) => {
+                const groupItems = grouped.get(status) ?? [];
+                if (groupItems.length === 0) {
+                  return null;
+                }
+                return (
+                  <section key={status} className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-[var(--border)] pb-2">
+                      <h2 className="font-serif text-xl font-normal tracking-tight">
+                        {GROUP_LABELS[status] ?? status}
+                      </h2>
+                      <span className="text-xs font-light tracking-wide text-[var(--muted)]">
+                        {groupItems.length}
+                      </span>
+                    </div>
                     <ul className="space-y-4">
-                      {items.map((story) => (
+                      {groupItems.map((item) => (
                         <li
-                          key={story.id}
+                          key={item.id}
                           className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5"
                         >
                           <article>
                             <header className="space-y-2">
-                              <h3 className="font-serif text-lg font-normal tracking-tight">{story.title}</h3>
+                              <h3 className="font-serif text-lg font-normal tracking-tight">
+                                {itemHeading(item)}
+                              </h3>
                               <p className="text-xs font-light tracking-wide text-[var(--muted)]">
-                                {story.name?.trim() || 'Community member'} · {story.email} ·{' '}
-                                {formatDate(story.createdAt)} · {STATUS_LABELS[story.status]}
+                                {item.entityType} · {subtypeLabel(item.type)} ·{' '}
+                                {VISIBILITY_LABEL[item.visibility]} · {formatDate(item.createdAt)}
                               </p>
                             </header>
                             <p className="mt-4 whitespace-pre-wrap text-sm font-light leading-relaxed text-[var(--muted)]">
-                              {story.body}
+                              {objectExcerpt(item.body, 600)}
                             </p>
                             <div className="mt-5 flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={() => void updateStatus(story, 'published')}
-                                disabled={actingStoryId === story.id}
-                                className="rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                Publish
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => void updateStatus(story, 'featured')}
-                                disabled={actingStoryId === story.id}
-                                className="rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                Feature
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => void updateStatus(story, 'archived')}
-                                disabled={actingStoryId === story.id}
-                                className="rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                Archive
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => void updateStatus(story, 'spam')}
-                                disabled={actingStoryId === story.id}
-                                className="rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition hover:border-red-400 hover:text-red-700 dark:hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                Mark spam
-                              </button>
+                              <ActionButton
+                                label="Publish"
+                                onClick={() => void transition(item, 'published')}
+                                disabled={actingId === item.id}
+                              />
+                              <ActionButton
+                                label="Feature"
+                                onClick={() => void transition(item, 'featured')}
+                                disabled={actingId === item.id}
+                              />
+                              <ActionButton
+                                label="Archive"
+                                onClick={() => void transition(item, 'archived')}
+                                disabled={actingId === item.id}
+                              />
+                              <ActionButton
+                                label="Reject"
+                                onClick={() => void transition(item, 'rejected')}
+                                disabled={actingId === item.id}
+                                danger
+                              />
                             </div>
                           </article>
                         </li>
                       ))}
                     </ul>
-                  )}
-                </section>
-              );
-            })}
+                  </section>
+                );
+              })
+            )}
           </div>
         ) : null}
       </div>
     </section>
+  );
+}
+
+function ActionButton({
+  label,
+  onClick,
+  disabled,
+  danger = false,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled: boolean;
+  danger?: boolean;
+}) {
+  const hover = danger
+    ? 'hover:border-red-400 hover:text-red-700 dark:hover:text-red-300'
+    : 'hover:border-[var(--accent)] hover:text-[var(--accent)]';
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition ${hover} disabled:cursor-not-allowed disabled:opacity-60`}
+    >
+      {label}
+    </button>
   );
 }
