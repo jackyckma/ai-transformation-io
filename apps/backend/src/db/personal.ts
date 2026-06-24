@@ -14,13 +14,16 @@ import type {
   RecentlyViewedUpdateRequest,
 } from '@ai-transformation/shared';
 import {
+  activitySummarySchema,
   annotationSchema,
   bookmarkSchema,
   commentSchema,
+  objectSubtypeSchema,
   noteSchema,
   personalTargetSchema,
   profileRecordSchema,
   recentlyViewedEntrySchema,
+  type ActivitySummary,
   type Annotation,
   type Bookmark,
   type Comment,
@@ -109,6 +112,15 @@ type ProfileRow = {
   updatedAt: string;
 };
 
+type FollowedTopicRow = {
+  type: string;
+  metadata: string | null;
+};
+
+type RecentTypeRow = {
+  type: string;
+};
+
 function parseMetadata(value: string | null): Record<string, unknown> | undefined {
   if (!value) {
     return undefined;
@@ -122,6 +134,18 @@ function parseMetadata(value: string | null): Record<string, unknown> | undefine
   } catch {
     return undefined;
   }
+}
+
+function incrementCount(target: Map<string, number>, key: string): void {
+  target.set(key, (target.get(key) ?? 0) + 1);
+}
+
+function normalizeTopic(value: string): string | null {
+  const normalized = value.trim().toLowerCase();
+  if (normalized.length === 0) {
+    return null;
+  }
+  return normalized.slice(0, 120);
 }
 
 function buildPersonalFilters(input: PersonalListRequest): {
@@ -1150,4 +1174,126 @@ export function setProfile(input: {
     throw new Error('Failed to load profile');
   }
   return profile;
+}
+
+export function getActivitySummary(input: { userId: string; site: 'io' | 'org' }): ActivitySummary {
+  const db = getDb();
+  const followedRows = db
+    .prepare(
+      `SELECT
+        o.type AS type,
+        o.metadata AS metadata
+      FROM community_follows f
+      JOIN objects o
+        ON o.id = f.object_id
+      WHERE f.user_id = @userId
+        AND f.site = @site
+        AND o.object_type = 'community'`,
+    )
+    .all({
+      userId: input.userId,
+      site: input.site,
+    }) as FollowedTopicRow[];
+
+  const topicCounts = new Map<string, number>();
+  for (const row of followedRows) {
+    const normalizedType = normalizeTopic(row.type);
+    if (normalizedType) {
+      incrementCount(topicCounts, normalizedType);
+    }
+    const metadata = parseMetadata(row.metadata);
+    const tags = metadata?.tags;
+    if (Array.isArray(tags)) {
+      for (const tag of tags) {
+        if (typeof tag !== 'string') {
+          continue;
+        }
+        const normalizedTag = normalizeTopic(tag);
+        if (!normalizedTag) {
+          continue;
+        }
+        incrementCount(topicCounts, normalizedTag);
+      }
+    }
+  }
+
+  const contributionsRow = db
+    .prepare(
+      `SELECT COUNT(*) AS count
+      FROM contributions
+      WHERE user_id = @userId
+        AND site = @site`,
+    )
+    .get({
+      userId: input.userId,
+      site: input.site,
+    }) as { count: number };
+
+  const interactionsRow = db
+    .prepare(
+      `SELECT COUNT(*) AS count
+      FROM community_interactions
+      WHERE user_id = @userId
+        AND site = @site`,
+    )
+    .get({
+      userId: input.userId,
+      site: input.site,
+    }) as { count: number };
+
+  const bookmarksRow = db
+    .prepare(
+      `SELECT COUNT(*) AS count
+      FROM personal_bookmarks
+      WHERE user_id = @userId
+        AND site = @site`,
+    )
+    .get({
+      userId: input.userId,
+      site: input.site,
+    }) as { count: number };
+
+  const recentTypeRows = db
+    .prepare(
+      `SELECT o.type AS type
+      FROM personal_recently_viewed rv
+      JOIN objects o
+        ON o.id = rv.target_id
+      WHERE rv.user_id = @userId
+        AND rv.site = @site
+        AND rv.target_type = 'object'
+      UNION ALL
+      SELECT o.type AS type
+      FROM community_interactions i
+      JOIN objects o
+        ON o.id = i.object_id
+      WHERE i.user_id = @userId
+        AND i.site = @site`,
+    )
+    .all({
+      userId: input.userId,
+      site: input.site,
+    }) as RecentTypeRow[];
+
+  const recentTypeCounts = new Map<string, number>();
+  for (const row of recentTypeRows) {
+    const parsedType = objectSubtypeSchema.safeParse(row.type);
+    if (!parsedType.success) {
+      continue;
+    }
+    incrementCount(recentTypeCounts, parsedType.data);
+  }
+
+  return activitySummarySchema.parse({
+    followedTopics: Array.from(topicCounts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([topic, count]) => ({ topic, count })),
+    contributionsCount: contributionsRow.count,
+    interactionsCount: interactionsRow.count,
+    bookmarksCount: bookmarksRow.count,
+    recentObjectTypes: Array.from(recentTypeCounts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([type, count]) => ({ type, count })),
+    generatedAt: new Date().toISOString(),
+  });
 }

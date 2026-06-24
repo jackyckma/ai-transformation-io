@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  activitySummaryRequestSchema,
   annotationCreateRequestSchema,
   annotationUpdateRequestSchema,
   agentContributionWriteSchema,
@@ -26,7 +27,7 @@ import {
   publishPreferenceSetRequestSchema,
   recentlyViewedCreateRequestSchema,
   recentlyViewedUpdateRequestSchema,
-  isCommunityPhase2ReservedType,
+  getCommunityTypeFields,
   type Site,
 } from '@ai-transformation/shared';
 import { Hono } from 'hono';
@@ -59,6 +60,7 @@ import {
   deleteComment,
   deleteNote,
   deleteRecentlyViewed,
+  getActivitySummary,
   getProfile,
   listAnnotations,
   listBookmarks,
@@ -206,15 +208,46 @@ export function requireResolvedUser(requester: Requester): UserRow | null {
   return requester.bearerOwnerUser ?? null;
 }
 
-function toReservedCommunityMetadata(
-  metadata: Record<string, unknown> | undefined,
-  type: string,
-): Record<string, unknown> {
+function buildEmptyActivitySummary() {
   return {
-    ...(metadata ?? {}),
-    reserved: true,
-    reservedPhase: 'phase2',
-    reservedType: type,
+    followedTopics: [],
+    contributionsCount: 0,
+    interactionsCount: 0,
+    bookmarksCount: 0,
+    recentObjectTypes: [],
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+function normalizeCommunityMetadata(
+  objectType: string,
+  type: string,
+  metadata: Record<string, unknown> | undefined,
+): { metadata: Record<string, unknown> | undefined; error: string | null } {
+  if (objectType !== 'community') {
+    return { metadata, error: null };
+  }
+  const typeFields = getCommunityTypeFields(type);
+  if (!typeFields) {
+    return { metadata, error: null };
+  }
+  const nextMetadata = metadata ?? {};
+  const candidateTypeFields: Record<string, unknown> = {};
+  for (const key of Object.keys(typeFields.shape)) {
+    if (Object.prototype.hasOwnProperty.call(nextMetadata, key)) {
+      candidateTypeFields[key] = nextMetadata[key];
+    }
+  }
+  const parsedTypeFields = typeFields.safeParse(candidateTypeFields);
+  if (!parsedTypeFields.success) {
+    return { metadata, error: getValidationErrorMessage(parsedTypeFields.error) };
+  }
+  return {
+    metadata: {
+      ...nextMetadata,
+      ...parsedTypeFields.data,
+    },
+    error: null,
   };
 }
 
@@ -326,18 +359,18 @@ objectsRouter.post('/objects', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
-  const reservedCommunityType =
-    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
+  const normalizedMetadata = normalizeCommunityMetadata(parsed.data.objectType, parsed.data.type, parsed.data.metadata);
+  if (normalizedMetadata.error) {
+    return c.json({ ok: false, error: normalizedMetadata.error }, 400);
+  }
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const object = createObject({
     payload: {
       ...parsed.data,
-      status: reservedCommunityType ? 'draft' : (parsed.data.status ?? 'draft'),
-      metadata: reservedCommunityType
-        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
-        : parsed.data.metadata,
+      status: parsed.data.status ?? 'draft',
+      metadata: normalizedMetadata.metadata,
     },
     ownerUserId: authenticated.userId,
   });
@@ -360,18 +393,18 @@ objectsRouter.post('/objects/drafts', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
-  const reservedCommunityType =
-    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
+  const normalizedMetadata = normalizeCommunityMetadata(parsed.data.objectType, parsed.data.type, parsed.data.metadata);
+  if (normalizedMetadata.error) {
+    return c.json({ ok: false, error: normalizedMetadata.error }, 400);
+  }
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const object = saveObjectDraft({
     payload: {
       ...parsed.data,
-      status: reservedCommunityType ? 'draft' : parsed.data.status,
-      metadata: reservedCommunityType
-        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
-        : parsed.data.metadata,
+      status: parsed.data.status,
+      metadata: normalizedMetadata.metadata,
     },
     ownerUserId: authenticated.userId,
   });
@@ -546,18 +579,18 @@ objectsRouter.post('/contributions', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
-  const reservedCommunityType =
-    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
+  const normalizedMetadata = normalizeCommunityMetadata(parsed.data.objectType, parsed.data.type, parsed.data.metadata);
+  if (normalizedMetadata.error) {
+    return c.json({ ok: false, error: normalizedMetadata.error }, 400);
+  }
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const contribution = createContribution({
     payload: {
       ...parsed.data,
-      status: reservedCommunityType ? 'draft' : (parsed.data.status ?? 'draft'),
-      metadata: reservedCommunityType
-        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
-        : parsed.data.metadata,
+      status: parsed.data.status ?? 'draft',
+      metadata: normalizedMetadata.metadata,
     },
     ownerUserId: authenticated.userId,
     ownerEmail: authenticated.email,
@@ -583,18 +616,18 @@ objectsRouter.post('/contributions/drafts', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
-  const reservedCommunityType =
-    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
+  const normalizedMetadata = normalizeCommunityMetadata(parsed.data.objectType, parsed.data.type, parsed.data.metadata);
+  if (normalizedMetadata.error) {
+    return c.json({ ok: false, error: normalizedMetadata.error }, 400);
+  }
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const contribution = saveContributionDraft({
     payload: {
       ...parsed.data,
-      status: reservedCommunityType ? 'draft' : parsed.data.status,
-      metadata: reservedCommunityType
-        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
-        : parsed.data.metadata,
+      status: parsed.data.status,
+      metadata: normalizedMetadata.metadata,
     },
     ownerUserId: authenticated.userId,
     ownerEmail: authenticated.email,
@@ -1058,6 +1091,30 @@ objectsRouter.delete('/personal/recently-viewed/:id', (c) => {
     return c.json({ ok: false, error: 'Entry not found' }, 404);
   }
   return c.json({ ok: true, id: c.req.param('id') });
+});
+
+objectsRouter.get('/personal/activity-summary', (c) => {
+  const requester = resolveRequester(c);
+  const parsed = activitySummaryRequestSchema.safeParse({
+    site: c.req.query('site') ?? requester.site,
+  });
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({
+      ok: true,
+      summary: buildEmptyActivitySummary(),
+    });
+  }
+  return c.json({
+    ok: true,
+    summary: getActivitySummary({
+      userId: user.id,
+      site: parsed.data.site,
+    }),
+  });
 });
 
 objectsRouter.get('/moderation/queue', (c) => {
