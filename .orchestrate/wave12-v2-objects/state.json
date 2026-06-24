@@ -1,0 +1,208 @@
+{
+  "rootSlug": "wave12-v2-objects",
+  "tasks": [
+    {
+      "name": "shared-foundation",
+      "type": "worker",
+      "branch": "orch/wave12-v2-objects/shared-foundation",
+      "startingRef": "main",
+      "dependsOn": [],
+      "agentId": "bc-fa812a2a-de9d-47c1-abd5-4003a48f9b0c",
+      "runId": "run-61955c93-a33c-42c9-84ce-d6be7defbbd5",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/shared-foundation.md",
+      "startedAt": "2026-06-24T10:11:16.848Z",
+      "finishedAt": "2026-06-24T10:17:52.032Z",
+      "lastUpdate": "2026-06-24T10:17:55.184Z",
+      "note": "respawned by self-planner (was error; attempts=1)",
+      "attempts": 2,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "type-check-only"
+    },
+    {
+      "name": "backend-objects",
+      "type": "worker",
+      "branch": "orch/wave12-v2-objects/backend-objects",
+      "startingRef": "orch/wave12-v2-objects/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": "bc-e90adce2-72fd-47cd-8cb5-99424a340459",
+      "runId": "run-ac9c139d-f601-4cc5-806c-27654775e053",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/backend-objects.md",
+      "startedAt": "2026-06-24T10:18:00.658Z",
+      "finishedAt": "2026-06-24T10:27:24.358Z",
+      "lastUpdate": "2026-06-24T10:27:27.710Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "unit-test-verified"
+    },
+    {
+      "name": "backend-personal",
+      "type": "worker",
+      "branch": "orch/wave12-v2-objects/backend-personal",
+      "startingRef": "orch/wave12-v2-objects/backend-objects",
+      "dependsOn": [
+        "backend-objects"
+      ],
+      "agentId": "bc-65c1a312-d7df-4591-b9e3-06288375f778",
+      "runId": "run-932e4c5d-7099-4c45-bac8-2e9ddffb8ea9",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/backend-personal.md",
+      "startedAt": "2026-06-24T10:27:31.264Z",
+      "finishedAt": "2026-06-24T10:33:45.320Z",
+      "lastUpdate": "2026-06-24T10:33:48.373Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "unit-test-verified"
+    },
+    {
+      "name": "web-io-personal",
+      "type": "worker",
+      "branch": "`orch/wave12-v2-objects/web-io-personal` (work committed on local `cursor/wave12-web-io-personal-b9a1`, pushed to the orchestrator branch ref)",
+      "startingRef": "orch/wave12-v2-objects/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": "bc-91c212f5-be84-42fa-b1bc-9467639bb9a1",
+      "runId": "run-ff6921fc-0e60-4c0c-afa0-d7b993e56465",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-io-personal.md",
+      "startedAt": "2026-06-24T10:18:04.718Z",
+      "finishedAt": "2026-06-24T10:44:19.628Z",
+      "lastUpdate": "2026-06-24T10:44:22.707Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "type-check-only"
+    },
+    {
+      "name": "web-org-personal",
+      "type": "worker",
+      "branch": "orch/wave12-v2-objects/web-org-personal",
+      "startingRef": "orch/wave12-v2-objects/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": "bc-47012463-a432-43f9-a555-a923eba85221",
+      "runId": "run-d4666f58-ca71-4a9a-a725-8a3680f69a30",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-org-personal.md",
+      "startedAt": "2026-06-24T10:18:08.131Z",
+      "finishedAt": "2026-06-24T10:34:18.670Z",
+      "lastUpdate": "2026-06-24T10:34:19.937Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "type-check-only"
+    },
+    {
+      "name": "integrate-wave12",
+      "type": "worker",
+      "branch": "orch/wave12-v2-objects/integrate-wave12",
+      "startingRef": "orch/wave12-v2-objects/backend-personal",
+      "dependsOn": [
+        "backend-objects",
+        "backend-personal",
+        "web-io-personal",
+        "web-org-personal"
+      ],
+      "agentId": "bc-6f280360-13c6-4133-886f-83a930d18caf",
+      "runId": "run-65201092-3701-4328-b3c1-41c668bc1dc2",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/integrate-wave12.md",
+      "startedAt": "2026-06-24T10:44:24.999Z",
+      "finishedAt": "2026-06-24T10:50:01.945Z",
+      "lastUpdate": "2026-06-24T10:50:05.753Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": 6,
+      "failureMode": null,
+      "verification": "unit-test-verified"
+    },
+    {
+      "name": "verify-wave12",
+      "type": "verifier",
+      "branch": "`orch/wave12-v2-objects/integrate-wave12` (no commits added; verification was non-destructive, temp probe scripts removed, working tree clean)",
+      "startingRef": "orch/wave12-v2-objects/integrate-wave12",
+      "dependsOn": [
+        "integrate-wave12"
+      ],
+      "agentId": "bc-c8d1eeb4-3151-4e25-8708-0f030ee91f74",
+      "runId": "run-1928fdc9-d038-4df5-ab62-c0359aa743f7",
+      "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-wave12.md",
+      "startedAt": "2026-06-24T10:50:08.549Z",
+      "finishedAt": "2026-06-24T11:01:57.567Z",
+      "lastUpdate": "2026-06-24T11:01:57.568Z",
+      "note": null,
+      "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    }
+  ],
+  "attention": [
+    {
+      "at": "2026-06-24T10:09:16.511Z",
+      "message": "shared-foundation: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents."
+    },
+    {
+      "at": "2026-06-24T10:11:07.860Z",
+      "message": "shared-foundation: respawned by self-planner (was error)"
+    },
+    {
+      "at": "2026-06-24T10:17:55.184Z",
+      "message": "shared-foundation: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-24T10:27:27.711Z",
+      "message": "backend-objects: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-24T10:33:48.373Z",
+      "message": "backend-personal: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-24T10:34:19.938Z",
+      "message": "web-org-personal: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-24T10:44:22.707Z",
+      "message": "web-io-personal: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-24T10:50:05.753Z",
+      "message": "integrate-wave12: verification self-reported (unit-test-verified)"
+    }
+  ]
+}
