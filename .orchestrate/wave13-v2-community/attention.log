@@ -1,0 +1,6 @@
+[2026-06-24T13:18:12.985Z] shared-foundation: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents.
+[2026-06-24T13:19:37.463Z] shared-foundation: respawned by self-planner (was error)
+[2026-06-24T13:22:48.082Z] shared-foundation: verification self-reported (type-check-only)
+[2026-06-24T13:29:50.259Z] backend-community: verification self-reported (unit-test-verified)
+[2026-06-24T13:43:52.702Z] web-org-community: verification self-reported (live-ui-verified)
+[2026-06-24T13:48:21.752Z] integrate-wave13: verification self-reported (unit-test-verified)
