@@ -63,12 +63,12 @@
       "handoffPath": "handoffs/backend-personal.md",
       "startedAt": "2026-06-24T10:27:31.264Z",
       "finishedAt": "2026-06-24T10:33:45.320Z",
-      "lastUpdate": "2026-06-24T10:33:45.320Z",
+      "lastUpdate": "2026-06-24T10:33:48.373Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
@@ -106,12 +106,12 @@
       "agentId": "bc-47012463-a432-43f9-a555-a923eba85221",
       "runId": "run-d4666f58-ca71-4a9a-a725-8a3680f69a30",
       "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-org-personal.md",
       "startedAt": "2026-06-24T10:18:08.131Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-24T10:18:10.846Z",
+      "finishedAt": "2026-06-24T10:34:18.670Z",
+      "lastUpdate": "2026-06-24T10:34:18.670Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -185,6 +185,10 @@
     {
       "at": "2026-06-24T10:27:27.711Z",
       "message": "backend-objects: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-24T10:33:48.373Z",
+      "message": "backend-personal: verification self-reported (unit-test-verified)"
     }
   ]
 }
