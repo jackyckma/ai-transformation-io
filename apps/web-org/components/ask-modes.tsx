@@ -12,6 +12,7 @@ import {
 } from '@ai-transformation/shared';
 
 import { useAuthUser } from '@/lib/use-auth-user';
+import { getApiClient } from '@/lib/api-client';
 
 function parseMode(raw: string | null): AskMode | null {
   if (raw && (askModeValues as readonly string[]).includes(raw)) {
@@ -22,6 +23,7 @@ function parseMode(raw: string | null): AskMode | null {
 
 export function AskModes() {
   const { audience, isLoading } = useAuthUser();
+  const isMember = audience === 'member';
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -79,44 +81,100 @@ export function AskModes() {
         {activeMode === 'ask' ? (
           <SidebarChat site="org" layout="page" initialInput={initialInput} />
         ) : (
-          <LocalDraftStub mode={activeMode} initialBody={initialInput} />
+          <AskComposer mode={activeMode} initialBody={initialInput} isMember={isMember} />
         )}
       </div>
     </div>
   );
 }
 
+type ComposerMode = Exclude<AskMode, 'ask'>;
+
 type SavedDraft = { id: string; body: string; createdAt: string };
 
 const STORE_PREFIX = 'atx-org-ask-';
 
-const MODE_COPY: Record<Exclude<AskMode, 'ask'>, { title: string; verb: string; saved: string; note: string }> = {
+const MODE_COPY: Record<ComposerMode, { title: string; verb: string; saved: string; note: string }> = {
   capture: {
     title: 'Capture a private note',
     verb: 'Save note',
-    saved: 'Saved notes',
-    note: 'Private to you. Notes sync to your library when the object model ships (Wave 12).',
+    saved: 'Offline notes',
+    note: 'Private to you. Saved to your library and visible under Knowledge → My Library.',
   },
   submit: {
     title: 'Draft a contribution',
     verb: 'Save draft',
-    saved: 'Saved drafts',
-    note: 'Drafts stay local for now. Submitting to review or agent auto-publish wires up in Wave 13.',
+    saved: 'Offline drafts',
+    note: 'Saved as a draft. Auto-publish or review-before-publish follows your Settings preference; it never becomes public on its own.',
   },
   'find-help': {
     title: 'Describe what you need',
     verb: 'Save request',
-    saved: 'Saved requests',
-    note: 'Becomes a community help request once the community types ship (Wave 13).',
+    saved: 'Offline requests',
+    note: 'Creates a community help request draft. Full reply and matching actions arrive in Wave 13.',
   },
 };
 
-function LocalDraftStub({ mode, initialBody }: { mode: Exclude<AskMode, 'ask'>; initialBody?: string }) {
+async function writeAsk(mode: ComposerMode, body: string): Promise<void> {
+  const client = getApiClient();
+  if (mode === 'capture') {
+    await client.notes.create({ site: 'org', body, isCapture: true, captureSource: 'ask_capture' });
+    return;
+  }
+  if (mode === 'find-help') {
+    await client.objects.saveDraft({
+      objectType: 'community',
+      type: 'help_request',
+      site: 'org',
+      visibility: 'public',
+      body,
+      status: 'draft',
+    });
+    return;
+  }
+
+  const draft = await client.contributions.saveDraft({
+    site: 'org',
+    objectType: 'knowledge',
+    type: 'field_note',
+    visibility: 'members-only',
+    body,
+    status: 'draft',
+  });
+
+  let publishMode: 'auto' | 'review' = 'review';
+  try {
+    const preference = await client.publishPreference.get();
+    publishMode = preference.publishPreference.defaultPublishMode;
+  } catch {
+    publishMode = 'review';
+  }
+
+  if (publishMode === 'auto') {
+    await client.contributions.submit({
+      contributionId: draft.contribution.id,
+      publishMode: 'auto',
+      visibility: 'members-only',
+    });
+  }
+}
+
+function AskComposer({
+  mode,
+  initialBody,
+  isMember,
+}: {
+  mode: ComposerMode;
+  initialBody?: string;
+  isMember: boolean;
+}) {
   const copy = MODE_COPY[mode];
   const storeKey = `${STORE_PREFIX}${mode}`;
   const [body, setBody] = useState('');
   const [drafts, setDrafts] = useState<SavedDraft[]>([]);
   const [status, setStatus] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     setBody(initialBody ?? '');
@@ -124,6 +182,7 @@ function LocalDraftStub({ mode, initialBody }: { mode: Exclude<AskMode, 'ask'>; 
 
   useEffect(() => {
     setStatus('');
+    setError('');
     try {
       const raw = window.localStorage.getItem(storeKey);
       setDrafts(raw ? (JSON.parse(raw) as SavedDraft[]) : []);
@@ -132,36 +191,58 @@ function LocalDraftStub({ mode, initialBody }: { mode: Exclude<AskMode, 'ask'>; 
     }
   }, [storeKey]);
 
-  const persist = useCallback(
+  const persistLocal = useCallback(
     (next: SavedDraft[]) => {
       setDrafts(next);
       try {
         window.localStorage.setItem(storeKey, JSON.stringify(next));
       } catch {
-        // Local persistence is best-effort in Phase 1.
+        // Best-effort local fallback.
       }
     },
     [storeKey],
   );
 
-  function save() {
-    const trimmed = body.trim();
-    if (trimmed.length < 1) {
-      setStatus('Add a little detail before saving.');
-      return;
-    }
+  function saveLocal(trimmed: string, message: string) {
     const entry: SavedDraft = {
       id: `${Date.now()}`,
       body: trimmed,
       createdAt: new Date().toISOString(),
     };
-    persist([entry, ...drafts]);
-    setBody('');
-    setStatus('Saved locally.');
+    persistLocal([entry, ...drafts]);
+    setStatus(message);
+  }
+
+  async function save() {
+    const trimmed = body.trim();
+    if (trimmed.length < 1) {
+      setError('Add a little detail before saving.');
+      return;
+    }
+    setError('');
+    setStatus('');
+
+    if (!isMember) {
+      saveLocal(trimmed, 'Saved on this device. Sign in to save to your account.');
+      setBody('');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await writeAsk(mode, trimmed);
+      setBody('');
+      setStatus(SAVED_MESSAGE[mode]);
+    } catch {
+      saveLocal(trimmed, 'Saved on this device — could not reach your account. We kept it here.');
+      setBody('');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function remove(id: string) {
-    persist(drafts.filter((draft) => draft.id !== id));
+    persistLocal(drafts.filter((draft) => draft.id !== id));
   }
 
   return (
@@ -179,6 +260,7 @@ function LocalDraftStub({ mode, initialBody }: { mode: Exclude<AskMode, 'ask'>; 
           onChange={(event) => {
             setBody(event.target.value);
             setStatus('');
+            setError('');
           }}
           rows={6}
           placeholder={ASK_MODE_METADATA[mode].placeholder}
@@ -187,14 +269,20 @@ function LocalDraftStub({ mode, initialBody }: { mode: Exclude<AskMode, 'ask'>; 
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={save}
-            className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90"
+            onClick={() => void save()}
+            disabled={submitting}
+            className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {copy.verb}
+            {submitting ? 'Saving…' : copy.verb}
           </button>
           {status ? (
             <span role="status" className="text-sm font-light text-[var(--accent)]">
               {status}
+            </span>
+          ) : null}
+          {error ? (
+            <span role="alert" className="text-sm text-red-700 dark:text-red-200">
+              {error}
             </span>
           ) : null}
         </div>
@@ -227,3 +315,9 @@ function LocalDraftStub({ mode, initialBody }: { mode: Exclude<AskMode, 'ask'>; 
     </section>
   );
 }
+
+const SAVED_MESSAGE: Record<ComposerMode, string> = {
+  capture: 'Saved to your notes.',
+  submit: 'Draft saved. Check Settings for your publish preference.',
+  'find-help': 'Help request drafted.',
+};
