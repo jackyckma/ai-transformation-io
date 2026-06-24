@@ -26,6 +26,7 @@ import {
   publishPreferenceSetRequestSchema,
   recentlyViewedCreateRequestSchema,
   recentlyViewedUpdateRequestSchema,
+  isCommunityPhase2ReservedType,
   type Site,
 } from '@ai-transformation/shared';
 import { Hono } from 'hono';
@@ -117,7 +118,7 @@ function parseInteger(value: string | undefined): number | undefined {
   return parsed;
 }
 
-function getValidationErrorMessage(error: {
+export function getValidationErrorMessage(error: {
   issues: Array<{ message: string }>;
   flatten: () => {
     formErrors: string[];
@@ -137,7 +138,7 @@ function getSessionUser(c: { get: (key: 'user') => UserRow | null | undefined })
   return user ?? null;
 }
 
-type Requester = {
+export type Requester = {
   site: Site;
   sessionUser: UserRow | null;
   bearerEmail: string | null;
@@ -145,7 +146,7 @@ type Requester = {
   isBearerAuthenticated: boolean;
 };
 
-function resolveRequester(c: {
+export function resolveRequester(c: {
   req: {
     header: (name: string) => string | undefined;
     query: (name: string) => string | undefined;
@@ -167,7 +168,7 @@ function resolveRequester(c: {
   };
 }
 
-function toVisibilityContext(requester: Requester): VisibilityQueryContext {
+export function toVisibilityContext(requester: Requester): VisibilityQueryContext {
   return {
     site: requester.site,
     requesterUserId: requester.sessionUser?.id ?? null,
@@ -176,7 +177,11 @@ function toVisibilityContext(requester: Requester): VisibilityQueryContext {
   };
 }
 
-function requireAuthenticated(requester: Requester): { userId: string | null; email: string | null; name: string | null } | null {
+export function requireAuthenticated(requester: Requester): {
+  userId: string | null;
+  email: string | null;
+  name: string | null;
+} | null {
   if (requester.sessionUser) {
     return {
       userId: requester.sessionUser.id,
@@ -194,11 +199,23 @@ function requireAuthenticated(requester: Requester): { userId: string | null; em
   return null;
 }
 
-function requireResolvedUser(requester: Requester): UserRow | null {
+export function requireResolvedUser(requester: Requester): UserRow | null {
   if (requester.sessionUser) {
     return requester.sessionUser;
   }
   return requester.bearerOwnerUser ?? null;
+}
+
+function toReservedCommunityMetadata(
+  metadata: Record<string, unknown> | undefined,
+  type: string,
+): Record<string, unknown> {
+  return {
+    ...(metadata ?? {}),
+    reserved: true,
+    reservedPhase: 'phase2',
+    reservedType: type,
+  };
 }
 
 function parseObjectListQuery(c: {
@@ -309,13 +326,18 @@ objectsRouter.post('/objects', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
+  const reservedCommunityType =
+    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const object = createObject({
     payload: {
       ...parsed.data,
-      status: parsed.data.status ?? 'draft',
+      status: reservedCommunityType ? 'draft' : (parsed.data.status ?? 'draft'),
+      metadata: reservedCommunityType
+        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
+        : parsed.data.metadata,
     },
     ownerUserId: authenticated.userId,
   });
@@ -338,11 +360,19 @@ objectsRouter.post('/objects/drafts', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
+  const reservedCommunityType =
+    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const object = saveObjectDraft({
-    payload: parsed.data,
+    payload: {
+      ...parsed.data,
+      status: reservedCommunityType ? 'draft' : parsed.data.status,
+      metadata: reservedCommunityType
+        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
+        : parsed.data.metadata,
+    },
     ownerUserId: authenticated.userId,
   });
   if (!object) {
@@ -516,13 +546,18 @@ objectsRouter.post('/contributions', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
+  const reservedCommunityType =
+    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const contribution = createContribution({
     payload: {
       ...parsed.data,
-      status: parsed.data.status ?? 'draft',
+      status: reservedCommunityType ? 'draft' : (parsed.data.status ?? 'draft'),
+      metadata: reservedCommunityType
+        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
+        : parsed.data.metadata,
     },
     ownerUserId: authenticated.userId,
     ownerEmail: authenticated.email,
@@ -548,11 +583,19 @@ objectsRouter.post('/contributions/drafts', async (c) => {
   if (!parsed.success) {
     return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
   }
+  const reservedCommunityType =
+    parsed.data.objectType === 'community' && isCommunityPhase2ReservedType(parsed.data.type);
   if (parsed.data.visibility === 'private' && !authenticated.userId) {
     return c.json({ ok: false, error: 'Private visibility requires a mapped owner.' }, 403);
   }
   const contribution = saveContributionDraft({
-    payload: parsed.data,
+    payload: {
+      ...parsed.data,
+      status: reservedCommunityType ? 'draft' : parsed.data.status,
+      metadata: reservedCommunityType
+        ? toReservedCommunityMetadata(parsed.data.metadata, parsed.data.type)
+        : parsed.data.metadata,
+    },
     ownerUserId: authenticated.userId,
     ownerEmail: authenticated.email,
     ownerName: authenticated.name,
