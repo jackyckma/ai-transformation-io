@@ -1,4 +1,5 @@
 import type {
+  CommunityActionVerb,
   CommunityObjectType,
   ObjectRecord,
   ObjectSubtype,
@@ -45,6 +46,32 @@ export const COMMUNITY_TYPE_VERBS: Record<string, string[]> = {
   event: ['Join', 'Follow', 'Save'],
   community_announcement: ['Read', 'Save'],
 };
+
+/** Human labels for the shared community action taxonomy verbs (§5.3). */
+export const COMMUNITY_VERB_LABEL: Record<CommunityActionVerb, string> = {
+  reply: 'Reply',
+  follow: 'Follow',
+  save: 'Save',
+  turn_into_field_note: 'Turn into field note',
+  draft_reply: 'Draft reply',
+  offer_help: 'Offer help',
+  draft_via_ask: 'Draft via Ask',
+  join: 'Join',
+  read: 'Read',
+  match: 'Match',
+  apply: 'Apply',
+  request_mentor: 'Request mentor',
+  ask_for_intro: 'Ask for intro',
+};
+
+export function communityVerbLabel(verb: CommunityActionVerb): string {
+  return COMMUNITY_VERB_LABEL[verb] ?? verb;
+}
+
+/** Detail route for a community object. */
+export function communityHref(id: string): string {
+  return `/community/${encodeURIComponent(id)}`;
+}
 
 export function subtypeLabel(subtype: ObjectSubtype): string {
   return KNOWLEDGE_TYPE_LABEL[subtype] ?? COMMUNITY_TYPE_LABEL[subtype] ?? subtype;

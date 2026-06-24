@@ -109,11 +109,20 @@ const MODE_COPY: Record<ComposerMode, { title: string; verb: string; saved: stri
   },
   'find-help': {
     title: 'Describe what you need',
-    verb: 'Save request',
+    verb: 'Post request',
     saved: 'Offline requests',
-    note: 'Creates a community help request draft. Full reply and matching actions arrive in Wave 13.',
+    note: 'Creates a public help request in Community that members can offer help on. Auto-publish or review-before-publish follows your Settings preference.',
   },
 };
+
+async function resolvePublishMode(client: ReturnType<typeof getApiClient>): Promise<'auto' | 'review'> {
+  try {
+    const preference = await client.publishPreference.get();
+    return preference.publishPreference.defaultPublishMode;
+  } catch {
+    return 'review';
+  }
+}
 
 async function writeAsk(mode: ComposerMode, body: string): Promise<void> {
   const client = getApiClient();
@@ -121,8 +130,9 @@ async function writeAsk(mode: ComposerMode, body: string): Promise<void> {
     await client.notes.create({ site: 'org', body, isCapture: true, captureSource: 'ask_capture' });
     return;
   }
+
   if (mode === 'find-help') {
-    await client.objects.saveDraft({
+    const draft = await client.objects.saveDraft({
       objectType: 'community',
       type: 'help_request',
       site: 'org',
@@ -130,6 +140,14 @@ async function writeAsk(mode: ComposerMode, body: string): Promise<void> {
       body,
       status: 'draft',
     });
+
+    if ((await resolvePublishMode(client)) === 'auto') {
+      await client.objects.submit({
+        objectId: draft.object.id,
+        publishMode: 'auto',
+        visibility: 'public',
+      });
+    }
     return;
   }
 
@@ -142,15 +160,7 @@ async function writeAsk(mode: ComposerMode, body: string): Promise<void> {
     status: 'draft',
   });
 
-  let publishMode: 'auto' | 'review' = 'review';
-  try {
-    const preference = await client.publishPreference.get();
-    publishMode = preference.publishPreference.defaultPublishMode;
-  } catch {
-    publishMode = 'review';
-  }
-
-  if (publishMode === 'auto') {
+  if ((await resolvePublishMode(client)) === 'auto') {
     await client.contributions.submit({
       contributionId: draft.contribution.id,
       publishMode: 'auto',
@@ -319,5 +329,5 @@ function AskComposer({
 const SAVED_MESSAGE: Record<ComposerMode, string> = {
   capture: 'Saved to your notes.',
   submit: 'Draft saved. Check Settings for your publish preference.',
-  'find-help': 'Help request drafted.',
+  'find-help': 'Help request submitted. It posts to Community per your publish preference.',
 };
