@@ -57,16 +57,7 @@ pnpm turbo build
 pnpm --filter @ai-transformation/backend test
 ```
 
-Wave 15 kickoff (re-run if needed):
-
-```bash
-set -a && source .cursor-env && set +a
-bun ~/.cursor/plugins/cache/cursor-public/orchestrate/*/skills/orchestrate/scripts/cli.ts kickoff \
-  "$(head -1 docs/waves/wave15-ui-readiness.md)" \
-  --ref main --repo https://github.com/jackyckma/ai-transformation-io --dispatcher-name "Jacky"
-```
-
-(Full goal string in `docs/waves/wave15-ui-readiness.md`.)
+Wave 15 kickoff (re-run if needed) — full command in `docs/waves/wave15-ui-readiness.md` § Kickoff command.
 
 ## Key file paths
 
