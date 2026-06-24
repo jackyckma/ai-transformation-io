@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   getCommunityActions,
-  isCommunityPhase2ReservedType,
   type CommunityObjectRecord,
 } from '@ai-transformation/shared';
 
@@ -17,8 +16,8 @@ import {
   COMMUNITY_TYPE_LABEL,
   VISIBILITY_LABEL,
   communityHref,
-  communityVerbLabel,
   formatDate,
+  isMatchEligible,
   objectExcerpt,
   objectTarget,
   objectTitle,
@@ -136,7 +135,7 @@ export function CommunityHighlights() {
         </h2>
         <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-[var(--muted)]">
           {isMember
-            ? 'Open any item to reply, follow, offer help, or join. Use Find Help to post a request, or Ask to draft a contribution. Matching for the opportunity types is coming.'
+            ? 'Open any item to reply, follow, offer help, join, request a mentor, or apply. Use Find Help to post a request, or Ask to draft a contribution. Opportunity items also have experimental rule-based matching.'
             : 'Posting and one-click actions require an account. Until then, browse highlights, or use Ask to draft a reply or contribution.'}
         </p>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
@@ -172,14 +171,14 @@ function ObjectCard({
   const title = objectTitle(object);
   const target = objectTarget(object);
   const typeLabel = COMMUNITY_TYPE_LABEL[object.type] ?? object.type;
-  const reserved = isCommunityPhase2ReservedType(object.type);
   const verbs = getCommunityActions(object.type);
   const interactions = useCommunityInteractions(object.id, {
-    enabled: isMember && !reserved,
+    enabled: isMember,
     userId,
   });
   const detailHref = communityHref(object.id);
-  const openLabel = object.type === 'discussion' ? 'Reply' : 'Open';
+  const openLabel = object.type === 'discussion' || object.type === 'question' ? 'Reply' : 'Open';
+  const matchEligible = isMatchEligible(object.type);
 
   return (
     <li className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
@@ -190,11 +189,6 @@ function ObjectCard({
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
           {VISIBILITY_LABEL[object.visibility]}
         </span>
-        {reserved ? (
-          <span className="rounded-full border border-[var(--border)] px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
-            Reserved
-          </span>
-        ) : null}
       </div>
       <h3 className="font-serif mt-3 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
         <Link href={detailHref} className="hover:text-[var(--accent)]">
@@ -207,64 +201,58 @@ function ObjectCard({
       <p className="mt-3 text-xs font-light text-[var(--secondary)]">{formatDate(object.updatedAt)}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-3">
-        {reserved ? (
-          verbs.map((verb) => (
-            <span
-              key={verb}
-              aria-disabled="true"
-              title="Reserved · coming soon"
-              className="cursor-default rounded-full border border-dashed border-[var(--border)] px-3 py-1 text-xs font-light text-[var(--muted)]/70"
-            >
-              {communityVerbLabel(verb)} · coming soon
-            </span>
-          ))
-        ) : (
-          <>
-            {isMember && verbs.includes('save') ? (
-              <SaveButton
-                target={target}
-                title={title}
-                saved={bookmarks.isSaved(target)}
-                pending={bookmarks.isPending(target)}
-                onToggle={bookmarks.toggle}
-              />
-            ) : null}
-            {isMember && verbs.includes('follow') ? (
-              <CardActionButton
-                active={interactions.isDone('follow')}
-                pending={interactions.isPending('follow')}
-                activeLabel="Following"
-                idleLabel="Follow"
-                onClick={() => void interactions.toggle('follow')}
-              />
-            ) : null}
-            {isMember && verbs.includes('join') ? (
-              <CardActionButton
-                active={interactions.isDone('join')}
-                pending={interactions.isPending('join')}
-                activeLabel="Leave"
-                idleLabel="Join"
-                onClick={() => void interactions.toggle('join')}
-              />
-            ) : null}
-            {isMember && verbs.includes('offer_help') ? (
-              <CardActionButton
-                active={interactions.isDone('offer_help')}
-                pending={interactions.isPending('offer_help')}
-                activeLabel="Help offered"
-                idleLabel="Offer help"
-                onClick={() => void interactions.offerHelp()}
-                disabledWhenActive
-              />
-            ) : null}
-            <Link
-              href={detailHref}
-              className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-            >
-              {openLabel}
-            </Link>
-          </>
-        )}
+        {isMember && verbs.includes('save') ? (
+          <SaveButton
+            target={target}
+            title={title}
+            saved={bookmarks.isSaved(target)}
+            pending={bookmarks.isPending(target)}
+            onToggle={bookmarks.toggle}
+          />
+        ) : null}
+        {isMember && verbs.includes('follow') ? (
+          <CardActionButton
+            active={interactions.isDone('follow')}
+            pending={interactions.isPending('follow')}
+            activeLabel="Following"
+            idleLabel="Follow"
+            onClick={() => void interactions.toggle('follow')}
+          />
+        ) : null}
+        {isMember && verbs.includes('join') ? (
+          <CardActionButton
+            active={interactions.isDone('join')}
+            pending={interactions.isPending('join')}
+            activeLabel="Leave"
+            idleLabel="Join"
+            onClick={() => void interactions.toggle('join')}
+          />
+        ) : null}
+        {isMember && verbs.includes('offer_help') ? (
+          <CardActionButton
+            active={interactions.isDone('offer_help')}
+            pending={interactions.isPending('offer_help')}
+            activeLabel="Help offered"
+            idleLabel="Offer help"
+            onClick={() => void interactions.offerHelp()}
+            disabledWhenActive
+          />
+        ) : null}
+        <Link
+          href={detailHref}
+          className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        >
+          {openLabel}
+        </Link>
+        {matchEligible ? (
+          <Link
+            href={`${detailHref}#community-match`}
+            title="Experimental rule-based matching"
+            className="rounded-full border border-dashed border-[var(--accent)]/50 px-3 py-1 text-xs font-medium text-[var(--accent)] transition hover:bg-[var(--accent)]/10"
+          >
+            Find matches · experimental
+          </Link>
+        ) : null}
       </div>
 
       {interactions.error ? (

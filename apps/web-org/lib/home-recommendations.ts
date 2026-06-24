@@ -3,14 +3,34 @@ import { COMMUNITY_HIGHLIGHTS, COMMUNITY_TYPE_META } from '@/lib/community-highl
 import type { RecommendationCandidate } from '@/lib/recommendation-types';
 
 export type { ActivitySignal, RecommendationCandidate } from '@/lib/recommendation-types';
-export { ACTIVITY_WEIGHTS } from '@/lib/recommendation-types';
+export { ACTIVITY_WEIGHTS, activitySignalsFor } from '@/lib/recommendation-types';
 
-function pseudoSignal(seed: string, salt: number): number {
-  let hash = salt;
-  for (let i = 0; i < seed.length; i += 1) {
-    hash = (hash * 31 + seed.charCodeAt(i)) % 1000;
-  }
-  return Math.round((hash / 1000) * 100) / 100;
+const STOP_WORDS = new Set([
+  'the',
+  'and',
+  'for',
+  'with',
+  'you',
+  'your',
+  'are',
+  'how',
+  'what',
+  'this',
+  'that',
+  'from',
+  'into',
+  'when',
+  'our',
+  'about',
+]);
+
+/** Derive lowercased match terms from a label plus the meaningful words in a title. */
+function keywordsFrom(label: string, title: string): string[] {
+  const words = title
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length > 3 && !STOP_WORDS.has(word));
+  return Array.from(new Set([label.toLowerCase(), ...words]));
 }
 
 /** Build a deterministic candidate set from current knowledge + community content. */
@@ -23,11 +43,7 @@ export function buildRecommendationCandidates(): RecommendationCandidate[] {
       title: item.title,
       description: item.description,
       href: item.href,
-      signals: {
-        followedTopic: pseudoSignal(item.slug, 7),
-        contributions: pseudoSignal(item.slug, 13),
-        interactions: pseudoSignal(item.slug, 19),
-      },
+      keywords: keywordsFrom(category.title, item.title),
     })),
   );
 
@@ -38,11 +54,7 @@ export function buildRecommendationCandidates(): RecommendationCandidate[] {
     title: item.title,
     description: item.summary,
     href: '/community',
-    signals: {
-      followedTopic: pseudoSignal(item.id, 5),
-      contributions: pseudoSignal(item.id, 11),
-      interactions: pseudoSignal(item.id, 17),
-    },
+    keywords: keywordsFrom(COMMUNITY_TYPE_META[item.type].label, item.title),
   }));
 
   return [...knowledge, ...community];

@@ -6,6 +6,7 @@ import type {
   PersonalTarget,
   Visibility,
 } from '@ai-transformation/shared';
+import { isCommunityTypeActive } from '@ai-transformation/shared';
 
 export const VISIBILITY_LABEL: Record<Visibility, string> = {
   public: 'Public',
@@ -66,6 +67,90 @@ export const COMMUNITY_VERB_LABEL: Record<CommunityActionVerb, string> = {
 
 export function communityVerbLabel(verb: CommunityActionVerb): string {
   return COMMUNITY_VERB_LABEL[verb] ?? verb;
+}
+
+/** Phase 2 wired in Wave 14 — every valid community type renders as an active object (§5.3). */
+export function isCommunityTypeRenderedActive(type: CommunityObjectType | string): boolean {
+  return isCommunityTypeActive(type);
+}
+
+/**
+ * Community types eligible for the experimental matcher (§5.3 Match verb + Wave 14
+ * help_request inclusion). help_request lacks the `match` taxonomy verb but is a
+ * primary matching subject, so it is listed explicitly here.
+ */
+export const MATCH_ELIGIBLE_TYPES: ReadonlySet<CommunityObjectType> = new Set([
+  'help_request',
+  'mentorship_request',
+  'project_request',
+  'collaboration_offer',
+] satisfies CommunityObjectType[]);
+
+export function isMatchEligible(type: CommunityObjectType | string): boolean {
+  return MATCH_ELIGIBLE_TYPES.has(type as CommunityObjectType);
+}
+
+/** Human labels for the Phase 2 per-type field keys stored in `object.metadata`. */
+const COMMUNITY_FIELD_LABEL: Record<string, string> = {
+  questionBody: 'Question',
+  focusArea: 'Focus area',
+  seniority: 'Seniority',
+  commitment: 'Commitment',
+  summary: 'Summary',
+  skillsNeeded: 'Skills needed',
+  timeline: 'Timeline',
+  offering: 'Offering',
+  seeking: 'Seeking',
+  cohort: 'Cohort',
+  tags: 'Tags',
+};
+
+/** Ordered field keys to surface per Phase 2 type, matching the shared field schemas. */
+const COMMUNITY_TYPE_FIELD_KEYS: Record<string, string[]> = {
+  question: ['questionBody', 'tags'],
+  mentorship_request: ['focusArea', 'seniority', 'commitment', 'tags'],
+  project_request: ['summary', 'skillsNeeded', 'timeline', 'tags'],
+  collaboration_offer: ['summary', 'offering', 'seeking', 'tags'],
+  apprenticeship_opportunity: ['summary', 'focusArea', 'cohort', 'tags'],
+};
+
+export type CommunityFieldEntry = { key: string; label: string; values: string[] };
+
+/**
+ * Reads the Phase 2 type-specific fields a community object carries in `metadata`
+ * and returns display-ready entries (label + string values), skipping empty ones.
+ */
+export function communityTypeFieldEntries(
+  type: CommunityObjectType | string,
+  metadata: Record<string, unknown> | undefined,
+): CommunityFieldEntry[] {
+  const keys = COMMUNITY_TYPE_FIELD_KEYS[type];
+  if (!keys || !metadata) {
+    return [];
+  }
+  const entries: CommunityFieldEntry[] = [];
+  for (const key of keys) {
+    const raw = metadata[key];
+    const values = toFieldValues(raw);
+    if (values.length > 0) {
+      entries.push({ key, label: COMMUNITY_FIELD_LABEL[key] ?? key, values });
+    }
+  }
+  return entries;
+}
+
+function toFieldValues(raw: unknown): string[] {
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    return trimmed.length > 0 ? [trimmed] : [];
+  }
+  if (Array.isArray(raw)) {
+    return raw
+      .filter((item): item is string => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+  }
+  return [];
 }
 
 /** Detail route for a community object. */
