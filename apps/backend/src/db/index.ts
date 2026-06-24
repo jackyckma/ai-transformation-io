@@ -10,6 +10,7 @@ import { runAgentProtocolMigrations } from './agent-protocol.js';
 import { runChatMigrations, createChatDbHelpers, type ChatDbHelpers } from './chat.js';
 import { runNewsletterMigrations } from './newsletter.js';
 import { runObjectsMigrations } from './objects.js';
+import { runPersonalMigrations } from './personal.js';
 
 type InsertContributionInput = {
   id: string;
@@ -263,6 +264,7 @@ function runMigrations(db: Database.Database): void {
     createdAt: '2026-06-15T00:00:00.000Z',
   });
   runObjectsMigrations(db);
+  runPersonalMigrations(db);
   runAgentProtocolMigrations(db);
   runNewsletterMigrations(db);
   runChatMigrations(db);

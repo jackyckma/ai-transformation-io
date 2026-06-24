@@ -1,10 +1,19 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  annotationCreateRequestSchema,
+  annotationUpdateRequestSchema,
   agentContributionWriteSchema,
+  bookmarkCreateRequestSchema,
+  bookmarkUpdateRequestSchema,
+  commentCreateRequestSchema,
+  commentUpdateRequestSchema,
   contributionCreateRequestSchema,
   contributionDraftRequestSchema,
   contributionSubmitRequestSchema,
+  noteCreateRequestSchema,
+  noteUpdateRequestSchema,
+  personalTargetSchema,
   derivedArticleDraftRequestSchema,
   moderationQueueListRequestSchema,
   moderationTransitionRequestSchema,
@@ -15,6 +24,8 @@ import {
   objectSubmitRequestSchema,
   profileSetRequestSchema,
   publishPreferenceSetRequestSchema,
+  recentlyViewedCreateRequestSchema,
+  recentlyViewedUpdateRequestSchema,
   type Site,
 } from '@ai-transformation/shared';
 import { Hono } from 'hono';
@@ -27,19 +38,41 @@ import {
   createObject,
   getContributionByIdForObjectsLane,
   getObjectByIdForRequester,
-  getProfile,
   getPublishPreference,
   listModerationQueue,
   listObjectsForRequester,
   saveContributionDraft,
   saveObjectDraft,
-  setProfile,
   setPublishPreference,
   submitContribution,
   submitObject,
   transitionModerationItem,
   type VisibilityQueryContext,
 } from '../../db/objects.js';
+import {
+  createAnnotation,
+  createComment,
+  createNote,
+  deleteAnnotation,
+  deleteBookmark,
+  deleteComment,
+  deleteNote,
+  deleteRecentlyViewed,
+  getProfile,
+  listAnnotations,
+  listBookmarks,
+  listComments,
+  listNotes,
+  listRecentlyViewed,
+  setProfile,
+  updateAnnotation,
+  updateBookmark,
+  updateComment,
+  updateNote,
+  updateRecentlyViewed,
+  upsertBookmark,
+  upsertRecentlyViewed,
+} from '../../db/personal.js';
 import { isAdmin } from '../../lib/admin.js';
 import type { SessionVariables } from '../../types/session.js';
 
@@ -195,6 +228,32 @@ function parseModerationListQuery(c: {
     limit: parseInteger(c.req.query('limit')),
     cursor: c.req.query('cursor'),
   });
+}
+
+function parsePersonalListQuery(c: {
+  req: { query: (name: string) => string | undefined };
+}): {
+  site?: 'io' | 'org';
+  targetType?: 'library_article' | 'object';
+  targetId?: string;
+  mine?: boolean;
+} {
+  const site = c.req.query('site');
+  const targetType = c.req.query('targetType');
+  const targetId = c.req.query('targetId')?.trim();
+  return {
+    site: site === 'io' || site === 'org' ? site : undefined,
+    targetType: targetType === 'library_article' || targetType === 'object' ? targetType : undefined,
+    targetId: targetId || undefined,
+    mine: parseBoolean(c.req.query('mine')),
+  };
+}
+
+function hasTargetAccess(target: { targetType: 'library_article' | 'object'; targetId: string }, requester: Requester): boolean {
+  if (target.targetType !== 'object') {
+    return true;
+  }
+  return Boolean(getObjectByIdForRequester(target.targetId, toVisibilityContext(requester)));
 }
 
 objectsRouter.get('/objects', (c) => {
@@ -535,6 +594,427 @@ objectsRouter.post('/contributions/submit', async (c) => {
   }
   const refreshed = getContributionByIdForObjectsLane(submitted.contribution.id) ?? submitted.contribution;
   return c.json({ ok: true, contribution: refreshed });
+});
+
+objectsRouter.get('/personal/bookmarks', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const query = parsePersonalListQuery(c);
+  const bookmarks = listBookmarks({
+    userId: user.id,
+    request: query,
+  }).filter((bookmark) => hasTargetAccess(bookmark.target, requester));
+  return c.json({ ok: true, bookmarks });
+});
+
+objectsRouter.post('/personal/bookmarks', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = bookmarkCreateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  if (!hasTargetAccess(parsed.data.target, requester)) {
+    return c.json({ ok: false, error: 'Target not found' }, 404);
+  }
+  const bookmark = upsertBookmark({
+    userId: user.id,
+    payload: parsed.data,
+  });
+  return c.json({ ok: true, bookmark }, 201);
+});
+
+objectsRouter.patch('/personal/bookmarks/:id', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = bookmarkUpdateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  const bookmark = updateBookmark({
+    userId: user.id,
+    id: c.req.param('id'),
+    payload: parsed.data,
+  });
+  if (!bookmark || !hasTargetAccess(bookmark.target, requester)) {
+    return c.json({ ok: false, error: 'Bookmark not found' }, 404);
+  }
+  return c.json({ ok: true, bookmark });
+});
+
+objectsRouter.delete('/personal/bookmarks/:id', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const deleted = deleteBookmark({
+    userId: user.id,
+    id: c.req.param('id'),
+  });
+  if (!deleted) {
+    return c.json({ ok: false, error: 'Bookmark not found' }, 404);
+  }
+  return c.json({ ok: true, id: c.req.param('id') });
+});
+
+objectsRouter.get('/personal/notes', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const query = parsePersonalListQuery(c);
+  const notes = listNotes({
+    userId: user.id,
+    request: query,
+  });
+  return c.json({ ok: true, notes });
+});
+
+objectsRouter.post('/personal/notes', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = noteCreateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  if (parsed.data.isCapture && !parsed.data.captureSource) {
+    return c.json({ ok: false, error: 'captureSource is required when isCapture is true.' }, 400);
+  }
+  const note = createNote({
+    userId: user.id,
+    payload: parsed.data,
+  });
+  return c.json({ ok: true, note }, 201);
+});
+
+objectsRouter.patch('/personal/notes/:id', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = noteUpdateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  const note = updateNote({
+    userId: user.id,
+    id: c.req.param('id'),
+    payload: parsed.data,
+  });
+  if (!note) {
+    return c.json({ ok: false, error: 'Note not found' }, 404);
+  }
+  return c.json({ ok: true, note });
+});
+
+objectsRouter.delete('/personal/notes/:id', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const deleted = deleteNote({
+    userId: user.id,
+    id: c.req.param('id'),
+  });
+  if (!deleted) {
+    return c.json({ ok: false, error: 'Note not found' }, 404);
+  }
+  return c.json({ ok: true, id: c.req.param('id') });
+});
+
+objectsRouter.get('/personal/annotations', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const query = parsePersonalListQuery(c);
+  const annotations = listAnnotations({
+    userId: user.id,
+    request: query,
+  }).filter((annotation) => hasTargetAccess(annotation.target, requester));
+  return c.json({ ok: true, annotations });
+});
+
+objectsRouter.post('/personal/annotations', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = annotationCreateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  if (!hasTargetAccess(parsed.data.target, requester)) {
+    return c.json({ ok: false, error: 'Target not found' }, 404);
+  }
+  const annotation = createAnnotation({
+    userId: user.id,
+    payload: parsed.data,
+  });
+  return c.json({ ok: true, annotation }, 201);
+});
+
+objectsRouter.patch('/personal/annotations/:id', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = annotationUpdateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  const annotation = updateAnnotation({
+    userId: user.id,
+    id: c.req.param('id'),
+    payload: parsed.data,
+  });
+  if (!annotation || !hasTargetAccess(annotation.target, requester)) {
+    return c.json({ ok: false, error: 'Annotation not found' }, 404);
+  }
+  return c.json({ ok: true, annotation });
+});
+
+objectsRouter.delete('/personal/annotations/:id', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const deleted = deleteAnnotation({
+    userId: user.id,
+    id: c.req.param('id'),
+  });
+  if (!deleted) {
+    return c.json({ ok: false, error: 'Annotation not found' }, 404);
+  }
+  return c.json({ ok: true, id: c.req.param('id') });
+});
+
+objectsRouter.get('/personal/comments', (c) => {
+  const requester = resolveRequester(c);
+  const query = parsePersonalListQuery(c);
+  if ((query.targetType && !query.targetId) || (!query.targetType && query.targetId)) {
+    return c.json({ ok: false, error: 'targetType and targetId must be provided together' }, 400);
+  }
+  if (query.targetType && !personalTargetSchema.safeParse({ targetType: query.targetType, targetId: query.targetId }).success) {
+    return c.json({ ok: false, error: 'Invalid target' }, 400);
+  }
+  if (query.mine && !requester.sessionUser && !requester.bearerOwnerUser) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const comments = listComments({
+    request: query,
+    userId: requester.sessionUser?.id ?? requester.bearerOwnerUser?.id ?? null,
+    mine: query.mine === true,
+  }).filter((comment) => hasTargetAccess(comment.target, requester));
+  return c.json({ ok: true, comments });
+});
+
+objectsRouter.post('/personal/comments', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = commentCreateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  if (!hasTargetAccess(parsed.data.target, requester)) {
+    return c.json({ ok: false, error: 'Target not found' }, 404);
+  }
+  const comment = createComment({
+    userId: user.id,
+    payload: parsed.data,
+  });
+  return c.json({ ok: true, comment }, 201);
+});
+
+objectsRouter.patch('/personal/comments/:id', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = commentUpdateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  const comment = updateComment({
+    userId: user.id,
+    id: c.req.param('id'),
+    payload: parsed.data,
+  });
+  if (!comment || !hasTargetAccess(comment.target, requester)) {
+    return c.json({ ok: false, error: 'Comment not found' }, 404);
+  }
+  return c.json({ ok: true, comment });
+});
+
+objectsRouter.delete('/personal/comments/:id', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const deleted = deleteComment({
+    userId: user.id,
+    id: c.req.param('id'),
+  });
+  if (!deleted) {
+    return c.json({ ok: false, error: 'Comment not found' }, 404);
+  }
+  return c.json({ ok: true, id: c.req.param('id') });
+});
+
+objectsRouter.get('/personal/recently-viewed', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const query = parsePersonalListQuery(c);
+  const entries = listRecentlyViewed({
+    userId: user.id,
+    request: query,
+  }).filter((entry) => hasTargetAccess(entry.target, requester));
+  return c.json({ ok: true, entries });
+});
+
+objectsRouter.post('/personal/recently-viewed', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = recentlyViewedCreateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  if (!hasTargetAccess(parsed.data.target, requester)) {
+    return c.json({ ok: false, error: 'Target not found' }, 404);
+  }
+  const entry = upsertRecentlyViewed({
+    userId: user.id,
+    payload: parsed.data,
+  });
+  return c.json({ ok: true, entry }, 201);
+});
+
+objectsRouter.patch('/personal/recently-viewed/:id', async (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400);
+  }
+  const parsed = recentlyViewedUpdateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ ok: false, error: getValidationErrorMessage(parsed.error) }, 400);
+  }
+  const entry = updateRecentlyViewed({
+    userId: user.id,
+    id: c.req.param('id'),
+    payload: parsed.data,
+  });
+  if (!entry || !hasTargetAccess(entry.target, requester)) {
+    return c.json({ ok: false, error: 'Entry not found' }, 404);
+  }
+  return c.json({ ok: true, entry });
+});
+
+objectsRouter.delete('/personal/recently-viewed/:id', (c) => {
+  const requester = resolveRequester(c);
+  const user = requireResolvedUser(requester);
+  if (!user) {
+    return c.json({ ok: false, error: 'Not authenticated' }, 401);
+  }
+  const deleted = deleteRecentlyViewed({
+    userId: user.id,
+    id: c.req.param('id'),
+  });
+  if (!deleted) {
+    return c.json({ ok: false, error: 'Entry not found' }, 404);
+  }
+  return c.json({ ok: true, id: c.req.param('id') });
 });
 
 objectsRouter.get('/moderation/queue', (c) => {
