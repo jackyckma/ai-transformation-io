@@ -3,30 +3,60 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { onboardingProfileSchema, type OnboardingProfile } from '@ai-transformation/shared';
 
+import { getApiClient } from '@/lib/api-client';
+import { useAuthUser } from '@/lib/use-auth-user';
+
 type FieldErrors = Partial<Record<keyof OnboardingProfile, string>>;
 
 const STORE_KEY = 'atx-org-onboarding-profile';
 
 const EMPTY: OnboardingProfile = { role: '', industry: '', projectFocus: '' };
 
+function readLocalProfile(): OnboardingProfile | null {
+  try {
+    const raw = window.localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    const parsed = onboardingProfileSchema.partial().safeParse(JSON.parse(raw));
+    return parsed.success ? { ...EMPTY, ...parsed.data } : null;
+  } catch {
+    return null;
+  }
+}
+
 export function OnboardingProfileForm() {
+  const { audience, isLoading } = useAuthUser();
+  const isMember = audience === 'member';
   const [values, setValues] = useState<OnboardingProfile>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORE_KEY);
-      if (raw) {
-        const parsed = onboardingProfileSchema.partial().safeParse(JSON.parse(raw));
-        if (parsed.success) {
-          setValues({ ...EMPTY, ...parsed.data });
-        }
-      }
-    } catch {
-      // Ignore unreadable local state.
+    const local = readLocalProfile();
+    if (local) {
+      setValues(local);
     }
   }, []);
+
+  useEffect(() => {
+    if (isLoading || !isMember) {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await getApiClient().profile.get();
+        if (!cancelled && response.profile) {
+          setValues({ ...EMPTY, ...response.profile.profile });
+        }
+      } catch {
+        // Keep local values when the account profile is unavailable.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoading, isMember]);
 
   function update(field: keyof OnboardingProfile, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -34,7 +64,7 @@ export function OnboardingProfileForm() {
     setStatus('');
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const candidate = {
       role: values.role.trim(),
@@ -54,11 +84,29 @@ export function OnboardingProfileForm() {
       return;
     }
 
+    const saveLocal = (message: string) => {
+      try {
+        window.localStorage.setItem(STORE_KEY, JSON.stringify(result.data));
+        setStatus(message);
+      } catch {
+        setStatus('Could not save locally. Check your browser settings.');
+      }
+    };
+
+    if (!isMember) {
+      saveLocal('Saved on this device. Sign in to save to your account.');
+      return;
+    }
+
+    setSubmitting(true);
+    setStatus('');
     try {
-      window.localStorage.setItem(STORE_KEY, JSON.stringify(result.data));
+      await getApiClient().profile.set({ profile: result.data });
       setStatus('Profile saved.');
     } catch {
-      setStatus('Could not save locally. Check your browser settings.');
+      saveLocal('Saved on this device — could not reach your account.');
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -95,9 +143,10 @@ export function OnboardingProfileForm() {
       <div className="flex items-center gap-3">
         <button
           type="submit"
-          className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90"
+          disabled={submitting}
+          className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Save profile
+          {submitting ? 'Saving…' : 'Save profile'}
         </button>
         {status ? (
           <span role="status" className="text-sm font-light text-[var(--accent)]">
