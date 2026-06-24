@@ -55,7 +55,7 @@
       "layout": "topic-row",
       "image": "/curation/harvest-stories.jpg",
       "title": "Community highlights",
-      "summary": "Discussions, help requests, and events from people doing the work.",
+      "summary": "Discussions, help requests, and events from people doing the work — open any item to reply, follow, offer help, or join.",
       "externalHref": "/community",
       "relatedSlugs": ["common-pitfalls"],
       "useOrgKnowledgePaths": true
@@ -87,7 +87,7 @@
     {
       "id": "community",
       "title": "Community highlights",
-      "summary": "Discussions, help requests, events, and announcements from practitioners navigating AI transformation.",
+      "summary": "Discussions, help requests, events, and announcements from practitioners — reply, follow, offer help, or join right from each item.",
       "href": "/community",
       "image": "/curation/harvest-stories.jpg"
     },
