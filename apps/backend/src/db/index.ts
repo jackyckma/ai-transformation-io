@@ -9,6 +9,7 @@ import Database from 'better-sqlite3';
 import { runAgentProtocolMigrations } from './agent-protocol.js';
 import { runChatMigrations, createChatDbHelpers, type ChatDbHelpers } from './chat.js';
 import { runNewsletterMigrations } from './newsletter.js';
+import { runObjectsMigrations } from './objects.js';
 
 type InsertContributionInput = {
   id: string;
@@ -23,8 +24,13 @@ type InsertContributionInput = {
   metadata?: string;
   publishedSlug?: string | null;
   createdAt: string;
+  updatedAt?: string;
   reviewedAt?: string | null;
   reviewedBy?: string | null;
+  objectType?: string;
+  type?: string;
+  visibility?: 'public' | 'members-only' | 'private';
+  objectId?: string | null;
 };
 
 type UpsertUserByGoogleInput = {
@@ -79,8 +85,13 @@ export type ContributionRow = {
   metadata: string;
   publishedSlug: string | null;
   createdAt: string;
+  updatedAt: string;
   reviewedAt: string | null;
   reviewedBy: string | null;
+  objectType: string | null;
+  type: string | null;
+  visibility: string | null;
+  objectId: string | null;
 };
 
 export type PublishedStoryRow = {
@@ -251,6 +262,7 @@ function runMigrations(db: Database.Database): void {
     status: 'active',
     createdAt: '2026-06-15T00:00:00.000Z',
   });
+  runObjectsMigrations(db);
   runAgentProtocolMigrations(db);
   runNewsletterMigrations(db);
   runChatMigrations(db);
@@ -285,6 +297,25 @@ function getUserById(db: Database.Database, id: string): UserRow | null {
       WHERE id = @id`,
     )
     .get({ id }) as UserRow | undefined;
+  return row ?? null;
+}
+
+export function getUserByEmail(email: string): UserRow | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        google_sub AS googleSub,
+        email,
+        name,
+        picture,
+        created_at AS createdAt,
+        last_login_at AS lastLoginAt
+      FROM users
+      WHERE email = @email`,
+    )
+    .get({ email: email.trim().toLowerCase() }) as UserRow | undefined;
   return row ?? null;
 }
 
@@ -550,6 +581,7 @@ export function upsertAssessmentSession(input: UpsertAssessmentSessionInput): { 
 
 export function insertContribution(input: InsertContributionInput): void {
   const db = getDb();
+  const updatedAt = input.updatedAt ?? input.reviewedAt ?? input.createdAt;
   db.prepare(
     `INSERT INTO contributions (
       id,
@@ -564,8 +596,13 @@ export function insertContribution(input: InsertContributionInput): void {
       metadata,
       published_slug,
       created_at,
+      updated_at,
       reviewed_at,
-      reviewed_by
+      reviewed_by,
+      object_type,
+      type,
+      visibility,
+      object_id
     ) VALUES (
       @id,
       @source,
@@ -579,8 +616,13 @@ export function insertContribution(input: InsertContributionInput): void {
       @metadata,
       @publishedSlug,
       @createdAt,
+      @updatedAt,
       @reviewedAt,
-      @reviewedBy
+      @reviewedBy,
+      @objectType,
+      @type,
+      @visibility,
+      @objectId
     )`,
   ).run({
     id: input.id,
@@ -595,8 +637,13 @@ export function insertContribution(input: InsertContributionInput): void {
     metadata: input.metadata ?? '{}',
     publishedSlug: input.publishedSlug ?? null,
     createdAt: input.createdAt,
+    updatedAt,
     reviewedAt: input.reviewedAt ?? null,
     reviewedBy: input.reviewedBy ?? null,
+    objectType: input.objectType ?? null,
+    type: input.type ?? null,
+    visibility: input.visibility ?? null,
+    objectId: input.objectId ?? null,
   });
 }
 
@@ -679,8 +726,13 @@ export function getContributionById(id: string): ContributionRow | null {
         metadata,
         published_slug AS publishedSlug,
         created_at AS createdAt,
+        updated_at AS updatedAt,
         reviewed_at AS reviewedAt,
-        reviewed_by AS reviewedBy
+        reviewed_by AS reviewedBy,
+        object_type AS objectType,
+        type,
+        visibility,
+        object_id AS objectId
       FROM contributions
       WHERE id = @id`,
     )
@@ -694,21 +746,26 @@ export function updateContributionModeration(input: {
   publishedSlug: string | null;
   reviewedBy: string;
   reviewedAt: string;
+  visibility?: 'public' | 'members-only' | 'private';
 }): void {
   const db = getDb();
   db.prepare(
     `UPDATE contributions
     SET status = @status,
         published_slug = @publishedSlug,
+        visibility = COALESCE(@visibility, visibility),
         reviewed_at = @reviewedAt,
-        reviewed_by = @reviewedBy
+        reviewed_by = @reviewedBy,
+        updated_at = @updatedAt
     WHERE id = @id`,
   ).run({
     id: input.id,
     status: input.status,
     publishedSlug: input.publishedSlug,
+    visibility: input.visibility ?? null,
     reviewedAt: input.reviewedAt,
     reviewedBy: input.reviewedBy,
+    updatedAt: input.reviewedAt,
   });
 }
 

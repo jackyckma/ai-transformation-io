@@ -16,6 +16,7 @@ import {
   type UserRow,
   updateContributionModeration,
 } from '../../db/index.js';
+import { isAdmin } from '../../lib/admin.js';
 import type { SessionVariables } from '../../types/session.js';
 
 const harvestRouter = new Hono<{ Variables: SessionVariables }>();
@@ -39,24 +40,6 @@ function getValidationErrorMessage(error: {
     Object.values(flattened.fieldErrors).flat()[0] ??
     'Invalid request body';
   return flattenedMessage;
-}
-
-function isAdmin(user: UserRow | null): boolean {
-  if (!user) {
-    return false;
-  }
-  const configured = process.env.ADMIN_EMAILS;
-  if (!configured) {
-    return false;
-  }
-  const allowed = configured
-    .split(',')
-    .map((value) => value.trim().toLowerCase())
-    .filter((value) => value.length > 0);
-  if (allowed.length === 0) {
-    return false;
-  }
-  return allowed.includes(user.email.trim().toLowerCase());
 }
 
 function toUrlSafeSlug(input: string): string {
