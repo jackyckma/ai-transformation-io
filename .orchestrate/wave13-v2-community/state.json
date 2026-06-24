@@ -63,12 +63,12 @@
       "handoffPath": "handoffs/web-org-community.md",
       "startedAt": "2026-06-24T13:22:57.301Z",
       "finishedAt": "2026-06-24T13:43:49.367Z",
-      "lastUpdate": "2026-06-24T13:43:49.368Z",
+      "lastUpdate": "2026-06-24T13:43:52.702Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "live-ui-verified",
       "attempts": 1
     },
     {
@@ -80,18 +80,18 @@
         "backend-community",
         "web-org-community"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-eba81a01-1e94-4874-9dc1-e6fba61d2b3b",
+      "runId": "run-1308f3f4-e039-4c6e-8cd5-bcf428798aed",
+      "parentAgentId": "bc-b59dbce0-4c7a-4288-b9ba-fe45e9e41033",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/integrate-wave13.md",
       "startedAt": "2026-06-24T13:43:51.030Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-24T13:43:51.030Z",
+      "finishedAt": "2026-06-24T13:48:20.437Z",
+      "lastUpdate": "2026-06-24T13:48:20.437Z",
       "note": null,
       "slackTs": null,
-      "prNumber": null,
+      "prNumber": 7,
       "failureMode": null,
       "verification": null,
       "attempts": 1
@@ -136,6 +136,10 @@
     {
       "at": "2026-06-24T13:29:50.259Z",
       "message": "backend-community: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-24T13:43:52.702Z",
+      "message": "web-org-community: verification self-reported (live-ui-verified)"
     }
   ]
 }
