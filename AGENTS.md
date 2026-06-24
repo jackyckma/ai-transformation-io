@@ -30,6 +30,7 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - Kickoff uses the orchestrate CLI (`bun cli.ts kickoff` under the Cursor orchestrate plugin `scripts/`). Requires `CURSOR_API_KEY` (personal key — not team key).
 - **Do not ask the founder for the key.** Load it from repo-root **`.cursor-env`** (gitignored, same pattern as `.env`): from repo root, `set -a && source .cursor-env && set +a` before kickoff. If kickoff still fails, check that `.cursor-env` defines `CURSOR_API_KEY` — do not paste or commit the value.
 - Dispatcher passes the user goal verbatim (e.g. `wave5-harvest: …`); return the cloud root planner URL from kickoff JSON.
+- **When a wave orchestrate run completes** (integrate PR + verifier pass): default to **review + merge to `main`** (checkout PR branch, `pnpm turbo build`, backend tests, merge, push) without asking — unless the user says otherwise.
 
 ## Learned User Preferences
 
@@ -39,8 +40,8 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - .org Apprenticeship program: separate product line from enterprise .io consulting (AI-era judgment/formation training); public pages use "we" voice (`apprenticeship-overview-EN.md`); founder first-person thesis stays in `usr/13` as internal source.
 - .org community: public read, login required to post; prefer Harvest Hub contribution model over a self-hosted discussion forum.
 - Site UI language: English-only; light theme default with dark mode toggle. User may converse in Cantonese/Traditional Chinese; agents respond in Traditional Chinese per project-guidelines; docs and code stay English.
-- .io IA (v2, Wave 11+): **Library · Insights · Ask** ribbon; public Library + Insights; logged-in personal cockpit — see `docs/SITE_DESIGN_v2.md`. **Until Wave 11 ships:** legacy `/frameworks`, `/playbook`, `/functions` remain live.
-- .org IA (v2): **Knowledge · Community · Ask**; brand **Community · Knowledge commons**. **Until Wave 11:** legacy `/learn`, `/stories` remain live.
+- .io IA (v2): **Library · Insights · Ask** ribbon; public Library + Insights; logged-in personal cockpit — see `docs/SITE_DESIGN_v2.md`. Legacy top-level hubs (`/frameworks`, `/playbook`, `/functions`) removed (no redirects); content under `/library` and `/insights`.
+- .org IA (v2): **Knowledge · Community · Ask**; brand **Community · Knowledge commons**. Legacy `/learn`, `/stories` top-level sections removed (no redirects); content under `/knowledge` and `/community`.
 - Curation: agent proposes `data/curated/*.json` → founder approves PR; see `data/curated/EDITORIAL_POLICY.md`.
 - Site design: content-first editorial; Ask page with modes (Ask/Capture/Submit/Find Help per site); agent-native contextual actions → on-site Ask prefill; not product-marketing chrome. Mobile: hamburger + bottom ribbon; companion via `/ask` (not persistent sidebar). Distinct .io vs .org color palettes and decoration imagery.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
@@ -51,7 +52,7 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - ai-transformation.io — public Library + Insights + personal cockpit (v2); ai-transformation.org — **Community · Knowledge commons** (v2). See `docs/SITE_DESIGN_v2.md`. Production URLs: ai-transformation.io / .org (not `*.zeabur.app`). Apprenticeship remains a special program (`/apprenticeship`).
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Wave 11–14 = IA + object model migration with doc/code housekeeping; Wave 10 newsletter pilot optional.
+- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Wave 11–14 = IA + object model migration with doc/code housekeeping; Waves 11–13 on `main` (v2 IA, object store/personal layer, community Phase 1 + Agent API parity); Wave 14 next; Wave 10 newsletter pilot optional.
 - Product direction: agent-first site — humans and agents are first-class participants; on-site companion (primary human UI; 8 msg/day anonymous, 25/day signed-in; MiniMax-M3 via `MINIMAX_API_KEY`) plus `/for-agents` and embedded machine-readable hints on human pages.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token.
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie).
