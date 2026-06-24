@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { OnboardingProfileForm } from '@/components/onboarding-profile-form';
+import { PublishPreferenceForm } from '@/components/publish-preference-form';
 import { PageIntro } from '@/components/page-intro';
 import { PageShell } from '@/components/page-shell';
 
@@ -23,7 +24,8 @@ export default function SettingsPage() {
       <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
         <h2 className="font-serif text-lg font-normal tracking-tight">Your profile</h2>
         <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">
-          Saved on this device for now. It moves to your account with the object model (Wave 12).
+          Saved to your account when signed in, or on this device otherwise. Feeds your Home
+          recommendations and personalizes Knowledge.
         </p>
         <div className="mt-6">
           <OnboardingProfileForm />
@@ -31,14 +33,12 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
-        <h2 className="font-serif text-lg font-normal tracking-tight">Agent auto-publish</h2>
+        <h2 className="font-serif text-lg font-normal tracking-tight">Publishing</h2>
         <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-[var(--muted)]">
-          Choose review-before-publish or auto-publish within visibility rules. This preference wires
-          up with the contribution pipeline in Wave 12.
+          Choose how your contributions publish. Auto-publish stays within visibility rules and never
+          elevates members-only content to public on its own.
         </p>
-        <p className="mt-4 text-xs font-light uppercase tracking-[0.12em] text-[var(--secondary)]">
-          Coming with the publish pipeline
-        </p>
+        <PublishPreferenceForm />
       </section>
 
       <nav className="mt-10 text-sm font-light text-[var(--muted)]">
