@@ -7,6 +7,8 @@ export type RecommendationInputs = {
   curatedSlugs: string[];
   /** Pillars of recently-viewed articles, newest first. */
   recentPillars: string[];
+  /** Library slugs tied to the completed assessment's weakest gap (§9 input 2). */
+  weakestGapSlugs?: string[];
 };
 
 export type RankedArticle = {
@@ -14,12 +16,13 @@ export type RankedArticle = {
   score: number;
 };
 
-type Signal = 'keywordMatch' | 'curatedBoost' | 'affinity';
+type Signal = 'keywordMatch' | 'curatedBoost' | 'affinity' | 'gapBoost';
 
 const WEIGHTS: Record<Signal, number> = {
-  keywordMatch: 0.45,
-  curatedBoost: 0.25,
-  affinity: 0.3,
+  keywordMatch: 0.4,
+  curatedBoost: 0.2,
+  affinity: 0.25,
+  gapBoost: 0.35,
 };
 
 const STOPWORDS = new Set([
@@ -59,10 +62,11 @@ function profileKeywords(profile: OnboardingProfile | null): string[] {
  */
 export function rankArticles(
   pages: ContentPageMeta[],
-  { profile, curatedSlugs, recentPillars }: RecommendationInputs,
+  { profile, curatedSlugs, recentPillars, weakestGapSlugs = [] }: RecommendationInputs,
 ): RankedArticle[] {
   const keywords = profileKeywords(profile);
   const curated = new Set(curatedSlugs);
+  const gapSlugs = new Set(weakestGapSlugs);
 
   const affinityByPillar = new Map<string, number>();
   recentPillars.forEach((pillar, index) => {
@@ -79,9 +83,10 @@ export function rankArticles(
       const curatedBoost = curated.has(page.slug) ? 1 : 0;
       const affinity =
         maxAffinity > 0 ? (affinityByPillar.get(page.pillar) ?? 0) / maxAffinity : 0;
+      const gapBoost = gapSlugs.has(page.slug) ? 1 : 0;
 
       const { score } = scoreRecommendation<Signal>(
-        { keywordMatch, curatedBoost, affinity },
+        { keywordMatch, curatedBoost, affinity, gapBoost },
         WEIGHTS,
       );
       return { page, score };

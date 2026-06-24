@@ -5,8 +5,11 @@ import { useMemo, useState } from 'react';
 import type { ContentPageMeta } from '@ai-transformation/content';
 
 import { OpenInAsk } from '@/components/open-in-ask';
+import { SaveToContext } from '@/components/save-to-context';
 import { libraryAskActions } from '@/lib/ask-actions';
 import { useAuthUser } from '@/lib/use-auth-user';
+import { useBookmarks } from '@/lib/bookmarks';
+import { useCapturedNotes } from '@/lib/captured-notes';
 import { useRecentlyViewed } from '@/lib/recently-viewed';
 import type { LibraryCollection } from '@/lib/library-index';
 
@@ -94,11 +97,13 @@ export function LibraryBrowser({ pages, collections }: LibraryBrowserProps) {
                     {page.description}
                   </p>
                 </Link>
-                <OpenInAsk
-                  contextId={page.slug}
-                  actions={libraryAskActions(page.title)}
-                  className="mt-3"
-                />
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <OpenInAsk contextId={page.slug} actions={libraryAskActions(page.title)} />
+                  <SaveToContext
+                    target={{ targetType: 'library_article', targetId: page.slug }}
+                    title={page.title}
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -110,7 +115,7 @@ export function LibraryBrowser({ pages, collections }: LibraryBrowserProps) {
           ) : null}
         </div>
       ) : (
-        <MyLibrary />
+        <MyLibrary pages={pages} />
       )}
     </div>
   );
@@ -222,11 +227,52 @@ function Chip({
   );
 }
 
-function MyLibrary() {
+function MyLibrary({ pages }: { pages: ContentPageMeta[] }) {
+  const pageBySlug = useMemo(() => {
+    const map = new Map<string, ContentPageMeta>();
+    pages.forEach((page) => map.set(page.slug, page));
+    return map;
+  }, [pages]);
+
   const recent = useRecentlyViewed();
+  const { bookmarks } = useBookmarks();
+  const { notes, remove } = useCapturedNotes();
 
   return (
-    <div className="mt-6 space-y-8">
+    <div className="mt-6 space-y-10">
+      <section>
+        <h2 className="font-serif text-lg font-normal tracking-tight">Saved articles</h2>
+        {bookmarks.length === 0 ? (
+          <p className="mt-3 text-sm font-light text-[var(--muted)]">
+            No bookmarks yet. Use Save to my context on any library article or insight.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {bookmarks.map((bookmark) => {
+              const page =
+                bookmark.target.targetType === 'library_article'
+                  ? pageBySlug.get(bookmark.target.targetId)
+                  : undefined;
+              const label = page?.title ?? bookmark.title ?? bookmark.target.targetId;
+              return (
+                <li key={bookmark.id}>
+                  {page ? (
+                    <Link
+                      href={page.pathname}
+                      className="text-sm font-light text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
+                    >
+                      {label}
+                    </Link>
+                  ) : (
+                    <span className="text-sm font-light text-[var(--foreground)]">{label}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
       <section>
         <h2 className="font-serif text-lg font-normal tracking-tight">Recently viewed</h2>
         {recent.length === 0 ? (
@@ -235,32 +281,57 @@ function MyLibrary() {
           </p>
         ) : (
           <ul className="mt-4 space-y-3">
-            {recent.map((entry) => (
-              <li key={entry.slug}>
-                <Link
-                  href={entry.pathname}
-                  className="text-sm font-light text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
-                >
-                  {entry.title}
-                </Link>
-              </li>
-            ))}
+            {recent.map((entry) => {
+              const page = pageBySlug.get(entry.slug);
+              if (!page) return null;
+              return (
+                <li key={entry.slug}>
+                  <Link
+                    href={page.pathname}
+                    className="text-sm font-light text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
+                  >
+                    {page.title}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
 
-      <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 md:p-6">
-        <h2 className="font-serif text-lg font-normal tracking-tight">Saved articles &amp; notes</h2>
-        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--muted)]">
-          Bookmarks, annotations, and Capture notes will live here once the object model ships
-          (Wave 12). For now, use Capture in Ask to jot a private note.
-        </p>
-        <Link
-          href="/ask?mode=capture"
-          className="mt-4 inline-flex items-center text-sm font-normal text-[var(--accent)] hover:underline"
-        >
-          Open Capture in Ask →
-        </Link>
+      <section>
+        <h2 className="font-serif text-lg font-normal tracking-tight">Private notes</h2>
+        {notes.length === 0 ? (
+          <p className="mt-3 text-sm font-light text-[var(--muted)]">
+            No notes yet. Capture a private note in Ask.{' '}
+            <Link href="/ask?mode=capture" className="text-[var(--accent)] hover:underline">
+              Open Capture
+            </Link>
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {notes.map((note) => (
+              <li
+                key={note.id}
+                className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4"
+              >
+                <p className="whitespace-pre-wrap text-sm font-light leading-relaxed text-[var(--foreground)]">
+                  {note.body}
+                </p>
+                <div className="mt-3 flex items-center justify-between text-xs font-light text-[var(--muted)]">
+                  <span>{new Date(note.createdAt).toLocaleString()}</span>
+                  <button
+                    type="button"
+                    onClick={() => remove(note.id)}
+                    className="text-[var(--secondary)] underline-offset-2 hover:text-[var(--foreground)] hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

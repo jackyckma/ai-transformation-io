@@ -15,7 +15,7 @@ export default function SettingsPage() {
     <PageShell>
       <PageIntro
         title="Settings"
-        description="Tell us your role and industry to tune recommendations. Saved on this device in Phase 1; account sync arrives with the object model."
+        description="Tell us your role and industry to tune recommendations. Synced to your account when signed in; saved on this device otherwise."
         seed="settings"
       />
 

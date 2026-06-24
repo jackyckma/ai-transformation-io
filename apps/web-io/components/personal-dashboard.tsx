@@ -1,12 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ContentPageMeta } from '@ai-transformation/content';
+import type { AssessmentGapId } from '@ai-transformation/shared';
 
 import { OpenInAsk } from '@/components/open-in-ask';
 import { OnboardingFields } from '@/components/onboarding-fields';
+import { getApiClient } from '@/lib/api-client';
 import { libraryAskActions } from '@/lib/ask-actions';
+import { WEAKEST_GAP_SLUGS } from '@/lib/assessment-gaps';
 import { useOnboardingProfile } from '@/lib/onboarding-profile';
 import { rankArticles } from '@/lib/recommendations';
 import { useRecentlyViewed } from '@/lib/recently-viewed';
@@ -21,13 +24,31 @@ type PersonalDashboardProps = {
 export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboardProps) {
   const { profile, isLoaded } = useOnboardingProfile();
   const recent = useRecentlyViewed();
+  const [weakestGap, setWeakestGap] = useState<AssessmentGapId | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getApiClient()
+      .getAssessmentSession()
+      .then((res) => {
+        if (cancelled) return;
+        setWeakestGap(res.session?.lastScore?.weakestGap.id ?? null);
+      })
+      .catch(() => {
+        // Backend unreachable — recommendations fall back to other signals.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const recommended = useMemo(() => {
     const recentPillars = recent
       .map((entry) => pages.find((page) => page.slug === entry.slug)?.pillar)
       .filter((value): value is ContentPageMeta['pillar'] => Boolean(value));
-    return rankArticles(pages, { profile, curatedSlugs, recentPillars }).slice(0, 5);
-  }, [pages, profile, curatedSlugs, recent]);
+    const weakestGapSlugs = weakestGap ? WEAKEST_GAP_SLUGS[weakestGap] : [];
+    return rankArticles(pages, { profile, curatedSlugs, recentPillars, weakestGapSlugs }).slice(0, 5);
+  }, [pages, profile, curatedSlugs, recent, weakestGap]);
 
   const greetingName = user.name?.trim() || user.email.split('@')[0];
 

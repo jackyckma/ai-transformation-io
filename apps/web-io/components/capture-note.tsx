@@ -21,7 +21,7 @@ export function CaptureNote({ context }: { context?: string }) {
           Capture a private note
         </label>
         <p className="mt-1 text-xs font-light text-[var(--muted)]">
-          Rough thoughts and project context. Private to this device in Phase 1.
+          Rough thoughts and project context. Always private — synced to your account when signed in.
         </p>
         {context ? (
           <p className="mt-3 inline-flex items-center rounded-full bg-[var(--accent)]/10 px-3 py-1 text-xs font-normal text-[var(--foreground)]">
@@ -52,7 +52,7 @@ export function CaptureNote({ context }: { context?: string }) {
         <h2 className="font-serif text-lg font-normal tracking-tight">Your notes</h2>
         {notes.length === 0 ? (
           <p className="mt-3 text-sm font-light text-[var(--muted)]">
-            No notes yet. Saved notes stay private and sync to the object model in Wave 12.
+            No notes yet. Saved notes stay private — to your account when signed in, otherwise this device.
           </p>
         ) : (
           <ul className="mt-4 space-y-3">

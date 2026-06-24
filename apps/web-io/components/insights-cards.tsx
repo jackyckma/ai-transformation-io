@@ -1,4 +1,5 @@
 import { OpenInAsk } from '@/components/open-in-ask';
+import { SaveToContext } from '@/components/save-to-context';
 import { insightAskActions } from '@/lib/ask-actions';
 import { INSIGHT_KIND_LABEL, IO_INSIGHTS } from '@/lib/insights-data';
 
@@ -28,11 +29,10 @@ export function InsightsCards() {
           <p className="mt-3 border-l-2 border-[var(--accent)]/40 pl-3 text-sm font-light italic leading-relaxed text-[var(--foreground)]">
             What this means: {card.interpretation}
           </p>
-          <OpenInAsk
-            contextId={card.id}
-            actions={insightAskActions(card.title, card.source)}
-            className="mt-4"
-          />
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <OpenInAsk contextId={card.id} actions={insightAskActions(card.title, card.source)} />
+            <SaveToContext target={{ targetType: 'object', targetId: card.id }} title={card.title} />
+          </div>
         </li>
       ))}
     </ul>
