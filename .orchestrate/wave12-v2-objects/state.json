@@ -74,7 +74,7 @@
     {
       "name": "web-io-personal",
       "type": "worker",
-      "branch": "orch/wave12-v2-objects/web-io-personal",
+      "branch": "`orch/wave12-v2-objects/web-io-personal` (work committed on local `cursor/wave12-web-io-personal-b9a1`, pushed to the orchestrator branch ref)",
       "startingRef": "orch/wave12-v2-objects/shared-foundation",
       "dependsOn": [
         "shared-foundation"
@@ -82,12 +82,12 @@
       "agentId": "bc-91c212f5-be84-42fa-b1bc-9467639bb9a1",
       "runId": "run-ff6921fc-0e60-4c0c-afa0-d7b993e56465",
       "parentAgentId": "bc-75594855-0552-493d-a488-66b0ac2612ae",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-io-personal.md",
       "startedAt": "2026-06-24T10:18:04.718Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-24T10:18:07.757Z",
+      "finishedAt": "2026-06-24T10:44:19.628Z",
+      "lastUpdate": "2026-06-24T10:44:19.629Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -111,12 +111,12 @@
       "handoffPath": "handoffs/web-org-personal.md",
       "startedAt": "2026-06-24T10:18:08.131Z",
       "finishedAt": "2026-06-24T10:34:18.670Z",
-      "lastUpdate": "2026-06-24T10:34:18.670Z",
+      "lastUpdate": "2026-06-24T10:34:19.937Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "type-check-only",
       "attempts": 1
     },
     {
@@ -189,6 +189,10 @@
     {
       "at": "2026-06-24T10:33:48.373Z",
       "message": "backend-personal: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-24T10:34:19.938Z",
+      "message": "web-org-personal: verification self-reported (type-check-only)"
     }
   ]
 }
