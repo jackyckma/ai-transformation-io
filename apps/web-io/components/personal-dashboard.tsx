@@ -10,6 +10,7 @@ import { OnboardingFields } from '@/components/onboarding-fields';
 import { getApiClient } from '@/lib/api-client';
 import { libraryAskActions } from '@/lib/ask-actions';
 import { WEAKEST_GAP_SLUGS } from '@/lib/assessment-gaps';
+import { useBookmarks } from '@/lib/bookmarks';
 import { useOnboardingProfile } from '@/lib/onboarding-profile';
 import { rankArticles } from '@/lib/recommendations';
 import { useRecentlyViewed } from '@/lib/recently-viewed';
@@ -24,6 +25,7 @@ type PersonalDashboardProps = {
 export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboardProps) {
   const { profile, isLoaded } = useOnboardingProfile();
   const recent = useRecentlyViewed();
+  const { bookmarks } = useBookmarks();
   const [weakestGap, setWeakestGap] = useState<AssessmentGapId | null>(null);
 
   useEffect(() => {
@@ -46,9 +48,19 @@ export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboa
     const recentPillars = recent
       .map((entry) => pages.find((page) => page.slug === entry.slug)?.pillar)
       .filter((value): value is ContentPageMeta['pillar'] => Boolean(value));
+    const bookmarkedPillars = bookmarks
+      .filter((bookmark) => bookmark.target.targetType === 'library_article')
+      .map((bookmark) => pages.find((page) => page.slug === bookmark.target.targetId)?.pillar)
+      .filter((value): value is ContentPageMeta['pillar'] => Boolean(value));
     const weakestGapSlugs = weakestGap ? WEAKEST_GAP_SLUGS[weakestGap] : [];
-    return rankArticles(pages, { profile, curatedSlugs, recentPillars, weakestGapSlugs }).slice(0, 5);
-  }, [pages, profile, curatedSlugs, recent, weakestGap]);
+    return rankArticles(pages, {
+      profile,
+      curatedSlugs,
+      recentPillars,
+      weakestGapSlugs,
+      bookmarkedPillars,
+    }).slice(0, 5);
+  }, [pages, profile, curatedSlugs, recent, bookmarks, weakestGap]);
 
   const greetingName = user.name?.trim() || user.email.split('@')[0];
 
@@ -93,7 +105,7 @@ export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboa
           </Link>
         </div>
         <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-          {recommended.map(({ page }) => (
+          {recommended.map(({ page, reasons }) => (
             <li
               key={page.slug}
               className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4"
@@ -106,6 +118,18 @@ export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboa
                   {page.description}
                 </p>
               </Link>
+              {reasons.length ? (
+                <ul className="mt-3 flex flex-wrap gap-1.5">
+                  {reasons.slice(0, 2).map((reason) => (
+                    <li
+                      key={reason}
+                      className="rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/5 px-2 py-0.5 text-[11px] font-light text-[var(--secondary)]"
+                    >
+                      {reason}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               <OpenInAsk
                 contextId={page.slug}
                 actions={libraryAskActions(page.title).slice(0, 1)}
