@@ -39,12 +39,12 @@
       "handoffPath": "handoffs/backend-objects.md",
       "startedAt": "2026-06-24T10:18:00.658Z",
       "finishedAt": "2026-06-24T10:27:24.358Z",
-      "lastUpdate": "2026-06-24T10:27:24.359Z",
+      "lastUpdate": "2026-06-24T10:27:27.710Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
@@ -58,17 +58,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-24T10:27:31.264Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-24T10:27:31.264Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     },
     {
       "name": "web-io-personal",
@@ -180,6 +181,10 @@
     {
       "at": "2026-06-24T10:17:55.184Z",
       "message": "shared-foundation: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-24T10:27:27.711Z",
+      "message": "backend-objects: verification self-reported (unit-test-verified)"
     }
   ]
 }
