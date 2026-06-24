@@ -1,8 +1,10 @@
 import { z } from 'zod';
+import * as wave12 from './wave12-objects';
 
 export * from './ask-modes';
 export * from './onboarding';
 export * from './recommendation';
+export * from './wave12-objects';
 
 export const healthResponseSchema = z.object({
   ok: z.boolean(),
@@ -469,6 +471,85 @@ const assessmentSessionSaveResponseSchema = z.object({
 
 export function createApiClient(baseUrl: string) {
   const base = baseUrl.replace(/\/$/, '');
+  const jsonContentType = 'application/json';
+
+  type AgentRequestOptions = {
+    token?: string;
+    clientId?: string;
+  };
+
+  type PersonalListRequest = {
+    site?: wave12.Site;
+    targetType?: wave12.PersonalTarget['targetType'];
+    targetId?: string;
+    mine?: boolean;
+  };
+
+  function buildQuery(params: Record<string, unknown>): string {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null || value === '') {
+        continue;
+      }
+      query.set(key, String(value));
+    }
+    const raw = query.toString();
+    return raw ? `?${raw}` : '';
+  }
+
+  function withJsonBody(payload: unknown, init: RequestInit = {}): RequestInit {
+    const headers = new Headers(init.headers ?? {});
+    if (!headers.has('content-type')) {
+      headers.set('content-type', jsonContentType);
+    }
+    return {
+      ...init,
+      headers,
+      body: JSON.stringify(payload),
+    };
+  }
+
+  function withAgentAuth(options: AgentRequestOptions | undefined, init: RequestInit = {}): RequestInit {
+    const headers = new Headers(init.headers ?? {});
+    if (options?.token) {
+      headers.set('authorization', `Bearer ${options.token}`);
+    }
+    if (options?.clientId) {
+      headers.set('x-agent-client-id', options.clientId);
+    }
+    return {
+      ...init,
+      headers,
+    };
+  }
+
+  async function requestJson<T>(path: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
+    const res = await fetch(`${base}${path}`, init);
+    if (!res.ok) {
+      throw new Error(`Request failed (${init?.method ?? 'GET'} ${path}): ${res.status}`);
+    }
+    return schema.parse(await res.json());
+  }
+
+  async function requestSessionJson<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    init: RequestInit = {},
+  ): Promise<T> {
+    return requestJson(path, schema, {
+      credentials: 'include',
+      ...init,
+    });
+  }
+
+  async function requestAgentJson<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options?: AgentRequestOptions,
+    init: RequestInit = {},
+  ): Promise<T> {
+    return requestJson(path, schema, withAgentAuth(options, init));
+  }
 
   return {
     async health(): Promise<HealthResponse> {
@@ -597,6 +678,717 @@ export function createApiClient(baseUrl: string) {
       });
       if (!res.ok) throw new Error(`Chat message failed: ${res.status}`);
       return chatSendMessageResponseSchema.parse(await res.json());
+    },
+    objects: {
+      async list(request: wave12.ObjectListRequest = {}): Promise<wave12.ObjectListResponse> {
+        const query = wave12.objectListRequestSchema.parse(request);
+        return requestSessionJson(
+          `/api/objects${buildQuery(query)}`,
+          wave12.objectListResponseSchema,
+        );
+      },
+      async get(id: string): Promise<wave12.ObjectGetResponse> {
+        const request = wave12.objectGetRequestSchema.parse({ id });
+        return requestSessionJson(
+          `/api/objects/${encodeURIComponent(request.id)}`,
+          wave12.objectGetResponseSchema,
+        );
+      },
+      async create(payload: wave12.ObjectCreateRequest): Promise<wave12.ObjectWriteResponse> {
+        const request = wave12.objectCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/objects',
+          wave12.objectWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async saveDraft(payload: wave12.ObjectDraftRequest): Promise<wave12.ObjectWriteResponse> {
+        const request = wave12.objectDraftRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/objects/drafts',
+          wave12.objectWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async submit(payload: wave12.ObjectSubmitRequest): Promise<wave12.ObjectWriteResponse> {
+        const request = wave12.objectSubmitRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/objects/submit',
+          wave12.objectWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async draftDerivedArticle(
+        payload: wave12.DerivedArticleDraftRequest,
+      ): Promise<wave12.DerivedArticleDraftResponse> {
+        const request = wave12.derivedArticleDraftRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/objects/derive-article',
+          wave12.derivedArticleDraftResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+    },
+    contributions: {
+      async create(
+        payload: wave12.ContributionCreateRequest,
+      ): Promise<wave12.ContributionWriteResponse> {
+        const request = wave12.contributionCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/contributions',
+          wave12.contributionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async saveDraft(
+        payload: wave12.ContributionDraftRequest,
+      ): Promise<wave12.ContributionWriteResponse> {
+        const request = wave12.contributionDraftRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/contributions/drafts',
+          wave12.contributionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async submit(
+        payload: wave12.ContributionSubmitRequest,
+      ): Promise<wave12.ContributionWriteResponse> {
+        const request = wave12.contributionSubmitRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/contributions/submit',
+          wave12.contributionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+    },
+    moderation: {
+      async list(
+        request: wave12.ModerationQueueListRequest = {},
+      ): Promise<wave12.ModerationQueueListResponse> {
+        const query = wave12.moderationQueueListRequestSchema.parse(request);
+        return requestSessionJson(
+          `/api/moderation/queue${buildQuery(query)}`,
+          wave12.moderationQueueListResponseSchema,
+        );
+      },
+      async transition(
+        id: string,
+        payload: wave12.ModerationTransitionRequest,
+      ): Promise<wave12.ModerationTransitionResponse> {
+        const requestId = z.string().min(1).parse(id);
+        const request = wave12.moderationTransitionRequestSchema.parse(payload);
+        return requestSessionJson(
+          `/api/moderation/queue/${encodeURIComponent(requestId)}`,
+          wave12.moderationTransitionResponseSchema,
+          withJsonBody(request, { method: 'PATCH' }),
+        );
+      },
+    },
+    publishPreference: {
+      async get(): Promise<wave12.PublishPreferenceGetResponse> {
+        return requestSessionJson(
+          '/api/settings/publish-preference',
+          wave12.publishPreferenceGetResponseSchema,
+        );
+      },
+      async set(
+        payload: wave12.PublishPreferenceSetRequest,
+      ): Promise<wave12.PublishPreferenceSetResponse> {
+        const request = wave12.publishPreferenceSetRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/settings/publish-preference',
+          wave12.publishPreferenceSetResponseSchema,
+          withJsonBody(request, { method: 'PUT' }),
+        );
+      },
+    },
+    profile: {
+      async get(): Promise<wave12.ProfileGetResponse> {
+        return requestSessionJson('/api/profile', wave12.profileGetResponseSchema);
+      },
+      async set(payload: wave12.ProfileSetRequest): Promise<wave12.ProfileSetResponse> {
+        const request = wave12.profileSetRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/profile',
+          wave12.profileSetResponseSchema,
+          withJsonBody(request, { method: 'PUT' }),
+        );
+      },
+    },
+    bookmarks: {
+      async list(request: PersonalListRequest = {}): Promise<wave12.BookmarkListResponse> {
+        return requestSessionJson(
+          `/api/personal/bookmarks${buildQuery(request)}`,
+          wave12.bookmarkListResponseSchema,
+        );
+      },
+      async create(payload: wave12.BookmarkCreateRequest): Promise<wave12.BookmarkWriteResponse> {
+        const request = wave12.bookmarkCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/personal/bookmarks',
+          wave12.bookmarkWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async update(
+        id: string,
+        payload: wave12.BookmarkUpdateRequest,
+      ): Promise<wave12.BookmarkWriteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        const request = wave12.bookmarkUpdateRequestSchema.parse(payload);
+        return requestSessionJson(
+          `/api/personal/bookmarks/${encodeURIComponent(requestId)}`,
+          wave12.bookmarkWriteResponseSchema,
+          withJsonBody(request, { method: 'PATCH' }),
+        );
+      },
+      async delete(id: string): Promise<wave12.DeleteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        return requestSessionJson(
+          `/api/personal/bookmarks/${encodeURIComponent(requestId)}`,
+          wave12.deleteResponseSchema,
+          { method: 'DELETE' },
+        );
+      },
+    },
+    notes: {
+      async list(request: PersonalListRequest = {}): Promise<wave12.NoteListResponse> {
+        return requestSessionJson(`/api/personal/notes${buildQuery(request)}`, wave12.noteListResponseSchema);
+      },
+      async create(payload: wave12.NoteCreateRequest): Promise<wave12.NoteWriteResponse> {
+        const request = wave12.noteCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/personal/notes',
+          wave12.noteWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async update(id: string, payload: wave12.NoteUpdateRequest): Promise<wave12.NoteWriteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        const request = wave12.noteUpdateRequestSchema.parse(payload);
+        return requestSessionJson(
+          `/api/personal/notes/${encodeURIComponent(requestId)}`,
+          wave12.noteWriteResponseSchema,
+          withJsonBody(request, { method: 'PATCH' }),
+        );
+      },
+      async delete(id: string): Promise<wave12.DeleteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        return requestSessionJson(
+          `/api/personal/notes/${encodeURIComponent(requestId)}`,
+          wave12.deleteResponseSchema,
+          { method: 'DELETE' },
+        );
+      },
+    },
+    annotations: {
+      async list(request: PersonalListRequest = {}): Promise<wave12.AnnotationListResponse> {
+        return requestSessionJson(
+          `/api/personal/annotations${buildQuery(request)}`,
+          wave12.annotationListResponseSchema,
+        );
+      },
+      async create(
+        payload: wave12.AnnotationCreateRequest,
+      ): Promise<wave12.AnnotationWriteResponse> {
+        const request = wave12.annotationCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/personal/annotations',
+          wave12.annotationWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async update(
+        id: string,
+        payload: wave12.AnnotationUpdateRequest,
+      ): Promise<wave12.AnnotationWriteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        const request = wave12.annotationUpdateRequestSchema.parse(payload);
+        return requestSessionJson(
+          `/api/personal/annotations/${encodeURIComponent(requestId)}`,
+          wave12.annotationWriteResponseSchema,
+          withJsonBody(request, { method: 'PATCH' }),
+        );
+      },
+      async delete(id: string): Promise<wave12.DeleteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        return requestSessionJson(
+          `/api/personal/annotations/${encodeURIComponent(requestId)}`,
+          wave12.deleteResponseSchema,
+          { method: 'DELETE' },
+        );
+      },
+    },
+    comments: {
+      async list(request: PersonalListRequest = {}): Promise<wave12.CommentListResponse> {
+        return requestSessionJson(
+          `/api/personal/comments${buildQuery(request)}`,
+          wave12.commentListResponseSchema,
+        );
+      },
+      async create(payload: wave12.CommentCreateRequest): Promise<wave12.CommentWriteResponse> {
+        const request = wave12.commentCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/personal/comments',
+          wave12.commentWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async update(
+        id: string,
+        payload: wave12.CommentUpdateRequest,
+      ): Promise<wave12.CommentWriteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        const request = wave12.commentUpdateRequestSchema.parse(payload);
+        return requestSessionJson(
+          `/api/personal/comments/${encodeURIComponent(requestId)}`,
+          wave12.commentWriteResponseSchema,
+          withJsonBody(request, { method: 'PATCH' }),
+        );
+      },
+      async delete(id: string): Promise<wave12.DeleteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        return requestSessionJson(
+          `/api/personal/comments/${encodeURIComponent(requestId)}`,
+          wave12.deleteResponseSchema,
+          { method: 'DELETE' },
+        );
+      },
+    },
+    recentlyViewed: {
+      async list(request: PersonalListRequest = {}): Promise<wave12.RecentlyViewedListResponse> {
+        return requestSessionJson(
+          `/api/personal/recently-viewed${buildQuery(request)}`,
+          wave12.recentlyViewedListResponseSchema,
+        );
+      },
+      async create(
+        payload: wave12.RecentlyViewedCreateRequest,
+      ): Promise<wave12.RecentlyViewedWriteResponse> {
+        const request = wave12.recentlyViewedCreateRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/personal/recently-viewed',
+          wave12.recentlyViewedWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async update(
+        id: string,
+        payload: wave12.RecentlyViewedUpdateRequest,
+      ): Promise<wave12.RecentlyViewedWriteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        const request = wave12.recentlyViewedUpdateRequestSchema.parse(payload);
+        return requestSessionJson(
+          `/api/personal/recently-viewed/${encodeURIComponent(requestId)}`,
+          wave12.recentlyViewedWriteResponseSchema,
+          withJsonBody(request, { method: 'PATCH' }),
+        );
+      },
+      async delete(id: string): Promise<wave12.DeleteResponse> {
+        const requestId = z.string().min(1).parse(id);
+        return requestSessionJson(
+          `/api/personal/recently-viewed/${encodeURIComponent(requestId)}`,
+          wave12.deleteResponseSchema,
+          { method: 'DELETE' },
+        );
+      },
+    },
+    v1: {
+      objects: {
+        async list(
+          request: wave12.ObjectListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ObjectListResponse> {
+          const query = wave12.objectListRequestSchema.parse(request);
+          return requestAgentJson(
+            `/api/v1/objects${buildQuery(query)}`,
+            wave12.objectListResponseSchema,
+            options,
+          );
+        },
+        async get(id: string, options?: AgentRequestOptions): Promise<wave12.ObjectGetResponse> {
+          const request = wave12.objectGetRequestSchema.parse({ id });
+          return requestAgentJson(
+            `/api/v1/objects/${encodeURIComponent(request.id)}`,
+            wave12.objectGetResponseSchema,
+            options,
+          );
+        },
+        async create(
+          payload: wave12.ObjectCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ObjectWriteResponse> {
+          const request = wave12.objectCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/objects',
+            wave12.objectWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async saveDraft(
+          payload: wave12.ObjectDraftRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ObjectWriteResponse> {
+          const request = wave12.objectDraftRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/objects/drafts',
+            wave12.objectWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async submit(
+          payload: wave12.ObjectSubmitRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ObjectWriteResponse> {
+          const request = wave12.objectSubmitRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/objects/submit',
+            wave12.objectWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+      },
+      contributions: {
+        async create(
+          payload: wave12.ContributionCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ContributionWriteResponse> {
+          const request = wave12.contributionCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/contributions',
+            wave12.contributionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async saveDraft(
+          payload: wave12.ContributionDraftRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ContributionWriteResponse> {
+          const request = wave12.contributionDraftRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/contributions/drafts',
+            wave12.contributionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async submit(
+          payload: wave12.ContributionSubmitRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ContributionWriteResponse> {
+          const request = wave12.contributionSubmitRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/contributions/submit',
+            wave12.contributionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+      },
+      moderation: {
+        async list(
+          request: wave12.ModerationQueueListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ModerationQueueListResponse> {
+          const query = wave12.moderationQueueListRequestSchema.parse(request);
+          return requestAgentJson(
+            `/api/v1/moderation/queue${buildQuery(query)}`,
+            wave12.moderationQueueListResponseSchema,
+            options,
+          );
+        },
+        async transition(
+          id: string,
+          payload: wave12.ModerationTransitionRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ModerationTransitionResponse> {
+          const requestId = z.string().min(1).parse(id);
+          const request = wave12.moderationTransitionRequestSchema.parse(payload);
+          return requestAgentJson(
+            `/api/v1/moderation/queue/${encodeURIComponent(requestId)}`,
+            wave12.moderationTransitionResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PATCH' }),
+          );
+        },
+      },
+      publishPreference: {
+        async get(options?: AgentRequestOptions): Promise<wave12.PublishPreferenceGetResponse> {
+          return requestAgentJson(
+            '/api/v1/settings/publish-preference',
+            wave12.publishPreferenceGetResponseSchema,
+            options,
+          );
+        },
+        async set(
+          payload: wave12.PublishPreferenceSetRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.PublishPreferenceSetResponse> {
+          const request = wave12.publishPreferenceSetRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/settings/publish-preference',
+            wave12.publishPreferenceSetResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PUT' }),
+          );
+        },
+      },
+      profile: {
+        async get(options?: AgentRequestOptions): Promise<wave12.ProfileGetResponse> {
+          return requestAgentJson('/api/v1/profile', wave12.profileGetResponseSchema, options);
+        },
+        async set(
+          payload: wave12.ProfileSetRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.ProfileSetResponse> {
+          const request = wave12.profileSetRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/profile',
+            wave12.profileSetResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PUT' }),
+          );
+        },
+      },
+      bookmarks: {
+        async list(
+          request: PersonalListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.BookmarkListResponse> {
+          return requestAgentJson(
+            `/api/v1/personal/bookmarks${buildQuery(request)}`,
+            wave12.bookmarkListResponseSchema,
+            options,
+          );
+        },
+        async create(
+          payload: wave12.BookmarkCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.BookmarkWriteResponse> {
+          const request = wave12.bookmarkCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/personal/bookmarks',
+            wave12.bookmarkWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async update(
+          id: string,
+          payload: wave12.BookmarkUpdateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.BookmarkWriteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          const request = wave12.bookmarkUpdateRequestSchema.parse(payload);
+          return requestAgentJson(
+            `/api/v1/personal/bookmarks/${encodeURIComponent(requestId)}`,
+            wave12.bookmarkWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PATCH' }),
+          );
+        },
+        async delete(id: string, options?: AgentRequestOptions): Promise<wave12.DeleteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          return requestAgentJson(
+            `/api/v1/personal/bookmarks/${encodeURIComponent(requestId)}`,
+            wave12.deleteResponseSchema,
+            options,
+            { method: 'DELETE' },
+          );
+        },
+      },
+      notes: {
+        async list(
+          request: PersonalListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.NoteListResponse> {
+          return requestAgentJson(
+            `/api/v1/personal/notes${buildQuery(request)}`,
+            wave12.noteListResponseSchema,
+            options,
+          );
+        },
+        async create(
+          payload: wave12.NoteCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.NoteWriteResponse> {
+          const request = wave12.noteCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/personal/notes',
+            wave12.noteWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async update(
+          id: string,
+          payload: wave12.NoteUpdateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.NoteWriteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          const request = wave12.noteUpdateRequestSchema.parse(payload);
+          return requestAgentJson(
+            `/api/v1/personal/notes/${encodeURIComponent(requestId)}`,
+            wave12.noteWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PATCH' }),
+          );
+        },
+        async delete(id: string, options?: AgentRequestOptions): Promise<wave12.DeleteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          return requestAgentJson(
+            `/api/v1/personal/notes/${encodeURIComponent(requestId)}`,
+            wave12.deleteResponseSchema,
+            options,
+            { method: 'DELETE' },
+          );
+        },
+      },
+      annotations: {
+        async list(
+          request: PersonalListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.AnnotationListResponse> {
+          return requestAgentJson(
+            `/api/v1/personal/annotations${buildQuery(request)}`,
+            wave12.annotationListResponseSchema,
+            options,
+          );
+        },
+        async create(
+          payload: wave12.AnnotationCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.AnnotationWriteResponse> {
+          const request = wave12.annotationCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/personal/annotations',
+            wave12.annotationWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async update(
+          id: string,
+          payload: wave12.AnnotationUpdateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.AnnotationWriteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          const request = wave12.annotationUpdateRequestSchema.parse(payload);
+          return requestAgentJson(
+            `/api/v1/personal/annotations/${encodeURIComponent(requestId)}`,
+            wave12.annotationWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PATCH' }),
+          );
+        },
+        async delete(id: string, options?: AgentRequestOptions): Promise<wave12.DeleteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          return requestAgentJson(
+            `/api/v1/personal/annotations/${encodeURIComponent(requestId)}`,
+            wave12.deleteResponseSchema,
+            options,
+            { method: 'DELETE' },
+          );
+        },
+      },
+      comments: {
+        async list(
+          request: PersonalListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.CommentListResponse> {
+          return requestAgentJson(
+            `/api/v1/personal/comments${buildQuery(request)}`,
+            wave12.commentListResponseSchema,
+            options,
+          );
+        },
+        async create(
+          payload: wave12.CommentCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.CommentWriteResponse> {
+          const request = wave12.commentCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/personal/comments',
+            wave12.commentWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async update(
+          id: string,
+          payload: wave12.CommentUpdateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.CommentWriteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          const request = wave12.commentUpdateRequestSchema.parse(payload);
+          return requestAgentJson(
+            `/api/v1/personal/comments/${encodeURIComponent(requestId)}`,
+            wave12.commentWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PATCH' }),
+          );
+        },
+        async delete(id: string, options?: AgentRequestOptions): Promise<wave12.DeleteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          return requestAgentJson(
+            `/api/v1/personal/comments/${encodeURIComponent(requestId)}`,
+            wave12.deleteResponseSchema,
+            options,
+            { method: 'DELETE' },
+          );
+        },
+      },
+      recentlyViewed: {
+        async list(
+          request: PersonalListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave12.RecentlyViewedListResponse> {
+          return requestAgentJson(
+            `/api/v1/personal/recently-viewed${buildQuery(request)}`,
+            wave12.recentlyViewedListResponseSchema,
+            options,
+          );
+        },
+        async create(
+          payload: wave12.RecentlyViewedCreateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.RecentlyViewedWriteResponse> {
+          const request = wave12.recentlyViewedCreateRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/personal/recently-viewed',
+            wave12.recentlyViewedWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async update(
+          id: string,
+          payload: wave12.RecentlyViewedUpdateRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.RecentlyViewedWriteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          const request = wave12.recentlyViewedUpdateRequestSchema.parse(payload);
+          return requestAgentJson(
+            `/api/v1/personal/recently-viewed/${encodeURIComponent(requestId)}`,
+            wave12.recentlyViewedWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'PATCH' }),
+          );
+        },
+        async delete(id: string, options?: AgentRequestOptions): Promise<wave12.DeleteResponse> {
+          const requestId = z.string().min(1).parse(id);
+          return requestAgentJson(
+            `/api/v1/personal/recently-viewed/${encodeURIComponent(requestId)}`,
+            wave12.deleteResponseSchema,
+            options,
+            { method: 'DELETE' },
+          );
+        },
+      },
     },
   };
 }
