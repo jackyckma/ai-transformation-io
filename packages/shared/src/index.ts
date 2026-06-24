@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import * as wave12 from './wave12-objects';
 import * as wave13 from './wave13-community';
+import * as wave14 from './wave14-community';
 
 export * from './ask-modes';
 export * from './onboarding';
 export * from './recommendation';
 export * from './wave12-objects';
 export * from './wave13-community';
+export * from './wave14-community';
 
 export const healthResponseSchema = z.object({
   ok: z.boolean(),
@@ -995,6 +997,17 @@ export function createApiClient(baseUrl: string) {
         );
       },
     },
+    personalization: {
+      async getActivitySummary(
+        request: wave14.ActivitySummaryRequest,
+      ): Promise<wave14.ActivitySummaryResponse> {
+        const query = wave14.activitySummaryRequestSchema.parse(request);
+        return requestSessionJson(
+          `/api/personal/activity-summary${buildQuery(query)}`,
+          wave14.activitySummaryResponseSchema,
+        );
+      },
+    },
     community: {
       async listByType(
         request: wave13.CommunityListByTypeRequest = {},
@@ -1073,6 +1086,24 @@ export function createApiClient(baseUrl: string) {
         return requestSessionJson(
           `/api/community/interactions${buildQuery(query)}`,
           wave13.communityInteractionListResponseSchema,
+        );
+      },
+      async match(payload: wave14.MatchExperimentRequest): Promise<wave14.MatchExperimentResponse> {
+        const request = wave14.matchExperimentRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/match',
+          wave14.matchExperimentResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async matchFeedback(
+        payload: wave14.MatchFeedbackRequest,
+      ): Promise<wave14.MatchFeedbackResponse> {
+        const request = wave14.matchFeedbackRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/match/feedback',
+          wave14.matchFeedbackResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
         );
       },
       async matchStub(payload: wave13.CommunityMatchRequest): Promise<wave13.CommunityMatchResponse> {
@@ -1480,6 +1511,19 @@ export function createApiClient(baseUrl: string) {
           );
         },
       },
+      personalization: {
+        async getActivitySummary(
+          request: wave14.ActivitySummaryRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave14.ActivitySummaryResponse> {
+          const query = wave14.activitySummaryRequestSchema.parse(request);
+          return requestAgentJson(
+            `/api/v1/personal/activity-summary${buildQuery(query)}`,
+            wave14.activitySummaryResponseSchema,
+            options,
+          );
+        },
+      },
       community: {
         async listByType(
           request: wave13.CommunityListByTypeRequest = {},
@@ -1584,6 +1628,30 @@ export function createApiClient(baseUrl: string) {
             `/api/v1/community/interactions${buildQuery(query)}`,
             wave13.communityInteractionListResponseSchema,
             options,
+          );
+        },
+        async match(
+          payload: wave14.MatchExperimentRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave14.MatchExperimentResponse> {
+          const request = wave14.matchExperimentRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/match',
+            wave14.matchExperimentResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async matchFeedback(
+          payload: wave14.MatchFeedbackRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave14.MatchFeedbackResponse> {
+          const request = wave14.matchFeedbackRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/match/feedback',
+            wave14.matchFeedbackResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
           );
         },
         async matchStub(
