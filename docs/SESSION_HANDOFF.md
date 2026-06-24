@@ -3,8 +3,8 @@
 **Date:** 2026-06-24  
 **Session:** Wave 13 integration — SITE_DESIGN_v2 Phase 3 community types + Agent API parity  
 **Branch:** `orch/wave13-v2-community/integrate-wave13`  
-**Latest commit:** pending (this handoff is committed in the Wave 13 integration commit)  
-**Push status:** pending push from this session
+**Latest commit:** see branch tip (`git log -1 --oneline`)  
+**Push status:** pushed to `origin/orch/wave13-v2-community/integrate-wave13`
 
 ## Active task
 
