@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { ORG_KNOWLEDGE_SLUGS, getPage } from '@ai-transformation/content';
 import { ContentPageLayout } from '@/components/content-page-layout';
+import { KnowledgeObjectView } from '@/components/knowledge-object-view';
 import { knowledgeActions } from '@/lib/ask-prefill';
 
 type PageProps = {
@@ -29,18 +29,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function KnowledgeArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  if (!isKnowledgeSlug(slug)) notFound();
 
-  const doc = getPage(slug);
-  if (!doc) notFound();
+  if (isKnowledgeSlug(slug)) {
+    const doc = getPage(slug);
+    if (doc) {
+      return (
+        <ContentPageLayout
+          doc={doc}
+          backHref="/knowledge"
+          backLabel="← All knowledge"
+          eyebrow="Knowledge"
+          actions={knowledgeActions(doc.title, doc.slug)}
+        />
+      );
+    }
+  }
 
-  return (
-    <ContentPageLayout
-      doc={doc}
-      backHref="/knowledge"
-      backLabel="← All knowledge"
-      eyebrow="Knowledge"
-      actions={knowledgeActions(doc.title, doc.slug)}
-    />
-  );
+  return <KnowledgeObjectView id={slug} />;
 }

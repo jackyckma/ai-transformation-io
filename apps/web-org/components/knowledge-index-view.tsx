@@ -6,13 +6,17 @@ import { useState } from 'react';
 import { useAuthUser } from '@/lib/use-auth-user';
 import { knowledgeActions } from '@/lib/ask-prefill';
 import type { KnowledgeIndex } from '@/lib/knowledge-index';
+import { KnowledgeObjects } from '@/components/knowledge-objects';
+import { MyLibraryPanel } from '@/components/my-library-panel';
+import { MyArticlesPanel, MyCommentsPanel } from '@/components/my-articles-panel';
 
-type Tab = 'browse' | 'library' | 'mine';
+type Tab = 'browse' | 'library' | 'articles' | 'comments';
 
 const MEMBER_TABS: { id: Tab; label: string }[] = [
   { id: 'browse', label: 'Browse' },
   { id: 'library', label: 'My Library' },
-  { id: 'mine', label: 'My articles & comments' },
+  { id: 'articles', label: 'My articles' },
+  { id: 'comments', label: 'My comments' },
 ];
 
 export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
@@ -56,19 +60,15 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
         </div>
       ) : null}
 
-      {activeTab === 'browse' ? <BrowseCategories index={index} /> : null}
-      {activeTab === 'library' ? (
-        <PlaceholderPanel
-          title="My Library"
-          body="Bookmarks, saved articles, and private notes will live here once the object model ships."
-        />
+      {activeTab === 'browse' ? (
+        <>
+          <BrowseCategories index={index} />
+          <KnowledgeObjects isMember={isMember} />
+        </>
       ) : null}
-      {activeTab === 'mine' ? (
-        <PlaceholderPanel
-          title="My articles & comments"
-          body="Articles you author and public comments you leave on the commons will appear here."
-        />
-      ) : null}
+      {activeTab === 'library' ? <MyLibraryPanel /> : null}
+      {activeTab === 'articles' ? <MyArticlesPanel /> : null}
+      {activeTab === 'comments' ? <MyCommentsPanel /> : null}
     </div>
   );
 }
@@ -121,14 +121,3 @@ function BrowseCategories({ index }: { index: KnowledgeIndex }) {
   );
 }
 
-function PlaceholderPanel({ title, body }: { title: string; body: string }) {
-  return (
-    <section className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
-      <h2 className="font-serif text-lg font-normal tracking-tight">{title}</h2>
-      <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-[var(--muted)]">{body}</p>
-      <p className="mt-4 text-xs font-light uppercase tracking-[0.12em] text-[var(--secondary)]">
-        Coming with the object model (Wave 12)
-      </p>
-    </section>
-  );
-}
