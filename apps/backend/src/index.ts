@@ -8,6 +8,7 @@ import agentProtocolRouter from './lanes/agent-protocol/index.js';
 import { handleAgentEntry } from './lanes/agent-protocol/entry.js';
 import authRouter from './lanes/auth/index.js';
 import chatRouter from './lanes/chat/index.js';
+import communityRouter from './lanes/community/index.js';
 import harvestRouter from './lanes/harvest/index.js';
 import newsletterRouter from './lanes/newsletter/index.js';
 import objectsRouter from './lanes/objects/index.js';
@@ -46,12 +47,14 @@ export function createApp() {
 
   app.route('/api', harvestRouter);
   app.route('/api', objectsRouter);
+  app.route('/api', communityRouter);
   app.route('/api', chatRouter);
   app.route('/api', newsletterRouter);
   app.route('/api/internal/agent', agentRouter);
   app.route('/api/auth', authRouter);
   app.route('/api/assessment', assessmentRouter);
   app.route('/api/v1', objectsRouter);
+  app.route('/api/v1', communityRouter);
   app.route('/api/v1', agentProtocolRouter);
 
   return app;

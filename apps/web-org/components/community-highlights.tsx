@@ -2,17 +2,22 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import type { CommunityObjectRecord } from '@ai-transformation/shared';
+import {
+  getCommunityActions,
+  isCommunityPhase2ReservedType,
+  type CommunityObjectRecord,
+} from '@ai-transformation/shared';
 
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useBookmarks } from '@/lib/use-bookmarks';
-import { communityActions } from '@/lib/ask-prefill';
+import { useCommunityInteractions } from '@/lib/use-community-interactions';
 import { getApiClient } from '@/lib/api-client';
 import { SaveButton } from '@/components/save-button';
 import {
   COMMUNITY_TYPE_LABEL,
-  COMMUNITY_TYPE_VERBS,
   VISIBILITY_LABEL,
+  communityHref,
+  communityVerbLabel,
   formatDate,
   objectExcerpt,
   objectTarget,
@@ -27,7 +32,7 @@ import {
 type LoadState = 'loading' | 'ready' | 'error';
 
 export function CommunityHighlights() {
-  const { audience } = useAuthUser();
+  const { user, audience } = useAuthUser();
   const isMember = audience === 'member';
   const [objects, setObjects] = useState<CommunityObjectRecord[]>([]);
   const [state, setState] = useState<LoadState>('loading');
@@ -91,6 +96,7 @@ export function CommunityHighlights() {
               key={object.id}
               object={object}
               isMember={isMember}
+              userId={user?.id}
               bookmarks={bookmarks}
             />
           ))}
@@ -130,8 +136,8 @@ export function CommunityHighlights() {
         </h2>
         <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-[var(--muted)]">
           {isMember
-            ? 'Save items to your library and use Ask to draft a reply or contribution. Full reply and follow actions arrive with the community types in Wave 13.'
-            : 'Posting and one-click actions require an account. Until then, use Ask to draft replies and contributions, or open the help request flow.'}
+            ? 'Open any item to reply, follow, offer help, or join. Use Find Help to post a request, or Ask to draft a contribution. Matching for the opportunity types is coming.'
+            : 'Posting and one-click actions require an account. Until then, browse highlights, or use Ask to draft a reply or contribution.'}
         </p>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
           <Link
@@ -155,17 +161,25 @@ export function CommunityHighlights() {
 function ObjectCard({
   object,
   isMember,
+  userId,
   bookmarks,
 }: {
   object: CommunityObjectRecord;
   isMember: boolean;
+  userId?: string | null;
   bookmarks: ReturnType<typeof useBookmarks>;
 }) {
   const title = objectTitle(object);
   const target = objectTarget(object);
   const typeLabel = COMMUNITY_TYPE_LABEL[object.type] ?? object.type;
-  const verbs = (COMMUNITY_TYPE_VERBS[object.type] ?? ['Save']).filter((verb) => verb !== 'Save');
-  const actions = communityActions(title, typeLabel.toLowerCase(), object.id);
+  const reserved = isCommunityPhase2ReservedType(object.type);
+  const verbs = getCommunityActions(object.type);
+  const interactions = useCommunityInteractions(object.id, {
+    enabled: isMember && !reserved,
+    userId,
+  });
+  const detailHref = communityHref(object.id);
+  const openLabel = object.type === 'discussion' ? 'Reply' : 'Open';
 
   return (
     <li className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
@@ -176,9 +190,16 @@ function ObjectCard({
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
           {VISIBILITY_LABEL[object.visibility]}
         </span>
+        {reserved ? (
+          <span className="rounded-full border border-[var(--border)] px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
+            Reserved
+          </span>
+        ) : null}
       </div>
       <h3 className="font-serif mt-3 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
-        {title}
+        <Link href={detailHref} className="hover:text-[var(--accent)]">
+          {title}
+        </Link>
       </h3>
       <p className="mt-2 flex-1 text-sm font-light leading-relaxed text-[var(--muted)]">
         {objectExcerpt(object.body)}
@@ -186,45 +207,109 @@ function ObjectCard({
       <p className="mt-3 text-xs font-light text-[var(--secondary)]">{formatDate(object.updatedAt)}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-3">
-        {isMember ? (
-          <SaveButton
-            target={target}
-            title={title}
-            saved={bookmarks.isSaved(target)}
-            pending={bookmarks.isPending(target)}
-            onToggle={bookmarks.toggle}
-          />
-        ) : null}
-        {verbs.map((verb) => (
-          <span
-            key={verb}
-            title="Available with community types (Wave 13)"
-            aria-disabled="true"
-            className="cursor-default rounded-full border border-[var(--border)] px-3 py-1 text-xs font-light text-[var(--muted)]/70"
-          >
-            {verb}
-          </span>
-        ))}
+        {reserved ? (
+          verbs.map((verb) => (
+            <span
+              key={verb}
+              aria-disabled="true"
+              title="Reserved · coming soon"
+              className="cursor-default rounded-full border border-dashed border-[var(--border)] px-3 py-1 text-xs font-light text-[var(--muted)]/70"
+            >
+              {communityVerbLabel(verb)} · coming soon
+            </span>
+          ))
+        ) : (
+          <>
+            {isMember && verbs.includes('save') ? (
+              <SaveButton
+                target={target}
+                title={title}
+                saved={bookmarks.isSaved(target)}
+                pending={bookmarks.isPending(target)}
+                onToggle={bookmarks.toggle}
+              />
+            ) : null}
+            {isMember && verbs.includes('follow') ? (
+              <CardActionButton
+                active={interactions.isDone('follow')}
+                pending={interactions.isPending('follow')}
+                activeLabel="Following"
+                idleLabel="Follow"
+                onClick={() => void interactions.toggle('follow')}
+              />
+            ) : null}
+            {isMember && verbs.includes('join') ? (
+              <CardActionButton
+                active={interactions.isDone('join')}
+                pending={interactions.isPending('join')}
+                activeLabel="Leave"
+                idleLabel="Join"
+                onClick={() => void interactions.toggle('join')}
+              />
+            ) : null}
+            {isMember && verbs.includes('offer_help') ? (
+              <CardActionButton
+                active={interactions.isDone('offer_help')}
+                pending={interactions.isPending('offer_help')}
+                activeLabel="Help offered"
+                idleLabel="Offer help"
+                onClick={() => void interactions.offerHelp()}
+                disabledWhenActive
+              />
+            ) : null}
+            <Link
+              href={detailHref}
+              className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            >
+              {openLabel}
+            </Link>
+          </>
+        )}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-        {actions.map((action) => (
-          <Link
-            key={action.label}
-            href={action.href}
-            className="text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
-          >
-            {action.label}
-          </Link>
-        ))}
-      </div>
+      {interactions.error ? (
+        <p role="alert" className="mt-3 text-xs text-red-700 dark:text-red-200">
+          {interactions.error}
+        </p>
+      ) : null}
     </li>
+  );
+}
+
+function CardActionButton({
+  active,
+  pending,
+  activeLabel,
+  idleLabel,
+  onClick,
+  disabledWhenActive = false,
+}: {
+  active: boolean;
+  pending: boolean;
+  activeLabel: string;
+  idleLabel: string;
+  onClick: () => void;
+  disabledWhenActive?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={pending || (disabledWhenActive && active)}
+      aria-pressed={active}
+      className={`rounded-full border px-3 py-1 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+        active
+          ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]'
+          : 'border-[var(--border)] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
+      }`}
+    >
+      {pending ? 'Saving…' : active ? activeLabel : idleLabel}
+    </button>
   );
 }
 
 function SampleCard({ item }: { item: CommunityHighlight }) {
   const typeMeta = COMMUNITY_TYPE_META[item.type];
-  const actions = communityActions(item.title, typeMeta.label.toLowerCase(), item.id);
 
   return (
     <li className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
@@ -234,6 +319,9 @@ function SampleCard({ item }: { item: CommunityHighlight }) {
         </span>
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
           public
+        </span>
+        <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
+          example
         </span>
       </div>
       <h3 className="font-serif mt-3 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
@@ -246,24 +334,12 @@ function SampleCard({ item }: { item: CommunityHighlight }) {
         {item.verbs.map((verb) => (
           <span
             key={verb}
-            title="Available with community types (Wave 13)"
             aria-disabled="true"
+            title="Example action — appears on live items"
             className="cursor-default rounded-full border border-[var(--border)] px-3 py-1 text-xs font-light text-[var(--muted)]/70"
           >
             {verb}
           </span>
-        ))}
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-        {actions.map((action) => (
-          <Link
-            key={action.label}
-            href={action.href}
-            className="text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
-          >
-            {action.label}
-          </Link>
         ))}
       </div>
     </li>

@@ -70,10 +70,22 @@ export default function ForAgentsPage() {
             scope <code>write:inquiry</code> on .io.
           </li>
           <li>
+            <strong>Community write/action API parity</strong> — Phase 1 community endpoints are available at{' '}
+            <code>/api/v1/community/*</code> with Bearer/session parity, and community objects are created via{' '}
+            <code>/api/v1/objects</code> / <code>/api/v1/objects/submit</code>. .io has no community UI, but
+            the shared Agentic Access API supports the same contracts used by .org.
+          </li>
+          <li>
             <strong>Changelog</strong> — <code>GET /api/v1/agent/changelog</code> returns versioned entries
             when the API changes.
           </li>
         </ul>
+        <p>
+          Phase 2 community types are reserved in the shared schema (
+          <code>question</code>, <code>mentorship_request</code>, <code>project_request</code>,{' '}
+          <code>collaboration_offer</code>, <code>apprenticeship_opportunity</code>) with a forward-compatible{' '}
+          <code>POST /api/v1/community/match</code> stub.
+        </p>
 
         <h2>Client identity</h2>
         <p>
