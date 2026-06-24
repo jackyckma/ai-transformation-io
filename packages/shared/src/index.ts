@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import * as wave12 from './wave12-objects';
+import * as wave13 from './wave13-community';
 
 export * from './ask-modes';
 export * from './onboarding';
 export * from './recommendation';
 export * from './wave12-objects';
+export * from './wave13-community';
 
 export const healthResponseSchema = z.object({
   ok: z.boolean(),
@@ -993,6 +995,95 @@ export function createApiClient(baseUrl: string) {
         );
       },
     },
+    community: {
+      async listByType(
+        request: wave13.CommunityListByTypeRequest = {},
+      ): Promise<wave13.CommunityListByTypeResponse> {
+        const query = wave13.communityListByTypeRequestSchema.parse(request);
+        return requestSessionJson(
+          `/api/community/objects${buildQuery(query)}`,
+          wave13.communityListByTypeResponseSchema,
+        );
+      },
+      async getWithReplies(id: string): Promise<wave13.CommunityGetWithRepliesResponse> {
+        const request = wave13.communityGetWithRepliesRequestSchema.parse({ id });
+        return requestSessionJson(
+          `/api/community/objects/${encodeURIComponent(request.id)}/replies`,
+          wave13.communityGetWithRepliesResponseSchema,
+        );
+      },
+      async reply(payload: wave13.CommunityReplyRequest): Promise<wave12.CommentWriteResponse> {
+        const commentRequest = wave13.toCommunityReplyCommentRequest(payload);
+        return requestSessionJson(
+          '/api/community/replies',
+          wave12.commentWriteResponseSchema,
+          withJsonBody(commentRequest, { method: 'POST' }),
+        );
+      },
+      async follow(
+        payload: wave13.CommunityFollowRequest,
+      ): Promise<wave13.CommunityInteractionWriteResponse> {
+        const request = wave13.communityFollowRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/follows',
+          wave13.communityInteractionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async unfollow(
+        payload: wave13.CommunityUnfollowRequest,
+      ): Promise<wave13.CommunityInteractionUndoResponse> {
+        const request = wave13.communityUnfollowRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/follows',
+          wave13.communityInteractionUndoResponseSchema,
+          withJsonBody(request, { method: 'DELETE' }),
+        );
+      },
+      async offerHelp(
+        payload: wave13.CommunityOfferHelpRequest,
+      ): Promise<wave13.CommunityInteractionWriteResponse> {
+        const request = wave13.communityOfferHelpRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/offers',
+          wave13.communityInteractionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async join(payload: wave13.CommunityJoinRequest): Promise<wave13.CommunityInteractionWriteResponse> {
+        const request = wave13.communityJoinRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/joins',
+          wave13.communityInteractionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async leave(payload: wave13.CommunityLeaveRequest): Promise<wave13.CommunityInteractionUndoResponse> {
+        const request = wave13.communityLeaveRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/joins',
+          wave13.communityInteractionUndoResponseSchema,
+          withJsonBody(request, { method: 'DELETE' }),
+        );
+      },
+      async listInteractions(
+        request: wave13.CommunityInteractionListRequest = {},
+      ): Promise<wave13.CommunityInteractionListResponse> {
+        const query = wave13.communityInteractionListRequestSchema.parse(request);
+        return requestSessionJson(
+          `/api/community/interactions${buildQuery(query)}`,
+          wave13.communityInteractionListResponseSchema,
+        );
+      },
+      async matchStub(payload: wave13.CommunityMatchRequest): Promise<wave13.CommunityMatchResponse> {
+        const request = wave13.communityMatchRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/match',
+          wave13.communityMatchResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+    },
     v1: {
       objects: {
         async list(
@@ -1386,6 +1477,125 @@ export function createApiClient(baseUrl: string) {
             wave12.deleteResponseSchema,
             options,
             { method: 'DELETE' },
+          );
+        },
+      },
+      community: {
+        async listByType(
+          request: wave13.CommunityListByTypeRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityListByTypeResponse> {
+          const query = wave13.communityListByTypeRequestSchema.parse(request);
+          return requestAgentJson(
+            `/api/v1/community/objects${buildQuery(query)}`,
+            wave13.communityListByTypeResponseSchema,
+            options,
+          );
+        },
+        async getWithReplies(
+          id: string,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityGetWithRepliesResponse> {
+          const request = wave13.communityGetWithRepliesRequestSchema.parse({ id });
+          return requestAgentJson(
+            `/api/v1/community/objects/${encodeURIComponent(request.id)}/replies`,
+            wave13.communityGetWithRepliesResponseSchema,
+            options,
+          );
+        },
+        async reply(
+          payload: wave13.CommunityReplyRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave12.CommentWriteResponse> {
+          const commentRequest = wave13.toCommunityReplyCommentRequest(payload);
+          return requestAgentJson(
+            '/api/v1/community/replies',
+            wave12.commentWriteResponseSchema,
+            options,
+            withJsonBody(commentRequest, { method: 'POST' }),
+          );
+        },
+        async follow(
+          payload: wave13.CommunityFollowRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityInteractionWriteResponse> {
+          const request = wave13.communityFollowRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/follows',
+            wave13.communityInteractionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async unfollow(
+          payload: wave13.CommunityUnfollowRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityInteractionUndoResponse> {
+          const request = wave13.communityUnfollowRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/follows',
+            wave13.communityInteractionUndoResponseSchema,
+            options,
+            withJsonBody(request, { method: 'DELETE' }),
+          );
+        },
+        async offerHelp(
+          payload: wave13.CommunityOfferHelpRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityInteractionWriteResponse> {
+          const request = wave13.communityOfferHelpRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/offers',
+            wave13.communityInteractionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async join(
+          payload: wave13.CommunityJoinRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityInteractionWriteResponse> {
+          const request = wave13.communityJoinRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/joins',
+            wave13.communityInteractionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async leave(
+          payload: wave13.CommunityLeaveRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityInteractionUndoResponse> {
+          const request = wave13.communityLeaveRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/joins',
+            wave13.communityInteractionUndoResponseSchema,
+            options,
+            withJsonBody(request, { method: 'DELETE' }),
+          );
+        },
+        async listInteractions(
+          request: wave13.CommunityInteractionListRequest = {},
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityInteractionListResponse> {
+          const query = wave13.communityInteractionListRequestSchema.parse(request);
+          return requestAgentJson(
+            `/api/v1/community/interactions${buildQuery(query)}`,
+            wave13.communityInteractionListResponseSchema,
+            options,
+          );
+        },
+        async matchStub(
+          payload: wave13.CommunityMatchRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave13.CommunityMatchResponse> {
+          const request = wave13.communityMatchRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/match',
+            wave13.communityMatchResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
           );
         },
       },
