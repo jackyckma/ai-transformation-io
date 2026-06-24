@@ -175,12 +175,13 @@ Lanes are **planning and agent-coordination** boundaries. Runtime code lives in 
 | **Web IO** | L8 | Editorial UI — .io | `apps/web-io` |
 | **Web ORG** | L9 | Editorial UI — .org | `apps/web-org` |
 | **Agent jobs** | L10 | Internal jobs: issue compile, synthesize, cluster | `apps/backend/src/lanes/agent` |
-| **Agent protocol** | L11 | External agent API: read, write tokens, credits, capabilities | `apps/backend/src/lanes/agent-protocol` |
+| **Agent protocol** | L11 | External agent API: read, write tokens, quotas (credits deferred) | `apps/backend/src/lanes/agent-protocol` |
+| **Editorial supply** | L12 | Draft ingest + review queue; Orbita client integration (Wave 16) | `apps/backend/src/lanes/editorial-supply` (planned) |
 
 ### Dependency rules
 
 - L8, L9 **only** call backend via `API_BASE_URL` + `@ai-transformation/shared` client — no business logic in pages.
-- L3–L6, L10, L11 **never** import each other's `src/` directly — shared types only via L0.
+- L3–L6, L10, L11, L12 **never** import each other's `src/` directly — shared types only via L0.
 - L1 routes by Host header only — no host checks in L8/L9 page components.
 - L7 content is consumed by L8, L9, and **L11 read API** (same registry).
 - L11 write tokens use L3 email verification (magic link) before OAuth is required.
@@ -210,15 +211,16 @@ Browser (.io / .org)
 | L2 Backend core | Health, DB, all lane routers | — |
 | L3 Auth | Google OAuth, sessions, agent authorize email | — |
 | L4 Assessment | Scoring API + session save/resume | — |
-| L5 Harvest | Stories, prompts, inquiries, moderation | `newsletter_reply` ingestion (Wave 10) |
-| L6 Newsletter | **Wave 8** — issues/subscribers tables, providers, webhooks | Public send + subscribe (Wave 10) |
+| L5 Harvest | Stories, prompts, inquiries, moderation | `newsletter_reply` ingestion (Wave 17) |
+| L6 Newsletter | **Wave 8** — issues/subscribers tables, providers, webhooks | Public send + subscribe (**Wave 17**) |
 | L7 Content | KB registry, curated JSON, agent content API | — |
-| L8 Web IO | Reader home, assessment secondary, for-agents, function role guides, **sidebar companion** | Your progress dashboard |
-| L9 Web ORG | Share-first Harvest Hub, apprenticeship, **sidebar companion** | Your progress dashboard |
-| L10 Agent jobs | **Wave 8** — compile-draft, cluster-replies | LLM synthesis (later) |
-| L11 Agent protocol | Wave 7 v1 — read, authorize, write | Token refresh/revoke (v1.1) |
+| L8 Web IO | v2 ribbon, Library, Insights, Ask, personalization v2 | **Wave 15** UI readiness |
+| L9 Web ORG | v2 ribbon, Knowledge, Community, Ask, Phase 2 types | **Wave 15** UI readiness |
+| L10 Agent jobs | **Wave 8** — compile-draft, cluster-replies | Extend compile for objects (Wave 16–17) |
+| L11 Agent protocol | Wave 7 v1 — read, authorize, write, quotas | Token refresh/revoke (v1.1); credits Wave 19+ |
+| L12 Editorial supply | — (planned) | Draft ingest + review API; Orbita client runbook |
 
-*Updated 2026-06-22 — see [project-progress.md](./project-progress.md)*
+*Updated 2026-06-25 — see [project-progress.md](./project-progress.md)*
 
 ---
 

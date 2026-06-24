@@ -1,17 +1,19 @@
 # Email & newsletter infrastructure
 
 **Last updated:** 2026-06-22  
-**Lane:** L6 Newsletter · **Wave 8:** infra shipped · **Send pilot:** Wave 10
+**Lane:** L6 Newsletter · **Wave 8:** infra shipped · **Send pilot:** Wave 17 (legacy Wave 10 scope)
+
+**Prerequisites:** Wave 15 UI readiness + Wave 16 content seed before first pilot send. See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12.
 
 ## Design principle
 
 Keep **subscribers, issues, and reply storage in our backend**. Avoid Mailchimp/Buttondown. Use platform services only for **transport** (send + inbound parse).
 
 ```
-Subscribe/unsubscribe     → backend (subscribers table) — Wave 10 UI
-Draft / approve issue     → backend + L10 compile job (Wave 8 ✅)
+Subscribe/unsubscribe     → backend (subscribers table) — Wave 17 UI
+Draft / approve issue     → backend + L10 compile job (Wave 8 ✅; extend Wave 16–17)
 Send newsletter           → Zeabur Email (ZSend) REST API
-Receive reader replies    → Cloudflare Email Worker → backend webhook (Wave 10)
+Receive reader replies    → Cloudflare Email Worker → backend webhook (Wave 17)
 Store all inputs          → contributions (source=newsletter_reply)
 ```
 
@@ -40,8 +42,8 @@ Agent authorize emails use `AGENT_AUTHORIZE_FROM` (default `pulse@ai-transformat
 | `issues`, `subscribers`, `issue_contributions` tables | ✅ |
 | `NoopNewsletterProvider` + `ZeaburZSendProvider` | ✅ |
 | `POST /api/webhooks/zsend` | ✅ log stub |
-| `POST /api/webhooks/inbound-email` | 501 until Wave 10 |
-| `POST /api/newsletter/subscribe` | 501 until Wave 10 |
+| `POST /api/webhooks/inbound-email` | 501 until Wave 17 |
+| `POST /api/newsletter/subscribe` | 501 until Wave 17 |
 | `POST /api/agent/compile-draft` | ✅ admin — draft MD in `issues` |
 | `POST /api/agent/cluster-replies` | ✅ admin — keyword cluster stub |
 
@@ -58,7 +60,7 @@ Requires signed-in user in `ADMIN_EMAILS`.
 
 ---
 
-## Receive replies — Cloudflare Email Worker (Wave 10)
+## Receive replies — Cloudflare Email Worker (Wave 17)
 
 | Item | Detail |
 |------|--------|
@@ -76,7 +78,7 @@ Requires signed-in user in `ADMIN_EMAILS`.
 |----------|---------|
 | `ZSEND_API_KEY` | ZSend send (agent authorize + future newsletter) |
 | `AGENT_AUTHORIZE_FROM` | e.g. `pulse@ai-transformation.io` |
-| `INBOUND_EMAIL_WEBHOOK_SECRET` | Wave 10 Worker auth |
+| `INBOUND_EMAIL_WEBHOOK_SECRET` | Wave 17 Worker auth |
 | `NEWSLETTER_FROM_IO` | Future: `pulse@ai-transformation.io` |
 | `NEWSLETTER_FROM_ORG` | Future: `learn@ai-transformation.org` |
 | `ADMIN_EMAILS` | Admin routes including compile-draft |

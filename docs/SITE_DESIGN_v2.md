@@ -287,11 +287,15 @@ Assessment **lives under Insights** as a data type (not standalone nav item). Co
 - Ask Submit / Find Help → API same as external agent
 - Phase 2 community types + matching stubs
 
-### Phase 4 — Personalization depth (Wave 14+)
+### Phase 4 — Personalization depth (Wave 14 ✅)
 
-- LLM-assisted ranking (optional)
-- External agent deep links (optional)
-- Newsletter integration with Knowledge objects (if Wave 10 pilot happened)
+Shipped on `main`: Phase 2 community types, experimental matcher, rule-based personalization v2 (.io + .org).
+
+**Deferred to post–Wave 14 waves (see §12):**
+
+- LLM-assisted ranking (Wave 18)
+- External agent deep links (Wave 18)
+- Newsletter integration with Knowledge objects (Wave 17 — newsletter pilot)
 
 ---
 
@@ -306,23 +310,34 @@ Assessment **lives under Insights** as a data type (not standalone nav item). Co
 | Curated home JSON | Home curated layer (both sites) |
 | Chat companion / `/ask` | Ask page + modes |
 | Harvest stories/prompts/inquiries | Migrate to Knowledge / Community types |
-| ZSend + newsletter infra (Wave 8) | Optional; Wave 10 unchanged |
+| ZSend + newsletter infra (Wave 8) | Wave 17 pilot after UI + content seed |
 
-### Wave 10 — Newsletter pilot
+### Wave 10 (legacy scope) — Newsletter pilot
 
-**Status:** Still **optional trigger** (contributions count, pilot list). **Not blocked by v2.**
+**Renumbered as Wave 17** in the post–Wave 14 plan (see table below). Infra remains Wave 8; do not confuse wave numbers in old commits.
 
-**v2 note:** When pilot runs, newsletter content should link to **Knowledge** URLs (`/knowledge/...`), not legacy `/learn` or `/stories`. Defer subscribe UI on home hero until agent curation matures (unchanged product preference).
+**Prerequisites (2026-06 founder alignment):** Wave 15 production UI readiness + Wave 16 content supply (seed objects) **before** first pilot send.
 
-### Wave 11+ — remapped to v2 (replaces old “forum / credits” bullet list)
+**v2 note:** When pilot runs, newsletter content links to **Knowledge** URLs (`/knowledge/...`). Subscribe UI stays low-key (footer), not home hero.
 
-| Wave | Goal |
-|------|------|
-| **11** | IA shell, Ask modes, onboarding, Insights/Community placeholders, drop old hub routes |
-| **12** | Object model, visibility, My Library, moderation settings, assessment→Insights |
-| **13** | Community Phase 1 types + unified write API for Ask + external agent |
-| **14** | Personalization v2, Phase 2 community types, matching experiments |
-| **15+** | Newsletter public archive, agent credits top-up (if still desired) |
+### Wave 11–14 — Site design v2 core ✅
+
+| Wave | Goal | Status |
+|------|------|--------|
+| **11** | IA shell, Ask modes, onboarding, drop old hub routes | ✅ shipped |
+| **12** | Object model, visibility, My Library, moderation | ✅ shipped |
+| **13** | Community Phase 1 + Ask ↔ Agent API write parity | ✅ shipped |
+| **14** | Personalization v2, Phase 2 community, matching experiments | ✅ shipped |
+
+### Wave 15+ — Post–v2 roadmap (founder-aligned 2026-06)
+
+| Wave | Goal | Depends on users? |
+|------|------|-------------------|
+| **15** | **Production UI readiness** — comparative audit + polish backlog (see [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md)); not friend interviews | No |
+| **16** | **Content supply** — editorial draft ingest + review queue on site; **Orbita client lane (L12)** optional parallel path for automated seeding | No |
+| **17** | **Newsletter pilot** (legacy Wave 10 scope) — small list, one send, reply capture | No (needs 15–16) |
+| **18** | Member-independent platform features — LLM-assisted ranking, external agent deep links, Phase 2 intent verb UI parity | No |
+| **19+** | Scale features — newsletter public archive, agent credits top-up (**defer until ~50 active users**; quota-only before that) | Yes (credits/archive) |
 
 **Explicitly deprioritized vs old Wave 11+ list:**
 

@@ -1,14 +1,15 @@
 # Documentation index
 
-**Last updated:** 2026-06-23
+**Last updated:** 2026-06-25
 
 ## Start here
 
 | Doc | Purpose |
 |-----|---------|
-| **[SITE_DESIGN_v2.md](SITE_DESIGN_v2.md)** | **Approved** product & IA spec — Wave 11+ north star |
+| **[SITE_DESIGN_v2.md](SITE_DESIGN_v2.md)** | **Approved** product & IA spec — Wave 11+ north star; §12 post–Wave 14 roadmap |
 | [CURRENT_STATUS.md](CURRENT_STATUS.md) | What works in production today |
-| [project-progress.md](project-progress.md) | Wave delivery (0–14); Wave 11+ aligned to v2 |
+| [UI_READINESS_AUDIT.md](UI_READINESS_AUDIT.md) | Wave 15 comparative UI gap analysis |
+| [project-progress.md](project-progress.md) | Wave delivery (0–19+); Waves 15–17 realigned 2026-06 |
 | [SESSION_HANDOFF.md](SESSION_HANDOFF.md) | Resume point for the next agent session |
 
 ## Product & UX

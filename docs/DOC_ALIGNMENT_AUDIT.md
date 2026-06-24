@@ -1,12 +1,23 @@
 # Document alignment audit
 
-**Last updated:** 2026-06-23  
+**Last updated:** 2026-06-25  
 **Trigger:** Founder approved [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — full doc pass + archive outdated plans.
+
+**Post–Wave 14 roadmap (2026-06-25):** Waves 15–19+ realigned — UI before newsletter; L12 Orbita client; see [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md).
 
 **Canonical product & IA (Wave 11+):** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)  
 **Historical UX (Waves 0–10):** [POSITIONING-UX.md](./POSITIONING-UX.md)
 
 ---
+
+## v2 alignment pass (2026-06-25)
+
+| Action | Files |
+|--------|-------|
+| **Roadmap realign** | `SITE_DESIGN_v2.md` §12 — Waves 15–19+; Wave 10 scope → Wave 17 |
+| **New** | `UI_READINESS_AUDIT.md`, `docs/waves/wave15-ui-readiness.md`, L12 `INTERFACE.md`, `.editorial-orbita/` |
+| **Updated** | `CURRENT_STATUS.md`, `SESSION_HANDOFF.md`, `project-progress.md`, `product-architecture.md`, `traceability-index.md`, `EMAIL_NEWSLETTER.md`, `docs/README.md`, `AGENTS.md` |
+| **Resolved** | Code↔doc “routes not migrated” — Wave 11–14 shipped on `main` |
 
 ## v2 alignment pass (2026-06-23)
 
@@ -61,13 +72,12 @@ Do not delete — research record. Where branding or IA conflicts with v2, **v2 
 
 ---
 
-## Code ↔ doc (Wave 11 cleanup tracked in v2 §15)
+## Code ↔ doc (Wave 11–14 ✅ on `main`)
 
-Shipped code still reflects Waves 0–9 IA until Wave 11 lands. Do not update docs to pretend routes already changed.
+Legacy routes removed per v2 §15. Do not reintroduce `/frameworks`, `/learn`, etc.
 
-| Shipped (today) | v2 target |
-|-----------------|-----------|
-| `/frameworks`, `/playbook`, `/functions` | `/library` |
-| `/learn`, `/stories` | `/knowledge`, `/community` |
-| Mobile ribbon Home/Read/Ask/You | v2 ribbon per site |
-| Home agent panel + `/for-agents` | Hamburger + contextual Ask prefill |
+| v2 route | Status |
+|----------|--------|
+| `/library`, `/insights`, `/ask` (.io) | ✅ |
+| `/knowledge`, `/community`, `/ask` (.org) | ✅ |
+| Object store + community API | ✅ Wave 12–14 |

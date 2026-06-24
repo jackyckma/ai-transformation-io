@@ -1,6 +1,6 @@
 # Project progress — waves & decisions
 
-**Last updated:** 2026-06-22  
+**Last updated:** 2026-06-25  
 **Methodology:** [lane-based-development.md](../.agents/instructions/lane-based-development.md)
 
 ## Milestone summary
@@ -19,7 +19,10 @@
 | M8 — Agent protocol v1 (Wave 7) | 2026-06-22 | ✅ |
 | M9 — Newsletter + internal agent jobs (Wave 8) | 2026-06-22 | ✅ |
 | M10 — IA expansion (Wave 9) | 2026-06-22 | ✅ |
-| M11 — Newsletter pilot (Wave 10) | TBD | ⏳ |
+| M11 — Site design v2 (Waves 11–14) | 2026-06-24 | ✅ |
+| M12 — Production UI readiness (Wave 15) | TBD | ⏳ ← **NEXT** |
+| M13 — Content supply (Wave 16) | TBD | ⏳ |
+| M14 — Newsletter pilot (Wave 17; legacy Wave 10 scope) | TBD | ⏳ |
 
 Legend: ✅ Done · 🔄 In progress · ⏳ Planned · ❌ Blocked
 
@@ -278,10 +281,10 @@ Each **wave** ships a **closed loop** — something demoable on production, veri
 - [x] `cluster_replies` stub for newsletter_reply contributions
 - [x] `issues`, `subscribers`, `issue_contributions` tables + providers
 - [x] No subscribe UI exposed (`POST /api/newsletter/subscribe` → 501)
-- [x] Inbound webhook stub returns 501 until Wave 10
+- [x] Inbound webhook stub returns 501 until Wave 17
 - [x] `POST /api/webhooks/zsend` accepts events (log-only stub)
 
-**Not in Wave 8:** Public send, subscribe UI, inbound Email Worker (Wave 10).
+**Not in Wave 8:** Public send, subscribe UI, inbound Email Worker (Wave 17).
 
 See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Worker inbound replies.
 
@@ -308,47 +311,57 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 
 ---
 
-### Wave 10 — Newsletter pilot (optional trigger)
+### Wave 10 (legacy scope) — Newsletter pilot → **Wave 17**
 
 **Goal:** Curated switchboard newsletter — small pilot list only.
 
-**Status:** Optional — **not required for Site design v2.** Proceed only when triggers fire.
+**Status:** Deferred to **Wave 17** (after Wave 15 UI readiness + Wave 16 content supply). Infra shipped in Wave 8.
 
-**v2 alignment:** When sending, link to `/knowledge/*` (post–Wave 11), not legacy `/learn` or `/stories`. Subscribe UI remains low-key / deferred on home per product preference.
+**Prerequisites (2026-06 alignment):**
 
-**Triggers (any):**
-- 10+ contributions in DB
-- Agent draft quality acceptable with <30% edit
+- Wave 15 production UI polish shipped
+- Wave 16 seed content in knowledge/community objects (manual or L12 agent)
 - ~10 person pilot list ready
+
+**Legacy triggers (relaxed):** content quality + pilot list matter more than raw contribution count.
 
 | Lane | Deliverables |
 |------|--------------|
-| L6 | Verify `ai-transformation.io` on ZSend; `ZeaburZSendProvider` live send |
-| L6 | Subscribe API + footer CTA (per-site lists) |
+| L6 | Live send via `ZeaburZSendProvider`; subscribe API + footer CTA |
 | L6 | Cloudflare Email Worker → `/api/webhooks/inbound-email` (or manual pilot) |
-| L10 | `compile_issue_draft` production job |
+| L10 | `compile-draft` extended to pull published objects + curated |
 
 **Exit criteria:**
+
 - [ ] One issue sent to pilot list
 - [ ] ≥1 reply captured as contribution
 
 ---
 
-### Wave 11+ — Site design v2 (north star)
+### Wave 11–14 — Site design v2 ✅
 
-**Authoritative spec:** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) (draft until founder-approved)
+**Authoritative spec:** [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)
 
-**Replaces** the old Wave 11+ bullets (forum, credits-only list). Incremental migration from Waves 0–9 shell — no big-bang rewrite.
+| Wave | Focus | Status |
+|------|--------|--------|
+| **11** | IA shell, Ask modes, onboarding, drop old hub nav | ✅ |
+| **12** | Object model, visibility, My Library, moderation | ✅ |
+| **13** | Community Phase 1 + Ask ↔ Agent API parity | ✅ |
+| **14** | Phase 2 community, matcher, personalization v2 | ✅ |
+
+---
+
+### Wave 15+ — Post–v2 (founder-aligned 2026-06)
 
 | Wave | Focus |
 |------|--------|
-| **11** | IA shell — ribbon routes (`/library`, `/knowledge`, `/insights`, `/community`), Ask modes, onboarding profile, Home logged-in dashboards, drop old hub nav (no legacy redirects) |
-| **12** | Object model + visibility; My Library; Capture/notes; assessment under Insights; auto-moderation + publish settings |
-| **13** | Community Phase 1 types (`discussion`, `help_request`, `event`, `community_announcement`); Ask ↔ Agent API write parity |
-| **14** | Phase 2 community types; matching experiments; optional LLM ranking |
-| **15+** | Newsletter archive pages; agent credits top-up (if desired) |
+| **15** | Production UI readiness — [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md) |
+| **16** | Content supply — L12 editorial draft ingest + review; Orbita client optional |
+| **17** | Newsletter pilot (legacy Wave 10 scope) |
+| **18** | LLM ranking, agent deep links, Phase 2 intent UI parity |
+| **19+** | Newsletter archive; agent credits top-up (≥50 active users) |
 
-**Deprioritized:** Full forum (Discourse); function-primary nav; Harvest Hub as primary .org brand.
+**Deprioritized:** Full forum (Discourse); function-primary nav; agent credits before scale.
 
 ---
 
@@ -377,12 +390,20 @@ Wave 8 (newsletter + L10 jobs) ✅
     ↓
 Wave 9 (function pages / IA expansion) ✅
     ↓
-Wave 10 (newsletter pilot) — optional trigger                    ← NEXT (optional)
+Wave 11–14 (Site design v2) ✅
     ↓
-Wave 11–14 (Site design v2 — see SITE_DESIGN_v2.md)             ← IA + object model
+Wave 15 (production UI readiness)                              ← NEXT
+    ↓
+Wave 16 (content supply + L12 editorial)                       ← parallel Orbita OK
+    ↓
+Wave 17 (newsletter pilot — legacy Wave 10 scope)
+    ↓
+Wave 18 (LLM ranking, deep links, …)
+    ↓
+Wave 19+ (archive, credits at scale)
 ```
 
-Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. Wave 10 pilot needs Wave 8 infra. **Wave 11+ follows [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)** — may run in parallel with Wave 10 if newsletter triggers are not met.
+Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. **Wave 17 newsletter pilot needs Wave 8 infra + Wave 15–16 prerequisites.** Wave 11–14 complete on `main`.
 
 ---
 

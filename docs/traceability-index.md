@@ -1,6 +1,6 @@
 # Traceability index — lanes → packages → skills
 
-**Last updated:** 2026-06-23
+**Last updated:** 2026-06-25
 
 | Lane | Name | Package / path | INTERFACE | Agent skill | Simulator fixtures |
 |------|------|----------------|-----------|-------------|-------------------|
@@ -16,6 +16,7 @@
 | L9 | web-org | `apps/web-org/` | [INTERFACE.md](../apps/web-org/INTERFACE.md) | [.agents/skills/lane-web-org/SKILL.md](../.agents/skills/lane-web-org/SKILL.md) | — |
 | L10 | agent | `apps/backend/src/lanes/agent/` | [INTERFACE.md](../apps/backend/src/lanes/agent/INTERFACE.md) | — | [data/simulators/agent/](../data/simulators/agent/) |
 | L11 | agent-protocol | `apps/backend/src/lanes/agent-protocol/` | [INTERFACE.md](../apps/backend/src/lanes/agent-protocol/INTERFACE.md) | — | — |
+| L12 | editorial-supply | `apps/backend/src/lanes/editorial-supply/` (planned) | [INTERFACE.md](../apps/backend/src/lanes/editorial-supply/INTERFACE.md) | — | — |
 
 ## API route map
 

@@ -67,7 +67,7 @@ Set in Zeabur only. Domains **ai-transformation.io** and **ai-transformation.org
 |----------|---------|
 | `ADMIN_EMAILS` | Comma-separated admin emails for `POST /api/agent/compile-draft` and `/cluster-replies` |
 
-Optional (Wave 10): `INBOUND_EMAIL_WEBHOOK_SECRET`, `NEWSLETTER_FROM_IO`, `NEWSLETTER_FROM_ORG` — see [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md).
+Optional (Wave 17): `INBOUND_EMAIL_WEBHOOK_SECRET`, `NEWSLETTER_FROM_IO`, `NEWSLETTER_FROM_ORG` — see [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md).
 
 ## Sidebar companion (chat v1)
 

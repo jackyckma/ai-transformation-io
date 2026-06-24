@@ -1,10 +1,10 @@
 # Current status
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-06-25
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11 (SITE_DESIGN_v2 Phase 1) ✅ · Wave 12 (SITE_DESIGN_v2 Phase 2) ✅ · Wave 13 (SITE_DESIGN_v2 Phase 3) ✅ · **Wave 14 (SITE_DESIGN_v2 Phase 4) shipped** ✅
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–14 (SITE_DESIGN_v2) ✅ · **Wave 14 on `main`** (`7be73fe`)
 
 ## What works (production)
 
@@ -23,8 +23,8 @@ Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11 (SITE_DESIGN_v2 Phase 1) ✅ · Wa
 - **Wave 14 matching experiments live:** `POST /api/v1/community/match` now runs an experimental deterministic rule-based matcher (type compatibility + overlap scoring) with ranked candidates and human-readable reasons, and `POST /api/v1/community/match/feedback` persists thumbs feedback.
 - **Wave 14 personalization v2 live:** .io recommendations now include bookmarks in ranking and personalized Insights relevance ordering for signed-in users; .org dashboard now uses real interaction/follow/bookmark/contribution signals from `GET /api/v1/personal/activity-summary`.
 - **Visibility enforcement unchanged and active:** all community/object reads and matcher candidate pools still rely on Wave 12 query-time visibility filtering (`buildVisibilityFilter`).
-- **Agent API v1** — read, authorize, write (`/api/v1/*`)
-- **Newsletter infra (Wave 8)** — `issues` / `subscribers` tables, `NoopNewsletterProvider` + `ZeaburZSendProvider`, webhooks stub
+- **Agent API v1** — read, authorize, write (`/api/v1/*`); **quota-only** (3/10 reads/day); credits top-up deferred until ~50 active users
+- **Newsletter infra (Wave 8)** — `issues` / `subscribers` tables, `NoopNewsletterProvider` + `ZeaburZSendProvider`, webhooks stub; **pilot send not live** (Wave 17)
 - **Internal jobs (Wave 8)** — admin `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies`
 - ZSend domains **ai-transformation.io** + **.org** verified; `ZSEND_API_KEY` on Zeabur
 - Assessment backend and data products remain available (assessment now lives under Insights route in web-io)
@@ -39,14 +39,22 @@ See [AGENT_ENV.md](./AGENT_ENV.md):
 - `ADMIN_EMAILS` — required for compile-draft admin routes
 - `CHAT_LLM_*` optional overrides — **default LLM:** `MINIMAX_API_KEY` + `MINIMAX_MODEL=MiniMax-M3` via `https://api.minimax.io/v1`
 
-## Next
+## Next (founder-aligned roadmap)
 
-- **Wave 15+ (per v2 roadmap):** newsletter public archive and optional agent credits top-up if still desired.
-- **Wave 10** remains optional: newsletter pilot trigger.
+See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md).
+
+| Wave | Focus |
+|------|--------|
+| **15** | Production UI readiness (comparative audit → polish backlog) |
+| **16** | Content supply — editorial draft ingest + review; Orbita client (L12) non-blocking |
+| **17** | Newsletter pilot (legacy Wave 10 scope; after 15–16) |
+| **18** | LLM ranking, agent deep links, Phase 2 intent UI parity |
+| **19+** | Newsletter archive, agent credits (≥50 users) |
 
 ## Docs
 
 - [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) — approved product & IA spec (Wave 11+)
-- [POSITIONING-UX.md](./POSITIONING-UX.md)
+- [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md) — Wave 15 comparative UI gap analysis
+- [POSITIONING-UX.md](./POSITIONING-UX.md) — historical (Waves 0–10)
 - [project-progress.md](./project-progress.md)
 - [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md)

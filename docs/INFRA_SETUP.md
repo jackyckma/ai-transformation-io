@@ -58,7 +58,7 @@ Both domains verified for Zeabur Email (2026-06-22). Agent authorize + future ne
 | Address | Purpose |
 |---------|---------|
 | pulse@ai-transformation.io | .io send / agent authorize |
-| learn@ai-transformation.org | .org digest (Wave 10) |
+| learn@ai-transformation.org | .org digest (Wave 17) |
 | info@* | Cloudflare forward (human contact) |
 
 See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md).
