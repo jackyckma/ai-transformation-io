@@ -39,12 +39,12 @@
       "handoffPath": "handoffs/backend-wave14.md",
       "startedAt": "2026-06-24T16:44:09.168Z",
       "finishedAt": "2026-06-24T16:56:04.335Z",
-      "lastUpdate": "2026-06-24T16:56:04.335Z",
+      "lastUpdate": "2026-06-24T16:56:05.557Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
@@ -58,12 +58,12 @@
       "agentId": "bc-bd02b130-6bc0-467d-883f-89c13d00010e",
       "runId": "run-504ae148-cc86-42e2-bafb-bbc26233d7bd",
       "parentAgentId": "bc-a68bc758-d442-4cfe-90f7-c1bcdb9bde01",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-org-wave14.md",
       "startedAt": "2026-06-24T16:44:12.681Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-24T16:44:15.722Z",
+      "finishedAt": "2026-06-24T17:09:23.087Z",
+      "lastUpdate": "2026-06-24T17:09:23.088Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -152,6 +152,10 @@
     {
       "at": "2026-06-24T16:53:34.994Z",
       "message": "web-io-wave14: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-24T16:56:05.557Z",
+      "message": "backend-wave14: verification self-reported (unit-test-verified)"
     }
   ]
 }
