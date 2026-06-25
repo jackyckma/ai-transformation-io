@@ -1,40 +1,37 @@
 # Session handoff
 
 **Date:** 2026-06-25  
-**Branch:** `orch/wave16-content-supply/integrate-wave16`  
-**Latest commit:** `ff3fd9a` — docs: mark wave16 integration shipped  
-**Push status:** pushed to `origin/orch/wave16-content-supply/integrate-wave16`; draft PR open: https://github.com/jackyckma/ai-transformation-io/pull/10
+**Branch:** `main`  
+**Latest commit:** `58a174b` — Merge pull request #10 (Wave 16 content supply)  
+**Push status:** merged to `origin/main`
 
 ## Active task
 
-- **Roadmap item:** `wave16-content-supply` — integrated branch finalization and PR handoff
-- **Definition of done:** [wave16-content-supply.md](./waves/wave16-content-supply.md) + build/test pass + idempotent seed proof + one draft PR to `main`
+- **Roadmap item:** `wave17-newsletter-pilot` — next up (legacy Wave 10 newsletter scope; content supply now unblocked)
+- **Definition of done:** See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12, [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md); draft orchestrate goal doc when ready
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 16 integration branch | ✅ L12 editorial-supply backend lane + compile-draft extension + idempotent seed + `.org` `/editorial` queue present on `orch/wave16-content-supply/integrate-wave16` |
-| Build + tests | ✅ `pnpm turbo build` (6/6 targets) and `pnpm --filter @ai-transformation/backend test` (55/55) pass |
-| Seed verification | ✅ `pnpm seed:editorial` run #1: knowledge=8, community=5 (mixed types), created=13; run #2: created=0, skipped=13 (idempotent) |
-| Curated slug alignment | ✅ `data/curated/org-home.json` knowledge slugs (`what-is-ai-transformation`, `transformation-roadmap`, `common-pitfalls`, `ai-patterns-copilots-agents-automation`) are all present in the seed set |
-| Orbita docs | ✅ `.editorial-orbita` runbooks/connection docs list exact Wave 16 live API paths; Orbita runtime remains out-of-repo and non-blocking |
-| Wave 16 on `main` | ⏳ pending PR review/merge |
+| Wave 16 on `main` | ✅ merged PR [#10](https://github.com/jackyckma/ai-transformation-io/pull/10) @ `58a174b` |
+| L12 editorial-supply | ✅ `/api/internal/editorial/drafts` + approve/reject; Bearer parity via `/api/v1/objects/drafts` |
+| compile-draft extension | ✅ published knowledge + community + curated links |
+| Idempotent seed | ✅ `pnpm seed:editorial` — 8 knowledge + 5 community; run #2 created 0 |
+| .org admin queue | ✅ `/editorial` (ADMIN_EMAILS gate) |
+| Orbita | ✅ `.editorial-orbita` exact-path docs only; runtime non-blocking |
+| Build + tests (post-merge verify) | ✅ turbo build 6/6; backend tests 55/55 |
 
 ## Verified in
 
-- **Cloud agent:** L1 build/test/seed verification on `orch/wave16-content-supply/integrate-wave16`
-- **Commands run:** `pnpm install`, `pnpm turbo build`, `pnpm --filter @ai-transformation/backend test`, `pnpm seed:editorial` (twice)
+- **Local agent:** build + backend tests on `main` after PR #10 merge
+- **Orchestrate verifier:** seed twice, editorial-supply integration tests, PR #10 scope check
 
 ## Top priority next
 
-1. Review and merge the Wave 16 draft PR into `main`.
-2. Kick off Wave 17 newsletter pilot using seeded published knowledge/community objects.
-
-## What was already tried
-
-- No cross-branch merge was required: `orch/wave16-content-supply/web-org-editorial` already had backend-editorial commits in a linear ancestry chain.
-- Seed script was run twice to verify idempotency and avoid duplicate published objects.
+1. Draft Wave 17 orchestrate goal (`docs/waves/wave17-newsletter-pilot.md`) and kick off newsletter pilot (compile-draft → issue send path; still no credits/Stripe).
+2. Run `pnpm seed:editorial` on production DB if seeded content not yet visible live (Zeabur one-off or deploy hook — confirm before mass send).
+3. Optional: wire Orbita as external HTTP client to L12 draft endpoints (doc-only in this repo today).
 
 ## How to run / verify
 
@@ -46,27 +43,25 @@ pnpm seed:editorial
 pnpm seed:editorial
 ```
 
-Optional quick checks:
+Admin editorial queue (requires ADMIN_EMAILS session on .org):
 
-```bash
-pnpm --filter @ai-transformation/web-org build
-pnpm --filter @ai-transformation/web-org typecheck
-```
+- https://ai-transformation.org/editorial
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| Wave 16 goal | `docs/waves/wave16-content-supply.md` |
+| Wave 16 goal (shipped) | `docs/waves/wave16-content-supply.md` |
 | L12 contract | `apps/backend/src/lanes/editorial-supply/INTERFACE.md` |
-| L12 backend implementation | `apps/backend/src/lanes/editorial-supply/index.ts` |
-| compile-draft extension | `apps/backend/src/lanes/agent/compile-draft.ts` |
 | Seed script | `scripts/seed-editorial-content.ts` |
-| .org admin queue UI | `apps/web-org/app/editorial/page.tsx`, `apps/web-org/components/editorial-queue.tsx` |
-| Orbita runbooks (doc-only) | `.editorial-orbita/README.md`, `.editorial-orbita/orbita-connection.md`, `.editorial-orbita/runbooks/weekly-seed.md` |
+| compile-draft | `apps/backend/src/lanes/agent/compile-draft.ts` |
+| .org admin queue | `apps/web-org/app/editorial/page.tsx` |
+| Newsletter spec | `docs/EMAIL_NEWSLETTER.md` |
+| Orbita runbooks | `.editorial-orbita/` |
 
 ## Warnings
 
-- Orbita integration remains **doc-only** in this repo; no Orbita platform runtime code is included.
-- Keep `packages/shared/src/index.ts` untouched (agent-protocol test asserts its text).
-- Keep `.orchestrate/` bookkeeping files out of PR diffs.
+- Newsletter **pilot send** still not live until Wave 17 ships; infra (ZSend, issues/subscribers tables) exists from Wave 8.
+- Orbita integration remains **doc-only** in this repo.
+- Keep `packages/shared/src/index.ts` untouched.
+- After doc-only merges, Zeabur may need manual restart if production shows 502.

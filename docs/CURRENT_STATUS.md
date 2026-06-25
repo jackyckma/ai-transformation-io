@@ -4,7 +4,7 @@
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–16 (SITE_DESIGN_v2) ✅ · **Wave 16 integrated (draft PR to `main`)** (`orch/wave16-content-supply/integrate-wave16`)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–16 (SITE_DESIGN_v2) ✅ · **Wave 16 shipped on `main`** (`58a174b`, PR #10)
 
 ## What works (production)
 
