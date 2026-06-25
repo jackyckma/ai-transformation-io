@@ -1,0 +1,7 @@
+[2026-06-25T16:32:47.897Z] backend-editorial: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents.
+[2026-06-25T16:33:53.148Z] backend-editorial: respawned by local-cli (was error)
+[2026-06-25T16:46:15.945Z] backend-editorial: verification self-reported (unit-test-verified)
+[2026-06-25T16:46:28.265Z] web-org-editorial: spawn failed after 3 transient sub-attempts: ConfigurationError: [validation_error] Branch 'orch/wave16-content-supply/backend-editorial' does not exist in repository jackyckma/ai-transformation-io.
+[2026-06-25T16:47:44.438Z] web-org-editorial: respawned by local-cli (was error)
+[2026-06-25T16:59:21.596Z] web-org-editorial: verification self-reported (live-ui-verified)
+[2026-06-25T17:04:58.822Z] integrate-wave16: verification self-reported (unit-test-verified)
