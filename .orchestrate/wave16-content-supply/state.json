@@ -65,16 +65,16 @@
       "finishedAt": "2026-06-25T17:04:55.601Z",
       "lastUpdate": "2026-06-25T17:04:58.821Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 10,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-wave16",
       "type": "verifier",
-      "branch": "orch/wave16-content-supply/verify-wave16",
+      "branch": "`orch/wave16-content-supply/integrate-wave16` (no commits made by verifier — kept PR clean)",
       "startingRef": "orch/wave16-content-supply/integrate-wave16",
       "dependsOn": [
         "integrate-wave16"
@@ -82,18 +82,18 @@
       "agentId": "bc-5a048f21-6b52-479d-8bae-d534dafbf768",
       "runId": "run-79e9875b-d1ed-47bb-ae37-9cf5d81cb30a",
       "parentAgentId": "bc-961aa9cf-d630-41b8-82ea-456f337bc90b",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-wave16.md",
       "startedAt": "2026-06-25T17:05:03.572Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-25T17:05:07.013Z",
+      "finishedAt": "2026-06-25T17:53:13.692Z",
+      "lastUpdate": "2026-06-25T17:53:13.693Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
