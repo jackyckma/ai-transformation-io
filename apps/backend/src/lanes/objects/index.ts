@@ -219,7 +219,7 @@ function buildEmptyActivitySummary() {
   };
 }
 
-function normalizeCommunityMetadata(
+export function normalizeCommunityMetadata(
   objectType: string,
   type: string,
   metadata: Record<string, unknown> | undefined,

@@ -8,9 +8,43 @@
 ## Preconditions
 
 - [ ] Wave 15 UI polish shipped
-- [ ] L12 `POST /api/internal/editorial/drafts` live (or v1 objects draft via Bearer)
+- [ ] L12 `POST /api/internal/editorial/drafts` live (or `POST /api/v1/objects/drafts` via Bearer)
 - [ ] Orbita vault `atx_write_org` set
 - [ ] HTTP allow-list includes ai-transformation domains
+
+---
+
+## API paths (live, Wave 16)
+
+Bearer (Orbita vault token) create-draft — pick either:
+
+```bash
+# Wave 12 object store draft (recommended for external agents)
+curl -X POST https://ai-transformation.io/api/v1/objects/drafts \
+  -H "authorization: Bearer $ATX_WRITE_ORG" \
+  -H "content-type: application/json" \
+  -d '{"objectType":"knowledge","type":"article","site":"org","visibility":"public","title":"…","body":"…"}'
+
+# Editorial lane (same payload; also accepts an admin session)
+curl -X POST https://ai-transformation.io/api/internal/editorial/drafts \
+  -H "authorization: Bearer $ATX_WRITE_ORG" \
+  -H "content-type: application/json" \
+  -d '{"objectType":"community","type":"community_announcement","site":"org","visibility":"public","title":"…","body":"…"}'
+```
+
+Admin review + publish (ADMIN_EMAILS session cookie):
+
+```bash
+GET  /api/internal/editorial/drafts?site=org      # list pending
+POST /api/internal/editorial/drafts/:id/approve   # publish → /knowledge or /community
+POST /api/internal/editorial/drafts/:id/reject    # archive
+```
+
+Idempotent local seed (founder fallback — no Orbita):
+
+```bash
+pnpm tsx scripts/seed-editorial-content.ts   # or: pnpm seed:editorial
+```
 
 ---
 

@@ -135,6 +135,63 @@ describe('Wave 8 newsletter + agent jobs', () => {
     expect(payload.contributionCount).toBeGreaterThan(0);
   });
 
+  it('includes published knowledge + community highlights and curated links in the draft', async () => {
+    const { app, db } = await loadBackend();
+    const objectsDb = await import('../../db/objects.js');
+    const user = db.upsertUserByGoogle({
+      googleSub: 'google-sub-founder-knowledge',
+      email: 'founder@example.com',
+      name: 'Founder',
+      picture: null,
+    });
+    const session = db.createSession(user.id, 60_000);
+    process.env.ADMIN_EMAILS = 'founder@example.com';
+
+    objectsDb.createObject({
+      payload: {
+        objectType: 'knowledge',
+        type: 'article',
+        site: 'org',
+        visibility: 'public',
+        title: 'Seeded knowledge article',
+        body: 'Published knowledge body describing the AI transformation roadmap in detail.',
+        status: 'published',
+        publishedSlug: 'transformation-roadmap',
+      },
+      ownerUserId: null,
+    });
+    objectsDb.createObject({
+      payload: {
+        objectType: 'community',
+        type: 'discussion',
+        site: 'org',
+        visibility: 'public',
+        title: 'Seeded community discussion',
+        body: 'Published community discussion about escaping pilot purgatory in practice.',
+        status: 'published',
+      },
+      ownerUserId: null,
+    });
+
+    const response = await app.request('http://localhost/api/internal/agent/compile-draft', {
+      method: 'POST',
+      headers: {
+        host: 'ai-transformation.org',
+        'content-type': 'application/json',
+        cookie: `atx_session=${session.id}`,
+      },
+      body: JSON.stringify({ site: 'org', limit: 10 }),
+    });
+
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { ok: boolean; issue: { draftMd: string } };
+    const draft = payload.issue.draftMd;
+    expect(draft).toContain('Featured knowledge');
+    expect(draft).toContain('Community highlights');
+    expect(draft).toContain('/knowledge/transformation-roadmap');
+    expect(draft).toContain('/community');
+  });
+
   it('clusters newsletter replies for admin', async () => {
     const { app, db } = await loadBackend();
     const user = db.upsertUserByGoogle({

@@ -519,6 +519,61 @@ export function listObjectsForRequester(input: {
   };
 }
 
+const OBJECT_SELECT_COLUMNS = `
+        id,
+        object_type AS objectType,
+        type,
+        site,
+        owner_user_id AS ownerUserId,
+        visibility,
+        title,
+        subject,
+        body,
+        status,
+        metadata,
+        source_contribution_id AS sourceContributionId,
+        published_slug AS publishedSlug,
+        created_at AS createdAt,
+        updated_at AS updatedAt`;
+
+export function listEditorialDrafts(input: { site?: Site; limit?: number }): ObjectRecord[] {
+  const db = getDb();
+  const limit = input.limit ?? 100;
+  const params: Record<string, unknown> = { limit };
+  const where: string[] = [
+    "status IN ('draft', 'pending')",
+    "json_extract(metadata, '$.editorial_source') IS NOT NULL",
+  ];
+  if (input.site) {
+    where.push('site = @site');
+    params.site = input.site;
+  }
+  const rows = db
+    .prepare(
+      `SELECT ${OBJECT_SELECT_COLUMNS}
+      FROM objects
+      WHERE ${where.join(' AND ')}
+      ORDER BY created_at DESC, id DESC
+      LIMIT @limit`,
+    )
+    .all(params) as DbObjectRow[];
+  return rows.map(toObjectRecord);
+}
+
+export function findEditorialSeedObject(input: { site: Site; seedKey: string }): ObjectRecord | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT ${OBJECT_SELECT_COLUMNS}
+      FROM objects
+      WHERE site = @site
+        AND json_extract(metadata, '$.seed_key') = @seedKey
+      LIMIT 1`,
+    )
+    .get({ site: input.site, seedKey: input.seedKey }) as DbObjectRow | undefined;
+  return row ? toObjectRecord(row) : null;
+}
+
 export function createObject(input: {
   payload: Omit<ObjectCreateRequest, 'status'> & { status: LifecycleStatus };
   ownerUserId: string | null;
