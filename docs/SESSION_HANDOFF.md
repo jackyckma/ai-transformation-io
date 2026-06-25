@@ -2,8 +2,8 @@
 
 **Date:** 2026-06-25  
 **Branch:** `orch/wave16-content-supply/integrate-wave16`  
-**Latest commit:** `c0cfa04` — feat(web-org): add admin /editorial draft queue (Wave 16 L12 UI)  
-**Push status:** pending push for integration branch + draft PR creation
+**Latest commit:** `ff3fd9a` — docs: mark wave16 integration shipped  
+**Push status:** pushed to `origin/orch/wave16-content-supply/integrate-wave16`; draft PR open: https://github.com/jackyckma/ai-transformation-io/pull/10
 
 ## Active task
 
