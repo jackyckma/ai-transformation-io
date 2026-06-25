@@ -22,7 +22,44 @@ A scheduled Orbita agent session drafts **knowledge** and **community** objects 
 | Orbita API key (`orb_…`) | Calls Orbita sessions | Orbita `/admin` — gitignore locally |
 | `client_id` | Memory / credentials namespace | Orbita `/admin` allow-list |
 | Vault credential | ai-transformation **write Bearer** | Orbita vault only — name e.g. `atx_write_org` |
-| Draft API | Our ingest endpoint | L12 `POST /api/internal/editorial/drafts` or `POST /api/v1/objects` (draft) |
+| Draft API | Our ingest endpoint | L12 `POST /api/internal/editorial/drafts` (admin session **or** L11 Bearer) or `POST /api/v1/objects/drafts` (L11 Bearer) |
+
+---
+
+## Exact API paths (Wave 16, live)
+
+**Admin (ADMIN_EMAILS session cookie):**
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/internal/editorial/drafts` | Create a draft knowledge/community object (also accepts an L11 Bearer) |
+| `GET` | `/api/internal/editorial/drafts?site=org` | List pending editorial drafts (`status` draft/pending) |
+| `POST` | `/api/internal/editorial/drafts/:id/approve` | Publish the draft (`status` → published) |
+| `POST` | `/api/internal/editorial/drafts/:id/reject` | Archive the draft (`status` → archived) |
+
+**External agent (L11 write Bearer — same create-draft contract):**
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/internal/editorial/drafts` | Create a draft with `Authorization: Bearer <token>` |
+| `POST` | `/api/v1/objects/drafts` | Create a draft object (Wave 12 object store) |
+| `POST` | `/api/v1/objects` | Create an object directly (Wave 12 object store) |
+
+Draft payload (both routes) is the Wave 12 `objectDraftRequest`:
+
+```json
+{
+  "objectType": "knowledge",
+  "type": "article",
+  "site": "org",
+  "visibility": "public",
+  "title": "…",
+  "body": "…",
+  "metadata": { }
+}
+```
+
+Editorial drafts are stamped with `metadata.editorial_source` so the admin queue can find them.
 
 ---
 

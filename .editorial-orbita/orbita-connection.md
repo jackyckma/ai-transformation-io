@@ -5,6 +5,15 @@ Admin: https://api.get-orbita.com/admin
 
 Target site API: https://ai-transformation.io/api (combined proxy — use `site=org|io` in payloads)
 
+Draft ingest endpoints (Wave 16, live):
+
+- `POST https://ai-transformation.io/api/v1/objects/drafts` — L11 Bearer, create draft object (Wave 12 store)
+- `POST https://ai-transformation.io/api/v1/objects` — L11 Bearer, create object directly
+- `POST https://ai-transformation.io/api/internal/editorial/drafts` — ADMIN session **or** L11 Bearer
+- `GET  https://ai-transformation.io/api/internal/editorial/drafts?site=org` — ADMIN session, review queue
+- `POST https://ai-transformation.io/api/internal/editorial/drafts/:id/approve` — ADMIN session, publish
+- `POST https://ai-transformation.io/api/internal/editorial/drafts/:id/reject` — ADMIN session, archive
+
 ---
 
 ## Client IDs
