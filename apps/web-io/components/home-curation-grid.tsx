@@ -6,6 +6,7 @@ import {
   type CuratedHomeTile,
 } from '@ai-transformation/content';
 import { FeatureSpotlightCard, CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
+import { formatMonthYear } from '@/lib/format-date';
 
 function resolveTileHref(tile: CuratedHomeTile): string | null {
   if (tile.href) {
@@ -18,6 +19,17 @@ function resolveTileHref(tile: CuratedHomeTile): string | null {
   return null;
 }
 
+/** Honest content-type label derived from where a curated tile points. */
+function tileTypeLabel(tile: CuratedHomeTile, href: string): string {
+  if (tile.external) return 'Community';
+  if (href.startsWith('/insights/assessment')) return 'Assessment';
+  if (href.startsWith('/insights')) return 'Insights';
+  if (href.startsWith('/library/') || tile.slug) return 'Framework';
+  if (href.startsWith('/library')) return 'Library';
+  if (href.startsWith('/api/agent')) return 'For agents';
+  return 'Guide';
+}
+
 type HomeCurationGridProps = {
   feed: CuratedHomeFeed;
 };
@@ -25,6 +37,7 @@ type HomeCurationGridProps = {
 export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
   const spotlight = feed.spotlight[0];
   const tiles = feed.homeTiles ?? [];
+  const updatedLabel = formatMonthYear(feed.updatedAt);
 
   return (
     <div className="space-y-8">
@@ -41,7 +54,8 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
                 article={article}
                 editorNote={spotlight.editorNote}
                 image={spotlight.image}
-                category="Spotlight"
+                category="Framework"
+                dateLabel={updatedLabel ? `Updated ${updatedLabel}` : null}
               />
             );
           })()}
@@ -67,7 +81,13 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
                     flush
                   />
                   <div className="p-4 pb-5">
-                    <h3 className="font-serif text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
+                    <p className="text-[11px] font-light tracking-wide text-[var(--muted)]">
+                      {tileTypeLabel(tile, href)}
+                      {updatedLabel ? (
+                        <span className="text-[var(--secondary)]"> · Updated {updatedLabel}</span>
+                      ) : null}
+                    </p>
+                    <h3 className="font-serif mt-1.5 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
                       {tile.title}
                     </h3>
                     {tile.summary ? (
