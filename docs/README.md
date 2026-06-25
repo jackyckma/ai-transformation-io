@@ -11,6 +11,7 @@
 | [UI_READINESS_AUDIT.md](UI_READINESS_AUDIT.md) | Wave 15 comparative UI gap analysis |
 | [project-progress.md](project-progress.md) | Wave delivery (0–19+); Waves 15–17 realigned 2026-06 |
 | [SESSION_HANDOFF.md](SESSION_HANDOFF.md) | Resume point for the next agent session |
+| [waves/wave17-newsletter-pilot.md](waves/wave17-newsletter-pilot.md) | Wave 17 orchestrate goal (newsletter pilot) |
 
 ## Product & UX
 
