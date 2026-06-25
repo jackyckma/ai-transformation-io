@@ -12,7 +12,7 @@ const STARTERS: Record<ChatSite, string[]> = {
   ],
   org: [
     'How do I share a field story?',
-    'What should I read first on Harvest Hub?',
+    'What should I read first in the community?',
     'How does the apprenticeship program work?',
   ],
 };
