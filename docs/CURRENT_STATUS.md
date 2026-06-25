@@ -4,13 +4,15 @@
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–14 (SITE_DESIGN_v2) ✅ · **Wave 14 on `main`** (`7be73fe`)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–15 (SITE_DESIGN_v2) ✅ · **Wave 15 integrated (draft PR to `main`)** (`orch/wave15-ui-readiness/integrate-wave15`)
 
 ## What works (production)
 
 - https://ai-transformation.io — v2 IA shell: **Home · Library · Insights · Ask**, `/library` unified index + `/library/[slug]`, `/insights` + `/insights/assessment`, `/ask` (guest Ask; member Ask+Capture), logged-in dashboard with rule-based recommendations v0, onboarding fields in Settings, contextual Open-in-Ask prefills
 - https://ai-transformation.org — v2 IA shell: **Home · Knowledge · Community · Ask**, `/knowledge` unified index + `/knowledge/[slug]`, `/community` with live highlights + `/community/[id]` detail/actions, `/ask` (guest Ask; member Ask+Capture+Submit+Find Help) with Submit/Find Help writing through unified API contracts, logged-in activity dashboard with real activity-summary signals + onboarding fields
 - .org branding updated to **Community · Knowledge commons**
+- **Wave 15 P0 UI readiness integrated:** visible type/date metadata on home and index cards (where source dates exist), user-facing Harvest Hub / Harvest companion copy removed from `.io`/`.org` app surfaces and curated home data, community loading/empty/error states now use skeleton + editorial fallback highlights, list/index pages demote docked companion chat to subtle Ask entry strip, and both sites include trust footer mission + copyright row.
+- **Wave 15 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` remained green (49/49); backend feature scope unchanged.
 - §15 housekeeping shipped (no redirects): removed `.io` `/frameworks` `/playbook` `/functions` `/assessment`; removed `.org` `/learn` `/stories` `/stories/submit`
 - **Wave 12 object store + visibility model live:** unified objects + contributions lifecycle with query-time visibility enforcement (`public` / `members-only` / `private`) for anonymous, session members, owners, and bearer-token owners.
 - **Wave 12 moderation/publish flow live:** generic draft/pending/published lifecycle, moderation queue transitions, member publish preference (`auto` vs `review`) with auto-moderation hook, and derived-article workflow stub.
@@ -45,7 +47,6 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 
 | Wave | Focus |
 |------|--------|
-| **15** | Production UI readiness (comparative audit → polish backlog) |
 | **16** | Content supply — editorial draft ingest + review; Orbita client (L12) non-blocking |
 | **17** | Newsletter pilot (legacy Wave 10 scope; after 15–16) |
 | **18** | LLM ranking, agent deep links, Phase 2 intent UI parity |
