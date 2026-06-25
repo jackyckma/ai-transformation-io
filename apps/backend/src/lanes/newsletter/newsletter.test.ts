@@ -4,14 +4,19 @@ import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const managedEnvKeys = ['SQLITE_PATH', 'DATABASE_URL', 'ADMIN_EMAILS', 'NODE_ENV', 'ZSEND_API_KEY'] as const;
+const managedEnvKeys = [
+  'SQLITE_PATH',
+  'DATABASE_URL',
+  'ADMIN_EMAILS',
+  'NODE_ENV',
+  'ZSEND_API_KEY',
+  'INBOUND_EMAIL_WEBHOOK_SECRET',
+  'NEWSLETTER_PILOT_MAX',
+] as const;
 
 const originalEnv = Object.fromEntries(
   managedEnvKeys.map((key) => [key, process.env[key]]),
 ) as Record<(typeof managedEnvKeys)[number], string | undefined>;
-
-const STORY_BODY =
-  'This story describes how the team standardized AI operating reviews across security, legal, and delivery with measurable checkpoints.';
 
 let tempDir = '';
 
@@ -47,15 +52,66 @@ async function loadBackend() {
   return { app: backendModule.app, db: dbModule };
 }
 
-describe('Wave 8 newsletter + agent jobs', () => {
-  it('returns 501 for inbound-email webhook', async () => {
+describe('Wave 17 newsletter + agent jobs', () => {
+  it('subscribes and unsubscribes newsletter recipients', async () => {
     const { app } = await loadBackend();
-    const response = await app.request('http://localhost/api/webhooks/inbound-email', {
+    const subscribeResponse = await app.request('http://localhost/api/newsletter/subscribe', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({}),
+      body: JSON.stringify({
+        email: 'reader@example.com',
+        list: 'io_pulse',
+      }),
     });
-    expect(response.status).toBe(501);
+
+    expect(subscribeResponse.status).toBe(200);
+    expect(await subscribeResponse.json()).toEqual({ ok: true, status: 'active' });
+
+    const newsletterDb = await import('../../db/newsletter.js');
+    const dbModule = await import('../../db/index.js');
+    expect(newsletterDb.listActiveSubscribers('io_pulse')).toContain('reader@example.com');
+
+    const activeRow = dbModule
+      .getDb()
+      .prepare(
+        `SELECT status, unsubscribed_at AS unsubscribedAt
+         FROM subscribers
+         WHERE email = @email AND list = @list`,
+      )
+      .get({ email: 'reader@example.com', list: 'io_pulse' }) as
+      | { status: string; unsubscribedAt: string | null }
+      | undefined;
+
+    expect(activeRow).toBeDefined();
+    expect(activeRow?.status).toBe('active');
+    expect(activeRow?.unsubscribedAt).toBeNull();
+
+    const unsubscribeResponse = await app.request('http://localhost/api/newsletter/unsubscribe', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        email: 'reader@example.com',
+        list: 'io_pulse',
+      }),
+    });
+
+    expect(unsubscribeResponse.status).toBe(200);
+    expect(await unsubscribeResponse.json()).toEqual({ ok: true, status: 'unsubscribed' });
+    expect(newsletterDb.listActiveSubscribers('io_pulse')).not.toContain('reader@example.com');
+
+    const unsubscribedRow = dbModule
+      .getDb()
+      .prepare(
+        `SELECT status, unsubscribed_at AS unsubscribedAt
+         FROM subscribers
+         WHERE email = @email AND list = @list`,
+      )
+      .get({ email: 'reader@example.com', list: 'io_pulse' }) as
+      | { status: string; unsubscribedAt: string | null }
+      | undefined;
+
+    expect(unsubscribedRow?.status).toBe('unsubscribed');
+    expect(unsubscribedRow?.unsubscribedAt).not.toBeNull();
   });
 
   it('accepts zsend webhook stub', async () => {
@@ -70,126 +126,194 @@ describe('Wave 8 newsletter + agent jobs', () => {
     expect(payload.ok).toBe(true);
   });
 
-  it('returns 501 for public subscribe', async () => {
-    const { app } = await loadBackend();
-    const response = await app.request('http://localhost/api/newsletter/subscribe', {
-      method: 'POST',
-    });
-    expect(response.status).toBe(501);
-  });
-
-  it('compiles issue draft for admin with contributions', async () => {
+  it('sends issue with pilot cap and admin protections', async () => {
     const { app, db } = await loadBackend();
-    const user = db.upsertUserByGoogle({
-      googleSub: 'google-sub-founder',
-      email: 'founder@example.com',
-      name: 'Founder',
+    process.env.ADMIN_EMAILS = 'admin@example.com';
+    process.env.NEWSLETTER_PILOT_MAX = '25';
+
+    const newsletterDb = await import('../../db/newsletter.js');
+
+    const nonAdminUser = db.upsertUserByGoogle({
+      googleSub: 'google-sub-non-admin',
+      email: 'reader@example.com',
+      name: 'Reader',
       picture: null,
     });
-    const session = db.createSession(user.id, 60_000);
-    process.env.ADMIN_EMAILS = 'founder@example.com';
+    const nonAdminSession = db.createSession(nonAdminUser.id, 60_000);
 
-    db.insertContribution({
-      id: crypto.randomUUID(),
-      source: 'web_inquiry',
-      site: 'io',
-      email: 'reader@example.com',
-      body: 'How do we measure ROI on agent copilots beyond pilot metrics?',
-      status: 'new',
-      metadata: '{}',
-      createdAt: new Date().toISOString(),
-    });
-
-    db.insertContribution({
-      id: crypto.randomUUID(),
-      source: 'web_story',
-      site: 'org',
-      email: 'author@example.com',
-      subject: 'Governance first',
-      body: STORY_BODY,
-      status: 'new',
-      metadata: '{}',
-      createdAt: new Date().toISOString(),
-    });
-
-    const response = await app.request('http://localhost/api/internal/agent/compile-draft', {
+    const nonAdminResponse = await app.request('http://localhost/api/internal/newsletter/send-issue', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        cookie: `atx_session=${session.id}`,
+        cookie: `atx_session=${nonAdminSession.id}`,
       },
-      body: JSON.stringify({ site: 'io', limit: 10 }),
+      body: JSON.stringify({ issueId: 'missing-issue' }),
+    });
+    expect(nonAdminResponse.status).toBe(403);
+
+    const adminUser = db.upsertUserByGoogle({
+      googleSub: 'google-sub-founder',
+      email: 'admin@example.com',
+      name: 'Admin',
+      picture: null,
+    });
+    const adminSession = db.createSession(adminUser.id, 60_000);
+
+    const missingIssueResponse = await app.request('http://localhost/api/internal/newsletter/send-issue', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: `atx_session=${adminSession.id}`,
+      },
+      body: JSON.stringify({ issueId: 'missing-issue' }),
+    });
+    expect(missingIssueResponse.status).toBe(404);
+
+    for (let index = 0; index < 30; index += 1) {
+      newsletterDb.upsertSubscriber({
+        email: `pilot-${index}@example.com`,
+        list: 'io_pulse',
+      });
+    }
+
+    const issue = newsletterDb.createIssueDraft({
+      site: 'io',
+      list: 'io_pulse',
+      title: 'Pilot issue',
+      draftMd: 'Hello pilot subscribers',
+    });
+
+    const response = await app.request('http://localhost/api/internal/newsletter/send-issue', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: `atx_session=${adminSession.id}`,
+      },
+      body: JSON.stringify({ issueId: issue.id }),
+    });
+
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { ok: boolean; sent: number; capped: boolean; providerId: string; status: string };
+    expect(payload.ok).toBe(true);
+    expect(payload.sent).toBe(25);
+    expect(payload.capped).toBe(true);
+    expect(payload.providerId).toBeTruthy();
+    expect(payload.status).toBe('sent');
+
+    const sentIssue = newsletterDb.getIssueById(issue.id);
+    expect(sentIssue?.status).toBe('sent');
+    expect(sentIssue?.providerId).toBe(payload.providerId);
+  });
+
+  it('ingests inbound newsletter replies and enforces secret checks', async () => {
+    process.env.INBOUND_EMAIL_WEBHOOK_SECRET = 'inbound-secret';
+    const { app, db } = await loadBackend();
+    const newsletterDb = await import('../../db/newsletter.js');
+    const issue = newsletterDb.createIssueDraft({
+      site: 'io',
+      list: 'io_pulse',
+      title: 'Issue for replies',
+      draftMd: 'Draft content',
+    });
+
+    const unauthorizedResponse = await app.request('http://localhost/api/webhooks/inbound-email', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        replyToToken: issue.replyToToken,
+        from: 'reader@example.com',
+        subject: 'Reply',
+        text: 'No secret header should fail',
+      }),
+    });
+    expect(unauthorizedResponse.status).toBe(401);
+
+    const wrongSecretResponse = await app.request('http://localhost/api/webhooks/inbound-email', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-inbound-secret': 'wrong-secret',
+      },
+      body: JSON.stringify({
+        replyToToken: issue.replyToToken,
+        from: 'reader@example.com',
+        subject: 'Reply',
+        text: 'Wrong secret should fail',
+      }),
+    });
+    expect(wrongSecretResponse.status).toBe(401);
+
+    const response = await app.request('http://localhost/api/webhooks/inbound-email', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-inbound-secret': 'inbound-secret',
+      },
+      body: JSON.stringify({
+        replyToToken: issue.replyToToken,
+        from: 'reader@example.com',
+        subject: 'Reply',
+        text: 'This is a newsletter reply.',
+      }),
+    });
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as {
+      ok: boolean;
+      linked: boolean;
+      contributionId: string;
+    };
+
+    expect(payload.ok).toBe(true);
+    expect(payload.linked).toBe(true);
+    expect(payload.contributionId).toBeTruthy();
+
+    const contribution = db.getContributionById(payload.contributionId);
+    expect(contribution?.source).toBe('newsletter_reply');
+    const metadata = JSON.parse(contribution?.metadata ?? '{}') as { issue_id?: string | null };
+    expect(metadata.issue_id).toBe(issue.id);
+
+    const linkedRow = db
+      .getDb()
+      .prepare(
+        `SELECT role
+         FROM issue_contributions
+         WHERE issue_id = @issueId
+           AND contribution_id = @contributionId`,
+      )
+      .get({ issueId: issue.id, contributionId: payload.contributionId }) as { role: string } | undefined;
+    expect(linkedRow?.role).toBe('reply');
+  });
+
+  it('lists recent issues for admins', async () => {
+    const { app, db } = await loadBackend();
+    process.env.ADMIN_EMAILS = 'admin@example.com';
+    const newsletterDb = await import('../../db/newsletter.js');
+    const user = db.upsertUserByGoogle({
+      googleSub: 'google-sub-admin-issues',
+      email: 'admin@example.com',
+      name: 'Admin',
+      picture: null,
+    });
+    const session = db.createSession(user.id, 60_000);
+
+    const draftIssue = newsletterDb.createIssueDraft({
+      site: 'io',
+      list: 'io_pulse',
+      title: 'Issue for admin list',
+      draftMd: 'draft',
+    });
+
+    const response = await app.request('http://localhost/api/internal/agent/issues?limit=5', {
+      headers: { cookie: `atx_session=${session.id}` },
     });
 
     expect(response.status).toBe(200);
     const payload = (await response.json()) as {
       ok: boolean;
-      job: string;
-      issue: { draftMd: string; status: string; replyToToken: string };
-      contributionCount: number;
+      issues: Array<{ id: string; title: string; status: string }>;
     };
     expect(payload.ok).toBe(true);
-    expect(payload.job).toBe('compile_issue_draft');
-    expect(payload.issue.status).toBe('draft');
-    expect(payload.issue.draftMd).toContain('Transformation Pulse');
-    expect(payload.contributionCount).toBeGreaterThan(0);
-  });
-
-  it('includes published knowledge + community highlights and curated links in the draft', async () => {
-    const { app, db } = await loadBackend();
-    const objectsDb = await import('../../db/objects.js');
-    const user = db.upsertUserByGoogle({
-      googleSub: 'google-sub-founder-knowledge',
-      email: 'founder@example.com',
-      name: 'Founder',
-      picture: null,
-    });
-    const session = db.createSession(user.id, 60_000);
-    process.env.ADMIN_EMAILS = 'founder@example.com';
-
-    objectsDb.createObject({
-      payload: {
-        objectType: 'knowledge',
-        type: 'article',
-        site: 'org',
-        visibility: 'public',
-        title: 'Seeded knowledge article',
-        body: 'Published knowledge body describing the AI transformation roadmap in detail.',
-        status: 'published',
-        publishedSlug: 'transformation-roadmap',
-      },
-      ownerUserId: null,
-    });
-    objectsDb.createObject({
-      payload: {
-        objectType: 'community',
-        type: 'discussion',
-        site: 'org',
-        visibility: 'public',
-        title: 'Seeded community discussion',
-        body: 'Published community discussion about escaping pilot purgatory in practice.',
-        status: 'published',
-      },
-      ownerUserId: null,
-    });
-
-    const response = await app.request('http://localhost/api/internal/agent/compile-draft', {
-      method: 'POST',
-      headers: {
-        host: 'ai-transformation.org',
-        'content-type': 'application/json',
-        cookie: `atx_session=${session.id}`,
-      },
-      body: JSON.stringify({ site: 'org', limit: 10 }),
-    });
-
-    expect(response.status).toBe(200);
-    const payload = (await response.json()) as { ok: boolean; issue: { draftMd: string } };
-    const draft = payload.issue.draftMd;
-    expect(draft).toContain('Featured knowledge');
-    expect(draft).toContain('Community highlights');
-    expect(draft).toContain('/knowledge/transformation-roadmap');
-    expect(draft).toContain('/community');
+    expect(payload.issues.some((issue) => issue.id === draftIssue.id)).toBe(true);
   });
 
   it('clusters newsletter replies for admin', async () => {

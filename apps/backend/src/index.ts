@@ -11,6 +11,7 @@ import chatRouter from './lanes/chat/index.js';
 import communityRouter from './lanes/community/index.js';
 import editorialRouter from './lanes/editorial-supply/index.js';
 import harvestRouter from './lanes/harvest/index.js';
+import newsletterInternalRouter from './lanes/newsletter/internal.js';
 import newsletterRouter from './lanes/newsletter/index.js';
 import objectsRouter from './lanes/objects/index.js';
 import { sessionMiddleware } from './middleware/session.js';
@@ -52,6 +53,7 @@ export function createApp() {
   app.route('/api', chatRouter);
   app.route('/api', newsletterRouter);
   app.route('/api/internal/agent', agentRouter);
+  app.route('/api/internal/newsletter', newsletterInternalRouter);
   app.route('/api/internal/editorial', editorialRouter);
   app.route('/api/auth', authRouter);
   app.route('/api/assessment', assessmentRouter);
