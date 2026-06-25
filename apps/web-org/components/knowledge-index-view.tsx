@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { CompanionAskStrip } from '@ai-transformation/chat-ui';
 
 import { useAuthUser } from '@/lib/use-auth-user';
 import { knowledgeActions } from '@/lib/ask-prefill';
-import type { KnowledgeIndex } from '@/lib/knowledge-index';
+import type { KnowledgeIndex, KnowledgeItem } from '@/lib/knowledge-index';
+import { formatDate } from '@/lib/object-display';
 import { KnowledgeObjects } from '@/components/knowledge-objects';
 import { MyLibraryPanel } from '@/components/my-library-panel';
 import { MyArticlesPanel, MyCommentsPanel } from '@/components/my-articles-panel';
@@ -18,6 +20,12 @@ const MEMBER_TABS: { id: Tab; label: string }[] = [
   { id: 'articles', label: 'My articles' },
   { id: 'comments', label: 'My comments' },
 ];
+
+const PILLAR_TYPE_LABEL: Record<KnowledgeItem['pillar'], string> = {
+  framework: 'Framework',
+  function: 'Guide',
+  resource: 'Reference',
+};
 
 export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
   const { audience } = useAuthUser();
@@ -37,7 +45,16 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
         <p className="mt-3 max-w-2xl text-sm font-light leading-relaxed text-[var(--muted)]">
           {index.description}
         </p>
+        {index.updatedAt ? (
+          <p className="mt-3 text-xs font-light text-[var(--secondary)]">
+            Updated {formatDate(index.updatedAt)}
+          </p>
+        ) : null}
       </header>
+
+      <div className="mb-8">
+        <CompanionAskStrip site="org" />
+      </div>
 
       {isMember ? (
         <div role="tablist" aria-label="Knowledge views" className="mb-8 flex flex-wrap gap-2 text-sm">
@@ -91,10 +108,13 @@ function BrowseCategories({ index }: { index: KnowledgeIndex }) {
                 className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition hover:border-[var(--accent)]/40"
               >
                 <Link href={item.href} className="group">
-                  <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
-                    public
+                  <span className="flex flex-wrap items-center gap-2 text-[11px] font-normal uppercase tracking-wide">
+                    <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2 py-0.5 text-[var(--accent)]">
+                      {PILLAR_TYPE_LABEL[item.pillar]}
+                    </span>
+                    <span className="text-[var(--secondary)]">public</span>
                   </span>
-                  <h3 className="font-serif mt-1 text-base font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
+                  <h3 className="font-serif mt-2 text-base font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
                     {item.title}
                   </h3>
                   <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">

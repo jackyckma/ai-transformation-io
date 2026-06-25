@@ -1,13 +1,13 @@
 # L9 — Web ORG INTERFACE
 
 ## Purpose
-Thin UI for ai-transformation.org. Harvest Hub community face.
+Thin UI for ai-transformation.org. Community · Knowledge commons face.
 
 ## Owns
 - `apps/web-org/**`
 
 ## Provides
-- Learn hub + Harvest Hub pages per product-architecture.md IA
+- Knowledge commons + community pages per SITE_DESIGN_v2.md IA
 - Warmer visual identity than web-io
 
 ## Consumes
