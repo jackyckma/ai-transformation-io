@@ -1,8 +1,15 @@
+import type { ObjectRecord } from '@ai-transformation/shared';
+
 import type { ContributionForCompile } from '../../db/newsletter.js';
 
 const SITE_LABEL: Record<'io' | 'org', string> = {
   io: 'Transformation Pulse',
   org: 'Harvest Hub digest',
+};
+
+const KNOWLEDGE_PATH: Record<'io' | 'org', string> = {
+  io: '/library',
+  org: '/knowledge',
 };
 
 function excerpt(body: string, max = 240): string {
@@ -25,9 +32,36 @@ function section(title: string, items: ContributionForCompile[]): string {
   return `## ${title}\n\n${lines.join('\n\n')}\n`;
 }
 
+function knowledgeSection(title: string, items: ObjectRecord[], site: 'io' | 'org'): string {
+  if (items.length === 0) {
+    return `## ${title}\n\n_No published knowledge yet._\n`;
+  }
+  const basePath = KNOWLEDGE_PATH[site];
+  const lines = items.map((item) => {
+    const headline = item.title?.trim() || item.subject?.trim() || item.type;
+    const href = item.publishedSlug ? `${basePath}/${item.publishedSlug}` : basePath;
+    return `- **[${headline}](${href})**\n  ${excerpt(item.body)}`;
+  });
+  return `## ${title}\n\n${lines.join('\n\n')}\n`;
+}
+
+function communitySection(title: string, items: ObjectRecord[]): string {
+  if (items.length === 0) {
+    return `## ${title}\n\n_No community highlights yet._\n`;
+  }
+  const lines = items.map((item) => {
+    const headline = item.title?.trim() || item.subject?.trim() || item.type;
+    const typeLabel = item.type.replace(/_/g, ' ');
+    return `- **[${headline}](/community)** _(${typeLabel})_\n  ${excerpt(item.body)}`;
+  });
+  return `## ${title}\n\n${lines.join('\n\n')}\n`;
+}
+
 export function compileIssueDraftMarkdown(input: {
   site: 'io' | 'org';
   contributions: ContributionForCompile[];
+  knowledge?: ObjectRecord[];
+  community?: ObjectRecord[];
 }): { title: string; draftMd: string } {
   const now = new Date();
   const dateLabel = now.toISOString().slice(0, 10);
@@ -40,16 +74,27 @@ export function compileIssueDraftMarkdown(input: {
   const replies = input.contributions.filter((c) => c.source === 'newsletter_reply');
   const agentItems = input.contributions.filter((c) => c.source === 'agent');
 
+  const knowledge = input.knowledge ?? [];
+  const community = input.community ?? [];
+  const knowledgeBasePath = KNOWLEDGE_PATH[input.site];
+
   const draftMd = [
     `# ${title}`,
     '',
     '> Draft compiled by internal job — human review before send.',
     '',
+    knowledgeSection('Featured knowledge', knowledge, input.site),
+    communitySection('Community highlights', community),
     section('Community stories', stories),
     section('Questions & reflections', inquiries),
     section('Prompt replies', promptReplies),
     section('Newsletter replies', replies),
     section('Agent submissions', agentItems),
+    '## Explore more',
+    '',
+    `- Knowledge commons: [${knowledgeBasePath}](${knowledgeBasePath})`,
+    '- Community highlights: [/community](/community)',
+    '',
     '---',
     '',
     '_Reply to this issue feeds the next edition (switchboard model)._',

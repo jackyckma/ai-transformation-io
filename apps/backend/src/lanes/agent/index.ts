@@ -6,6 +6,7 @@ import {
   listContributionsSince,
   listNewsletterReplyContributions,
 } from '../../db/newsletter.js';
+import { listObjectsForRequester } from '../../db/objects.js';
 import { isAdmin } from '../../lib/admin.js';
 import type { SessionVariables } from '../../types/session.js';
 import { clusterNewsletterReplies, compileIssueDraftMarkdown } from './compile-draft.js';
@@ -52,7 +53,22 @@ agentRouter.post('/compile-draft', async (c) => {
     limit: parsed.data.limit ?? 30,
   });
 
-  const { title, draftMd } = compileIssueDraftMarkdown({ site, contributions });
+  const publishedContext = {
+    site,
+    requesterUserId: admin.id,
+    bearerOwnerUserId: null,
+    isAuthenticated: true,
+  };
+  const knowledge = listObjectsForRequester({
+    request: { site, objectType: 'knowledge', status: 'published', limit: 10 },
+    context: publishedContext,
+  }).objects;
+  const community = listObjectsForRequester({
+    request: { site, objectType: 'community', status: 'published', limit: 10 },
+    context: publishedContext,
+  }).objects;
+
+  const { title, draftMd } = compileIssueDraftMarkdown({ site, contributions, knowledge, community });
   const issue = createIssueDraft({
     site,
     list,
