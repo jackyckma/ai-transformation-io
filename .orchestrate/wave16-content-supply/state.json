@@ -106,6 +106,10 @@
     {
       "at": "2026-06-25T16:46:15.945Z",
       "message": "backend-editorial: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-25T16:46:28.265Z",
+      "message": "web-org-editorial: spawn failed after 3 transient sub-attempts: ConfigurationError: [validation_error] Branch 'orch/wave16-content-supply/backend-editorial' does not exist in repository jackyckma/ai-transformation-io."
     }
   ]
 }
