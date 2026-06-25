@@ -39,7 +39,7 @@
       "articleSlugs": ["what-is-ai-transformation"],
       "externalLinks": [
         {
-          "label": "Harvest Hub on .org",
+          "label": "Community on .org",
           "href": "https://ai-transformation.org"
         }
       ]
@@ -112,7 +112,7 @@
     {
       "id": "community",
       "title": "Community on .org",
-      "summary": "Harvest Hub — field stories, weekly prompts, and practitioner learn guides. Read first, share when you have something real.",
+      "summary": "Community · Knowledge commons — field stories, prompts, and practitioner guides. Read first, share when you have something real.",
       "href": "https://ai-transformation.org",
       "image": "/curation/path-explore.jpg",
       "external": true

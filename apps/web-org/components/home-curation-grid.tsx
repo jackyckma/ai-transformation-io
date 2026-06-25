@@ -6,9 +6,24 @@ import {
   type CuratedHomeTile,
 } from '@ai-transformation/content';
 import { FeatureSpotlightCard, CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
+import { formatDate } from '@/lib/object-display';
 
 function useKnowledgePaths(value: { useOrgKnowledgePaths?: boolean; useOrgLearnPaths?: boolean }): boolean {
   return Boolean(value.useOrgKnowledgePaths ?? value.useOrgLearnPaths);
+}
+
+/** Section kind shown as the content-type kicker on home tiles (Wave 15 item 1). */
+const TILE_KIND_LABEL: Record<string, string> = {
+  knowledge: 'Knowledge',
+  community: 'Community',
+  contribute: 'Contribute',
+  apprenticeship: 'Program',
+  prompts: 'Prompts',
+  'agent-entry': 'For agents',
+};
+
+function tileKind(tile: CuratedHomeTile): string {
+  return TILE_KIND_LABEL[tile.id] ?? 'Explore';
 }
 
 function resolveTileHref(tile: CuratedHomeTile): string | null {
@@ -49,6 +64,7 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
                 editorNote={spotlight.editorNote}
                 image={spotlight.image}
                 category="Spotlight"
+                date={feed.updatedAt ? formatDate(feed.updatedAt) : undefined}
               />
             );
           })()}
@@ -74,7 +90,10 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
                     flush
                   />
                   <div className="p-4 pb-5">
-                    <h3 className="font-serif text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
+                    <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
+                      {tileKind(tile)}
+                    </span>
+                    <h3 className="font-serif mt-1 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
                       {tile.title}
                     </h3>
                     {tile.summary ? (

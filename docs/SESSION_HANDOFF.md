@@ -1,88 +1,75 @@
 # Session handoff
 
-**Date:** 2026-06-25 (session paused — founder offline overnight)  
-**Branch:** `main`  
-**Latest commit:** `af93c09` — docs: align post-Wave 14 roadmap and add Wave 15–16 planning artifacts  
-**Push status:** pushed to `origin/main`
+**Date:** 2026-06-25  
+**Branch:** `orch/wave15-ui-readiness/integrate-wave15`  
+**Latest commit:** `bb4a874` — merge `orch/wave15-ui-readiness/web-io-ui` into integration branch  
+**Push status:** local branch ready to push
 
 ## Active task
 
-- **Roadmap item:** `wave15-ui-readiness` — SITE_DESIGN_v2 Wave 15 production UI readiness
-- **Orchestrate:** kickoff sent 2026-06-24 ~23:23 UTC; **no repo artifacts yet** at pause time
-- **Definition of done (Wave 15):** P0 items in [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md); one draft PR; build + backend tests pass; then **review + merge to `main`** (founder default)
+- **Roadmap item:** `wave15-ui-readiness` — SITE_DESIGN_v2 Wave 15 production UI readiness (P0 polish only)
+- **Integration scope:** merge `.io` + `.org` Wave 15 UI branches, verify cross-package build/tests, run legacy-brand grep, update status docs, open one draft PR to `main`
+- **Definition of done:** `pnpm turbo build` green (6/6), backend tests green, no user-facing `Harvest Hub` / `Harvest companion` strings in app + curated trees, docs updated
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 14 on `main` | ✅ `7be73fe` — Phase 2 community, matcher, personalization v2 |
-| Roadmap / planning docs | ✅ `af93c09` — Waves 15–19+ aligned; UI audit; L12 + `.editorial-orbita/` skeleton |
-| Wave 15 orchestrate | ⏳ **RUNNING** — [root planner bc-327caa90…](https://cursor.com/agents/bc-327caa90-6b00-42be-84d8-1b0cd81a8ef2), run `run-bc65ba6f-…`; **no** `.orchestrate/wave15-*`, **no** branches, **no** PR (~26 min at last check) |
-| Wave 15 code on `main` | ❌ not merged yet |
-| Local uncommitted | `.cursor/hooks/state/continual-learning*.json` only (hook state; safe to ignore) |
+| Integration branch | ✅ `orch/wave15-ui-readiness/integrate-wave15` created from `web-org-ui` |
+| Merge state | ✅ merged `origin/orch/wave15-ui-readiness/web-io-ui` with merge commit (`bb4a874`, both parents preserved) |
+| Wave 15 P0 `.io` polish | ✅ integrated (dates/type labels, brand pass, Ask strip demotion on list pages, trust footer) |
+| Wave 15 P0 `.org` polish | ✅ integrated (community skeleton/fallback, date/type labels, Ask strip demotion on index pages, trust footer) |
+| Backend scope | ✅ untouched by Wave 15 integration changes |
 
 ## Verified in
 
-- **This session (local):**
-  - Wave 14 merge review: `pnpm turbo build` 6/6, backend tests 49/49 (before merge)
-  - Docs commit `af93c09` pushed
-- **Wave 15 orchestrate:** not verified — still in planner phase at handoff
+- **Cloud agent (this session):**
+  - `pnpm install` completed successfully (workspace deps resolved)
+  - `pnpm turbo build` passed — `Tasks: 6 successful, 6 total`
+  - `pnpm --filter @ai-transformation/backend test` passed — `49 passed (49)`
+  - `rg -i "harvest hub|harvest companion" apps/web-io apps/web-org data/curated` returned no matches
 
-## Top priority next (tomorrow)
+## Top priority next
 
-1. **Poll Wave 15 orchestrate** — `git fetch && git log origin/main --grep=wave15`; check for `.orchestrate/wave15-ui-readiness/` and draft PR.
-2. If **~35+ min with zero artifacts** or run status **ERROR** (Wave 14 pattern): **re-kickoff** using [waves/wave15-ui-readiness.md](./waves/wave15-ui-readiness.md).
-3. When Wave 15 completes + verifier passes: **review + merge PR** without asking (founder preference).
-4. After Wave 15 ships: Wave 16 content supply (L12); Orbita client is **non-blocking**.
+1. Push `orch/wave15-ui-readiness/integrate-wave15`.
+2. Open one **draft** PR to `main` with Wave 15 P0 summary and verification outputs.
+3. After review/merge, start Wave 16 content supply (L12 draft ingest path).
 
 ## What was already tried
 
-- Wave 14 first orchestrate kickoff **ERROR** (~37 min, zero output); **re-kickoff succeeded** (~53 min total).
-- Wave 15 kickoff once at 23:23 UTC — at pause (~26 min) still no `plan.json` / state on `main`; may need re-kickoff tomorrow if unchanged.
-- Friend UX interview **not** used; comparative audit in `UI_READINESS_AUDIT.md` instead.
+- Two upstream implementation branches delivered disjoint changesets (`web-io-ui`, `web-org-ui`) and were integrated via merge commit (no manual conflict resolution required).
+- Build/test validation executed post-merge to catch shared `@ai-transformation/chat-ui` consumption drift (none found).
 
 ## How to run / verify
 
 ```bash
-cd /home/jackyma/ai-transformation-io
-git pull origin main
-
-# Orchestrate poll
-git log origin/main --oneline -10 | rg wave15 || true
-git ls-remote origin 'refs/heads/orch/wave15*'
-gh pr list --search wave15
-
-# After Wave 15 PR branch exists
+cd /workspace
+pnpm install
 pnpm turbo build
 pnpm --filter @ai-transformation/backend test
+rg -i "harvest hub|harvest companion" apps/web-io apps/web-org data/curated
 ```
-
-Wave 15 kickoff (re-run if needed) — full command in `docs/waves/wave15-ui-readiness.md` § Kickoff command.
 
 ## Key file paths
 
 | Concern | Path |
 |---------|------|
-| Wave 15 UI audit (P0 backlog) | `docs/UI_READINESS_AUDIT.md` |
-| Wave 15 orchestrate goal | `docs/waves/wave15-ui-readiness.md` |
-| Post–Wave 14 roadmap | `docs/SITE_DESIGN_v2.md` §12 |
-| Production status | `docs/CURRENT_STATUS.md` |
-| L12 editorial (Wave 16) | `apps/backend/src/lanes/editorial-supply/INTERFACE.md`, `.editorial-orbita/` |
-| Orchestrate state (when appears) | `.orchestrate/wave15-ui-readiness/state.json` |
+| Wave 15 audit checklist | `docs/UI_READINESS_AUDIT.md` |
+| Integrated `.io` UI polish | `apps/web-io/**`, `data/curated/io-home.json` |
+| Integrated `.org` UI polish | `apps/web-org/**`, `data/curated/org-*.json` |
+| Status snapshot | `docs/CURRENT_STATUS.md` |
+| This handoff | `docs/SESSION_HANDOFF.md` |
 
 ## Warnings
 
-- **Wave numbering:** legacy “Wave 10 newsletter” = **Wave 17** (after Wave 15 UI + Wave 16 content).
-- **Credits:** quota-only until ~50 active users — do not implement Stripe top-up early.
-- **Orbita (L12):** must not block Wave 15; manual draft path is fallback for Wave 16.
-- **Orchestrate-only commits on `main`** can trigger noisy Zeabur builds; full deploy may need `npx zeabur@latest deploy` if 502 after merge.
+- `packages/shared/src/index.ts` intentionally still includes historical "Harvest Hub" text for backend test assertions; it is out of scope for Wave 15 UI copy pass.
+- Keep `.orchestrate/` run-local files out of PR diff.
 
-## Roadmap queue (after Wave 15)
+## Roadmap queue (post Wave 15)
 
 | Wave | Focus |
 |------|--------|
-| 15 | Production UI readiness ← **in flight** |
-| 16 | Content supply + L12 draft ingest; Orbita optional parallel |
+| 16 | Content supply + L12 draft ingest (Orbita optional/non-blocking) |
 | 17 | Newsletter pilot |
 | 18 | LLM ranking, deep links, intent UI parity |
-| 19+ | Archive, credits at scale |
+| 19+ | Archive + credits at scale |

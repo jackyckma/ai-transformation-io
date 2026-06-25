@@ -32,9 +32,10 @@ type Tab = 'all' | 'mine';
 type LibraryBrowserProps = {
   pages: ContentPageMeta[];
   collections: LibraryCollection[];
+  reviewedLabel?: string | null;
 };
 
-export function LibraryBrowser({ pages, collections }: LibraryBrowserProps) {
+export function LibraryBrowser({ pages, collections, reviewedLabel }: LibraryBrowserProps) {
   const { user, isLoading } = useAuthUser();
   const [tab, setTab] = useState<Tab>('all');
   const [pillar, setPillar] = useState<Pillar | 'all'>('all');
@@ -81,6 +82,9 @@ export function LibraryBrowser({ pages, collections }: LibraryBrowserProps) {
 
           <p className="mt-6 text-xs font-light text-[var(--muted)]">
             {filtered.length} {filtered.length === 1 ? 'article' : 'articles'}
+            {reviewedLabel ? (
+              <span className="text-[var(--secondary)]"> · Reviewed {reviewedLabel}</span>
+            ) : null}
           </p>
 
           <ul className="mt-2 divide-y divide-[var(--border)]">

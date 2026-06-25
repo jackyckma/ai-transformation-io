@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
-import { getAllPages } from '@ai-transformation/content';
+import { getAllPages, getCuratedHomeFeed } from '@ai-transformation/content';
 
 import { LibraryBrowser } from '@/components/library-browser';
 import { PageIntro } from '@/components/page-intro';
 import { PageShell } from '@/components/page-shell';
 import { getLibraryCollections } from '@/lib/library-index';
+import { formatMonthYear } from '@/lib/format-date';
 
 export const metadata: Metadata = {
   title: 'Library',
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function LibraryPage() {
   const pages = getAllPages().sort((a, b) => a.title.localeCompare(b.title));
   const collections = getLibraryCollections();
+  const reviewedLabel = formatMonthYear(getCuratedHomeFeed('io').updatedAt);
 
   return (
     <PageShell>
@@ -23,7 +25,7 @@ export default function LibraryPage() {
         description="Every framework, playbook, and reference article in one place. Filter by type or collection, then open any article in Ask."
         seed="library"
       />
-      <LibraryBrowser pages={pages} collections={collections} />
+      <LibraryBrowser pages={pages} collections={collections} reviewedLabel={reviewedLabel} />
     </PageShell>
   );
 }

@@ -6,6 +6,7 @@ import {
   getCommunityActions,
   type CommunityObjectRecord,
 } from '@ai-transformation/shared';
+import { CompanionAskStrip } from '@ai-transformation/chat-ui';
 
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useBookmarks } from '@/lib/use-bookmarks';
@@ -84,9 +85,11 @@ export function CommunityHighlights() {
         </p>
       </header>
 
-      {state === 'loading' ? (
-        <p className="text-sm font-light text-[var(--muted)]">Loading community…</p>
-      ) : null}
+      <div className="mb-8">
+        <CompanionAskStrip site="org" />
+      </div>
+
+      {state === 'loading' ? <CommunitySkeleton /> : null}
 
       {hasLiveObjects ? (
         <ul className="grid gap-4 sm:grid-cols-2">
@@ -103,24 +106,15 @@ export function CommunityHighlights() {
       ) : null}
 
       {state === 'ready' && !hasLiveObjects ? (
-        <>
-          <p className="mb-4 text-sm font-light text-[var(--muted)]">
-            No live community items yet. Here is the kind of activity that lives here:
-          </p>
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {COMMUNITY_HIGHLIGHTS.map((item) => (
-              <SampleCard key={item.id} item={item} />
-            ))}
-          </ul>
-        </>
+        <FallbackHighlights
+          note="No live community posts yet. These editor's picks show the kind of activity that lives here:"
+        />
       ) : null}
 
       {state === 'error' ? (
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {COMMUNITY_HIGHLIGHTS.map((item) => (
-            <SampleCard key={item.id} item={item} />
-          ))}
-        </ul>
+        <FallbackHighlights
+          note="The live community feed is unavailable right now. In the meantime, here are editor's picks:"
+        />
       ) : null}
 
       {bookmarks.error ? (
@@ -198,7 +192,9 @@ function ObjectCard({
       <p className="mt-2 flex-1 text-sm font-light leading-relaxed text-[var(--muted)]">
         {objectExcerpt(object.body)}
       </p>
-      <p className="mt-3 text-xs font-light text-[var(--secondary)]">{formatDate(object.updatedAt)}</p>
+      <p className="mt-3 text-xs font-light text-[var(--secondary)]">
+        Updated {formatDate(object.updatedAt)}
+      </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-3">
         {isMember && verbs.includes('save') ? (
@@ -296,6 +292,49 @@ function CardActionButton({
   );
 }
 
+function CommunitySkeleton() {
+  return (
+    <ul className="grid gap-4 sm:grid-cols-2" aria-hidden>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <li
+          key={index}
+          className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5"
+        >
+          <div className="flex items-center gap-2">
+            <span className="h-4 w-20 rounded-full bg-[var(--border)] motion-safe:animate-pulse" />
+            <span className="h-4 w-14 rounded-full bg-[var(--border)] motion-safe:animate-pulse" />
+          </div>
+          <span className="mt-3 h-5 w-3/4 rounded bg-[var(--border)] motion-safe:animate-pulse" />
+          <span className="mt-3 h-4 w-full rounded bg-[var(--border)] motion-safe:animate-pulse" />
+          <span className="mt-2 h-4 w-5/6 rounded bg-[var(--border)] motion-safe:animate-pulse" />
+          <span className="mt-4 h-3 w-24 rounded bg-[var(--border)] motion-safe:animate-pulse" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function FallbackHighlights({ note }: { note: string }) {
+  return (
+    <section aria-labelledby="community-editors-picks">
+      <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2
+          id="community-editors-picks"
+          className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]"
+        >
+          Editor&rsquo;s picks
+        </h2>
+        <p className="text-sm font-light text-[var(--muted)]">{note}</p>
+      </div>
+      <ul className="grid gap-4 sm:grid-cols-2">
+        {COMMUNITY_HIGHLIGHTS.map((item) => (
+          <SampleCard key={item.id} item={item} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function SampleCard({ item }: { item: CommunityHighlight }) {
   const typeMeta = COMMUNITY_TYPE_META[item.type];
 
@@ -309,7 +348,7 @@ function SampleCard({ item }: { item: CommunityHighlight }) {
           public
         </span>
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
-          example
+          featured
         </span>
       </div>
       <h3 className="font-serif mt-3 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">

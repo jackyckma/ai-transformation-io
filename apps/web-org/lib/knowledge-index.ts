@@ -16,6 +16,7 @@ type KnowledgeConfigSection = {
 type KnowledgeConfigPage = {
   title: string;
   description: string;
+  updatedAt?: string;
   sections: KnowledgeConfigSection[];
 };
 
@@ -36,6 +37,7 @@ export type KnowledgeCategory = {
 export type KnowledgeIndex = {
   title: string;
   description: string;
+  updatedAt?: string;
   categories: KnowledgeCategory[];
 };
 
@@ -102,6 +104,7 @@ export function getKnowledgeIndex(): KnowledgeIndex {
     description:
       config?.description ??
       'Durable, contributed knowledge for the community — frameworks, patterns, and references.',
+    updatedAt: config?.updatedAt,
     categories,
   };
 }

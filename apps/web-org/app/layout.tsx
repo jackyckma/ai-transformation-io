@@ -20,7 +20,7 @@ const lora = Lora({
 });
 
 const SITE_DESCRIPTION =
-  'A community knowledge commons for AI transformation — contributed knowledge and community highlights (formerly Harvest Hub).';
+  'A community knowledge commons for AI transformation — contributed knowledge and community highlights.';
 
 export const metadata: Metadata = {
   title: {
@@ -66,9 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="min-h-0 flex-1 overflow-y-auto pb-[var(--mobile-nav-h)] lg:pb-0">{children}</main>
           <SiteFooter />
         </div>
-        <div className="border-t border-[var(--border)] lg:flex lg:h-full lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:flex-col lg:overflow-hidden lg:border-t-0 lg:border-l">
-          <LayoutCompanion />
-        </div>
+        <LayoutCompanion />
         <MobileBottomNav />
       </body>
     </html>

@@ -43,7 +43,8 @@ export default function HomePage() {
                 href={page.pathname}
                 className="block rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition hover:border-[var(--accent)]/40"
               >
-                <h3 className="font-serif text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
+                <p className="text-[11px] font-light tracking-wide text-[var(--muted)]">Framework</p>
+                <h3 className="font-serif mt-1.5 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
                   {page.title}
                 </h3>
                 <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">

@@ -47,7 +47,7 @@ const COPY: Record<
     toggle: 'Ask companion',
   },
   org: {
-    title: 'Harvest companion',
+    title: 'Community companion',
     subtitle: 'Learn, share, and find your next step in the community.',
     placeholder: 'Ask about learn guides, stories, or prompts…',
     toggle: 'Ask companion',

@@ -37,17 +37,27 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const year = new Date().getFullYear();
   return (
-    <footer className="hidden shrink-0 border-t border-[var(--border)] py-6 text-center text-sm font-normal text-[var(--secondary)] lg:block">
-      <p>
-        Community · Knowledge commons — share experiences, not hype.{' '}
-        <a href="/api/agent" className="underline hover:text-[var(--foreground)]">
-          Agent entry
-        </a>
-        {' · '}
-        <a href="https://ai-transformation.io" className="underline hover:text-[var(--foreground)]">
-          Frameworks on .io
-        </a>
+    <footer className="hidden shrink-0 border-t border-[var(--border)] py-6 text-sm font-normal text-[var(--secondary)] lg:block">
+      <div className="site-panel-x layout-shell flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="font-serif text-[var(--foreground)]">
+          A community knowledge commons for AI transformation — share experiences, not hype.
+        </p>
+        <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <a href="/ask?mode=submit" className="underline hover:text-[var(--foreground)]">
+            Contribute
+          </a>
+          <a href="/api/agent" className="underline hover:text-[var(--foreground)]">
+            Agent entry
+          </a>
+          <a href="https://ai-transformation.io" className="underline hover:text-[var(--foreground)]">
+            Frameworks on .io
+          </a>
+        </nav>
+      </div>
+      <p className="site-panel-x layout-shell mt-3 text-xs text-[var(--secondary)]">
+        © {year} AI Transformation
       </p>
     </footer>
   );
