@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { MobileNavDrawer } from '@/components/mobile-nav-drawer';
+import { NewsletterSubscribe } from '@/components/newsletter-subscribe';
 import { RibbonNav } from '@/components/ribbon-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { IO_RIBBON } from '@/lib/nav';
@@ -65,7 +66,10 @@ export function SiteFooter() {
             </Link>
           </nav>
         </div>
-        <p className="mt-4 text-xs font-light text-[var(--muted)]">© {year} AI Transformation</p>
+        <div className="mt-6 border-t border-[var(--border)] pt-6">
+          <NewsletterSubscribe list="io_pulse" label="Get the Transformation Pulse" />
+        </div>
+        <p className="mt-6 text-xs font-light text-[var(--muted)]">© {year} AI Transformation</p>
       </div>
     </footer>
   );
