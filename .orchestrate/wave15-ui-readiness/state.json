@@ -88,13 +88,13 @@
       "handoffPath": "handoffs/integrate-wave15.md",
       "startedAt": "2026-06-25T13:04:04.503Z",
       "finishedAt": "2026-06-25T13:25:11.686Z",
-      "lastUpdate": "2026-06-25T13:25:13.128Z",
+      "lastUpdate": "2026-06-25T13:40:06.825Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 9,
       "failureMode": null,
-      "verification": "type-check-only",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-wave15",
@@ -114,11 +114,11 @@
       "finishedAt": "2026-06-25T13:40:03.639Z",
       "lastUpdate": "2026-06-25T13:40:03.640Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
@@ -161,6 +161,10 @@
     {
       "at": "2026-06-25T13:25:13.128Z",
       "message": "integrate-wave15: verification self-reported (type-check-only)"
+    },
+    {
+      "at": "2026-06-25T13:40:06.826Z",
+      "message": "integrate-wave15: verification recorded (unit-test-verified) by verifier verify-wave15"
     }
   ]
 }
