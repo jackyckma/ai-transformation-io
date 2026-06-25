@@ -6,9 +6,11 @@
     "dev": "turbo run dev --parallel",
     "start": "pnpm --filter @ai-transformation/combined start",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "seed:editorial": "tsx scripts/seed-editorial-content.ts"
   },
   "devDependencies": {
+    "tsx": "^4.19.4",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3"
   },
