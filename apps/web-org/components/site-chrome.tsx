@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { DesktopNavLinks } from '@/components/desktop-nav-links';
 import { MobileNavDrawer } from '@/components/mobile-nav-drawer';
+import { NewsletterSubscribe } from '@/components/newsletter-subscribe';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ORG_RIBBON } from '@/lib/nav';
 
@@ -56,7 +57,10 @@ export function SiteFooter() {
           </a>
         </nav>
       </div>
-      <p className="site-panel-x layout-shell mt-3 text-xs text-[var(--secondary)]">
+      <div className="site-panel-x layout-shell mt-6 border-t border-[var(--border)] pt-6">
+        <NewsletterSubscribe list="org_harvest" label="Get the Harvest Hub digest" />
+      </div>
+      <p className="site-panel-x layout-shell mt-6 text-xs text-[var(--secondary)]">
         © {year} AI Transformation
       </p>
     </footer>
