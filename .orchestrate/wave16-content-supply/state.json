@@ -1,0 +1,97 @@
+{
+  "rootSlug": "wave16-content-supply",
+  "tasks": [
+    {
+      "name": "backend-editorial",
+      "type": "worker",
+      "branch": "orch/wave16-content-supply/backend-editorial",
+      "startingRef": "main",
+      "dependsOn": [],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": "2026-06-25T16:32:36.768Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-25T16:32:36.768Z",
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null,
+      "attempts": 1
+    },
+    {
+      "name": "web-org-editorial",
+      "type": "worker",
+      "branch": "orch/wave16-content-supply/web-org-editorial",
+      "startingRef": "orch/wave16-content-supply/backend-editorial",
+      "dependsOn": [
+        "backend-editorial"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "integrate-wave16",
+      "type": "worker",
+      "branch": "orch/wave16-content-supply/integrate-wave16",
+      "startingRef": "orch/wave16-content-supply/web-org-editorial",
+      "dependsOn": [
+        "web-org-editorial"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "verify-wave16",
+      "type": "verifier",
+      "branch": "orch/wave16-content-supply/verify-wave16",
+      "startingRef": "orch/wave16-content-supply/integrate-wave16",
+      "dependsOn": [
+        "integrate-wave16"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    }
+  ],
+  "attention": []
+}
