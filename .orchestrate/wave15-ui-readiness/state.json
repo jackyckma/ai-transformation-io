@@ -1,0 +1,121 @@
+{
+  "rootSlug": "wave15-ui-readiness",
+  "tasks": [
+    {
+      "name": "shared-foundation",
+      "type": "worker",
+      "branch": "orch/wave15-ui-readiness/shared-foundation",
+      "startingRef": "main",
+      "dependsOn": [],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": "2026-06-25T12:27:50.600Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-25T12:27:50.600Z",
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null,
+      "attempts": 1
+    },
+    {
+      "name": "web-io-ui",
+      "type": "worker",
+      "branch": "orch/wave15-ui-readiness/web-io-ui",
+      "startingRef": "orch/wave15-ui-readiness/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "web-org-ui",
+      "type": "worker",
+      "branch": "orch/wave15-ui-readiness/web-org-ui",
+      "startingRef": "orch/wave15-ui-readiness/shared-foundation",
+      "dependsOn": [
+        "shared-foundation"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "integrate-wave15",
+      "type": "worker",
+      "branch": "orch/wave15-ui-readiness/integrate-wave15",
+      "startingRef": "orch/wave15-ui-readiness/web-org-ui",
+      "dependsOn": [
+        "web-io-ui",
+        "web-org-ui"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "verify-wave15",
+      "type": "verifier",
+      "branch": "orch/wave15-ui-readiness/verify-wave15",
+      "startingRef": "orch/wave15-ui-readiness/integrate-wave15",
+      "dependsOn": [
+        "integrate-wave15"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    }
+  ],
+  "attention": []
+}
