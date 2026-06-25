@@ -63,12 +63,12 @@
       "handoffPath": "handoffs/integrate-wave16.md",
       "startedAt": "2026-06-25T16:59:19.903Z",
       "finishedAt": "2026-06-25T17:04:55.601Z",
-      "lastUpdate": "2026-06-25T17:04:55.602Z",
+      "lastUpdate": "2026-06-25T17:04:58.821Z",
       "note": null,
       "slackTs": null,
       "prNumber": 10,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
@@ -82,17 +82,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-25T17:05:03.572Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-25T17:05:03.572Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     }
   ],
   "attention": [
@@ -119,6 +120,10 @@
     {
       "at": "2026-06-25T16:59:21.596Z",
       "message": "web-org-editorial: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-25T17:04:58.822Z",
+      "message": "integrate-wave16: verification self-reported (unit-test-verified)"
     }
   ]
 }
