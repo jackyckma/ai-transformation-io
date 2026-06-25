@@ -1,68 +1,70 @@
 # Session handoff
 
 **Date:** 2026-06-25  
-**Branch:** `main`  
-**Latest commit:** `e4c3b82` — docs: mark Wave 16 merged and hand off to Wave 17  
-**Push status:** Wave 17 goal doc + kickoff pending commit
+**Branch:** `orch/wave17-newsletter-pilot/integrate-newsletter`  
+**Latest commit:** `7192a78` — merge web newsletter slice into integration branch  
+**Push status:** pending docs commit + push for final integration handoff
 
 ## Active task
 
-- **Roadmap item:** `wave17-newsletter-pilot` — orchestrate **running**
-- **Definition of done:** [wave17-newsletter-pilot.md](./waves/wave17-newsletter-pilot.md) + [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md)
-
-## Orchestrate (Wave 17)
-
-| Field | Value |
-|-------|--------|
-| Slug | `wave17-newsletter-pilot` |
-| Agent | [bc-9ce54122…](https://cursor.com/agents/bc-9ce54122-a30a-4ed9-be35-74ef5e087011) |
-| Run | `run-8214463b-1d92-44e0-8178-92ad797116c7` |
-| Ref | `main` @ Wave 16 merged |
-| Status | **running** (kickoff 2026-06-25) |
-
-**Scope:** subscribe/unsubscribe APIs, admin send-issue, inbound webhook, footer subscribe + `/newsletter` admin UI on both sites, pilot cap 25, tests + docs. No Stripe, no public archive, Cloudflare Worker doc-only.
+- **Roadmap item:** `wave17-newsletter-pilot`
+- **Definition of done:** merged backend + web slices, green monorepo build/tests, Wave 17 docs updated, one draft PR to `main`
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 16 on `main` | ✅ PR #10 @ `58a174b` |
-| Wave 17 orchestrate | ⏳ running |
-| Newsletter pilot send | ⏳ not live until Wave 17 merges |
+| Wave 17 backend slice | ✅ merged (`orch/wave17-newsletter-pilot/backend-newsletter`) |
+| Wave 17 web slice | ✅ merged (`orch/wave17-newsletter-pilot/web-newsletter`) |
+| Integration verification | ✅ `pnpm turbo build` + backend tests passing |
+| Docs update | ✅ `EMAIL_NEWSLETTER`, `CURRENT_STATUS`, `SESSION_HANDOFF` refreshed |
+| Deploy follow-up | ⏳ pending Cloudflare Worker deploy + Zeabur env sync |
+
+## Verified in
+
+- **Cloud agent branch env:** `pnpm install`, `pnpm turbo build`, `pnpm --filter @ai-transformation/backend test` all passed on `orch/wave17-newsletter-pilot/integrate-newsletter`.
+- **Live/staging smoke:** not run in this session.
 
 ## Top priority next
 
-1. Poll Wave 17 orchestrate; if ERROR ~35 min with no branches → re-kickoff from [wave17-newsletter-pilot.md](./waves/wave17-newsletter-pilot.md).
-2. When complete + verifier pass → review + merge draft PR (founder default).
-3. Post-merge: add ~10 pilot subscribers, compile + send one issue; test inbound or manual reply fallback.
+1. Open/keep one draft PR from `orch/wave17-newsletter-pilot/integrate-newsletter` to `main` and route for planner review.
+2. Deploy Cloudflare Email Worker that parses `replies+{issueToken}@ai-transformation.io` and POSTs webhook payload to `/api/webhooks/inbound-email`.
+3. Ensure Zeabur production env has Wave 17 variables (`ZSEND_API_KEY`, `INBOUND_EMAIL_WEBHOOK_SECRET`, `NEWSLETTER_FROM_IO`, `NEWSLETTER_FROM_ORG`, `NEWSLETTER_PILOT_MAX`, `ADMIN_EMAILS`), then run one small-list pilot send.
 
-## How to poll
+## What was already tried
 
-```bash
-git fetch origin
-ls .orchestrate/wave17-newsletter-pilot/ 2>/dev/null
-git ls-remote origin 'refs/heads/orch/wave17*'
-gh pr list --limit 5
-```
+- Merged both orchestrate branches without conflicts (backend first, then web).
+- Ran full monorepo build and backend test suite; no integration breakage observed.
+- Updated newsletter docs to formalize Worker contract and manual fallback path.
 
-Planner run status (after `source .cursor-env`):
+## How to run / verify
 
 ```bash
-curl -sS -H "Authorization: Bearer $CURSOR_API_KEY" \
-  "https://api.cursor.com/v1/agents/bc-9ce54122-a30a-4ed9-be35-74ef5e087011/runs/run-8214463b-1d92-44e0-8178-92ad797116c7"
+pnpm install
+pnpm turbo build
+pnpm --filter @ai-transformation/backend test
 ```
 
-## Key paths
+Manual pilot checks after deploy:
+
+1. Admin compile draft (`POST /api/agent/compile-draft`).
+2. Admin send issue (`POST /api/internal/newsletter/send-issue`) and confirm cap behavior.
+3. Reply to newsletter via `replies+{issueToken}@ai-transformation.io` and verify webhook-created `newsletter_reply` contribution.
+
+## Key file paths
 
 | Concern | Path |
 |---------|------|
-| Wave 17 goal | `docs/waves/wave17-newsletter-pilot.md` |
-| Newsletter spec | `docs/EMAIL_NEWSLETTER.md` |
-| L6 backend | `apps/backend/src/lanes/newsletter/` |
-| compile-draft | `apps/backend/src/lanes/agent/` |
+| Newsletter spec + env + Worker contract | `docs/EMAIL_NEWSLETTER.md` |
+| Program status summary | `docs/CURRENT_STATUS.md` |
+| Backend newsletter routes | `apps/backend/src/lanes/newsletter/` |
+| Backend admin send route | `apps/backend/src/lanes/newsletter/internal.ts` |
+| Backend issues list route | `apps/backend/src/lanes/agent/index.ts` |
+| Footer + admin UI (.io) | `apps/web-io/components/newsletter-*.tsx`, `apps/web-io/app/newsletter/page.tsx` |
+| Footer + admin UI (.org) | `apps/web-org/components/newsletter-*.tsx`, `apps/web-org/app/newsletter/page.tsx` |
 
 ## Warnings
 
-- First orchestrate kickoff sometimes ERROR (~30 min); re-kickoff usually succeeds (Waves 14–16 pattern).
-- Keep `packages/shared/src/index.ts` untouched if possible.
-- Zeabur manual restart if 502 after merge-only deploy.
+- Cloudflare Email Worker is documented only in-repo; Worker code/deploy is an external follow-up.
+- Keep `.orchestrate/` run-local files out of PR diffs.
+- If Zeabur auto-deploy misses combined artifacts, run manual deploy and verify both domains.
