@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Lora, Geist } from 'next/font/google';
 import { SiteJsonLd } from '@/components/site-json-ld';
 import { AuthErrorBanner } from '@/components/auth-error-banner';
+import { CompanionAskEntry } from '@/components/companion-ask-entry';
 import { LayoutCompanion } from '@/components/layout-companion';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
@@ -53,12 +54,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthErrorBanner />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:h-full lg:overflow-hidden">
           <SiteHeader />
-          <main className="min-h-0 flex-1 overflow-y-auto pb-[var(--mobile-nav-h)] lg:pb-0">{children}</main>
+          <main className="min-h-0 flex-1 overflow-y-auto pb-[var(--mobile-nav-h)] lg:pb-0">
+            {children}
+            <CompanionAskEntry />
+          </main>
           <SiteFooter />
         </div>
-        <div className="border-t border-[var(--border)] lg:flex lg:h-full lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:flex-col lg:overflow-hidden lg:border-t-0 lg:border-l">
-          <LayoutCompanion />
-        </div>
+        <LayoutCompanion />
         <MobileBottomNav />
       </body>
     </html>

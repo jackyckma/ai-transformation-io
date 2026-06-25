@@ -89,6 +89,7 @@ type FeatureSpotlightCardProps = {
   editorNote: string;
   image?: string;
   category?: string;
+  dateLabel?: string | null;
 };
 
 export function FeatureSpotlightCard({
@@ -96,6 +97,7 @@ export function FeatureSpotlightCard({
   editorNote,
   image,
   category = 'Spotlight',
+  dateLabel,
 }: FeatureSpotlightCardProps) {
   return (
     <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
@@ -107,7 +109,10 @@ export function FeatureSpotlightCard({
           flush
         />
         <div className="p-5 md:p-6">
-          <p className="text-xs font-light tracking-wide text-[var(--muted)]">{category}</p>
+          <p className="text-xs font-light tracking-wide text-[var(--muted)]">
+            {category}
+            {dateLabel ? <span className="text-[var(--secondary)]"> · {dateLabel}</span> : null}
+          </p>
           <h3 className="font-serif mt-2 text-xl font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)] md:text-2xl">
             {article.title}
           </h3>
