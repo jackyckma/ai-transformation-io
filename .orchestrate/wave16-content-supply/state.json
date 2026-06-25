@@ -39,13 +39,13 @@
       "handoffPath": "handoffs/web-org-editorial.md",
       "startedAt": "2026-06-25T16:47:45.596Z",
       "finishedAt": "2026-06-25T16:59:18.118Z",
-      "lastUpdate": "2026-06-25T16:59:18.118Z",
+      "lastUpdate": "2026-06-25T16:59:21.595Z",
       "note": "respawned by local-cli (was error; attempts=1)",
       "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "integrate-wave16",
@@ -55,18 +55,18 @@
       "dependsOn": [
         "web-org-editorial"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-4dcfec9b-2503-404c-8ab8-87246fe5fbc5",
+      "runId": "run-e098391c-e8bf-4dfb-ae74-73784d73e118",
+      "parentAgentId": "bc-961aa9cf-d630-41b8-82ea-456f337bc90b",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/integrate-wave16.md",
       "startedAt": "2026-06-25T16:59:19.903Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-25T16:59:19.903Z",
+      "finishedAt": "2026-06-25T17:04:55.601Z",
+      "lastUpdate": "2026-06-25T17:04:55.602Z",
       "note": null,
       "slackTs": null,
-      "prNumber": null,
+      "prNumber": 10,
       "failureMode": null,
       "verification": null,
       "attempts": 1
@@ -115,6 +115,10 @@
     {
       "at": "2026-06-25T16:47:44.438Z",
       "message": "web-org-editorial: respawned by local-cli (was error)"
+    },
+    {
+      "at": "2026-06-25T16:59:21.596Z",
+      "message": "web-org-editorial: verification self-reported (live-ui-verified)"
     }
   ]
 }
