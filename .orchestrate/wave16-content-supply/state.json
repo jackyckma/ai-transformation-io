@@ -27,21 +27,21 @@
       "name": "web-org-editorial",
       "type": "worker",
       "branch": "orch/wave16-content-supply/web-org-editorial",
-      "startingRef": "orch/wave16-content-supply/backend-editorial",
+      "startingRef": "cursor/wave16-backend-editorial-8610",
       "dependsOn": [
         "backend-editorial"
       ],
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-25T16:47:45.596Z",
       "finishedAt": null,
-      "lastUpdate": "2026-06-25T16:47:43.232Z",
+      "lastUpdate": "2026-06-25T16:47:45.596Z",
       "note": "respawned by local-cli (was error; attempts=1)",
-      "attempts": 1,
+      "attempts": 2,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
@@ -110,6 +110,10 @@
     {
       "at": "2026-06-25T16:46:28.265Z",
       "message": "web-org-editorial: spawn failed after 3 transient sub-attempts: ConfigurationError: [validation_error] Branch 'orch/wave16-content-supply/backend-editorial' does not exist in repository jackyckma/ai-transformation-io."
+    },
+    {
+      "at": "2026-06-25T16:47:44.438Z",
+      "message": "web-org-editorial: respawned by local-cli (was error)"
     }
   ]
 }
