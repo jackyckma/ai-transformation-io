@@ -34,12 +34,12 @@
       "agentId": "bc-8c7bf60d-dc4d-4348-bfb3-2091f08218a4",
       "runId": "run-1f7bbd56-5461-4c43-8ecb-3c340b4ed660",
       "parentAgentId": "bc-fe336dd7-606b-4d84-8243-4ed8aabd497b",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-io-ui.md",
       "startedAt": "2026-06-25T12:31:14.130Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-25T12:31:17.248Z",
+      "finishedAt": "2026-06-25T13:03:59.643Z",
+      "lastUpdate": "2026-06-25T13:03:59.644Z",
       "note": null,
       "attempts": 1,
       "slackTs": null,
@@ -63,13 +63,13 @@
       "handoffPath": "handoffs/web-org-ui.md",
       "startedAt": "2026-06-25T12:31:17.398Z",
       "finishedAt": "2026-06-25T12:45:36.378Z",
-      "lastUpdate": "2026-06-25T12:45:36.379Z",
+      "lastUpdate": "2026-06-25T12:45:37.521Z",
       "note": null,
       "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "integrate-wave15",
@@ -139,6 +139,18 @@
     {
       "at": "2026-06-25T12:42:02.350Z",
       "message": "web-org-ui: tool_call idle 626564ms; last=2026-06-25T12:31:35.786Z"
+    },
+    {
+      "at": "2026-06-25T12:45:37.521Z",
+      "message": "web-org-ui: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-25T12:51:19.066Z",
+      "message": "web-io-ui: SSE idle 302544ms, polled status=running; watchdog still waiting"
+    },
+    {
+      "at": "2026-06-25T12:51:19.068Z",
+      "message": "web-io-ui: tool_call idle 302546ms; last=2026-06-25T12:46:16.522Z"
     }
   ]
 }
