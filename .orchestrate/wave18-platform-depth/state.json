@@ -15,9 +15,56 @@
       "handoffPath": "handoffs/backend-wave18.md",
       "startedAt": "2026-06-26T09:10:39.850Z",
       "finishedAt": "2026-06-26T09:22:25.284Z",
-      "lastUpdate": "2026-06-26T09:22:25.284Z",
+      "lastUpdate": "2026-06-26T09:22:28.398Z",
       "note": "respawned by self-planner (was error; attempts=1)",
       "attempts": 2,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "unit-test-verified"
+    },
+    {
+      "name": "web-io-wave18",
+      "type": "worker",
+      "branch": "orch/wave18-platform-depth/web-io-wave18",
+      "startingRef": "orch/wave18-platform-depth/backend-wave18",
+      "dependsOn": [
+        "backend-wave18"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": "2026-06-26T09:25:20.306Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-26T09:25:20.306Z",
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null,
+      "attempts": 1
+    },
+    {
+      "name": "web-org-wave18",
+      "type": "worker",
+      "branch": "orch/wave18-platform-depth/web-org-wave18",
+      "startingRef": "orch/wave18-platform-depth/backend-wave18",
+      "dependsOn": [
+        "backend-wave18"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
@@ -32,6 +79,10 @@
     {
       "at": "2026-06-26T09:10:30.872Z",
       "message": "backend-wave18: respawned by self-planner (was error)"
+    },
+    {
+      "at": "2026-06-26T09:22:28.398Z",
+      "message": "backend-wave18: verification self-reported (unit-test-verified)"
     }
   ]
 }
