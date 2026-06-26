@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { ContentPageMeta } from '@ai-transformation/content';
 
+import { ExternalAgentLinks } from '@/components/external-agent-links';
 import { OpenInAsk } from '@/components/open-in-ask';
 import { SaveToContext } from '@/components/save-to-context';
 import { libraryAskActions } from '@/lib/ask-actions';
@@ -108,6 +109,11 @@ export function LibraryBrowser({ pages, collections, reviewedLabel }: LibraryBro
                     title={page.title}
                   />
                 </div>
+                <ExternalAgentLinks
+                  title={page.title}
+                  path={page.pathname}
+                  className="mt-2"
+                />
               </li>
             ))}
           </ul>
