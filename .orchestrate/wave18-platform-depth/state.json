@@ -31,15 +31,15 @@
       "dependsOn": [
         "backend-wave18"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
+      "agentId": "bc-7a77e0ba-f483-4b5e-8a8d-2d7ea6713d8f",
+      "runId": "run-a84a5fd3-689b-4618-9811-03d3f9452881",
+      "parentAgentId": "bc-b6402923-c5c1-4ffe-a72e-ba9a9a7b0193",
       "status": "running",
       "resultStatus": null,
       "handoffPath": null,
       "startedAt": "2026-06-26T09:25:20.306Z",
       "finishedAt": null,
-      "lastUpdate": "2026-06-26T09:25:20.306Z",
+      "lastUpdate": "2026-06-26T09:25:23.456Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -58,17 +58,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-26T09:25:23.844Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-26T09:25:23.844Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     }
   ],
   "attention": [
