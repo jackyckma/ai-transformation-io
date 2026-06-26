@@ -2,8 +2,8 @@
 
 **Date:** 2026-06-26  
 **Branch:** `orch/wave18-platform-depth/integrate-wave18`  
-**Latest commit:** pending (Wave 18 integration docs update in progress)  
-**Push status:** not pushed yet in this session
+**Latest commit:** `de2e0b8` — docs: mark wave18 platform depth shipped  
+**Push status:** pushed (`orch/wave18-platform-depth/integrate-wave18`)
 
 ## Active task
 
