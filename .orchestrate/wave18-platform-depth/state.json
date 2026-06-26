@@ -39,18 +39,18 @@
       "handoffPath": "handoffs/web-io-wave18.md",
       "startedAt": "2026-06-26T09:25:20.306Z",
       "finishedAt": "2026-06-26T09:54:50.261Z",
-      "lastUpdate": "2026-06-26T09:54:50.262Z",
+      "lastUpdate": "2026-06-26T09:54:51.435Z",
       "note": null,
       "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "web-org-wave18",
       "type": "worker",
-      "branch": "orch/wave18-platform-depth/web-org-wave18",
+      "branch": "`orch/wave18-platform-depth/web-org-wave18` (pushed; no PR per instructions)",
       "startingRef": "orch/wave18-platform-depth/backend-wave18",
       "dependsOn": [
         "backend-wave18"
@@ -58,12 +58,12 @@
       "agentId": "bc-25957e0f-fe66-4dbc-a1c0-5b80adfb84cd",
       "runId": "run-2229ec99-fc6b-440b-bf87-5c8b0a5708c5",
       "parentAgentId": "bc-b6402923-c5c1-4ffe-a72e-ba9a9a7b0193",
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-org-wave18.md",
       "startedAt": "2026-06-26T09:25:23.844Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-26T09:25:27.011Z",
+      "finishedAt": "2026-06-26T09:54:52.449Z",
+      "lastUpdate": "2026-06-26T09:54:52.450Z",
       "note": null,
       "attempts": 1,
       "slackTs": null,
@@ -84,6 +84,10 @@
     {
       "at": "2026-06-26T09:22:28.398Z",
       "message": "backend-wave18: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-26T09:54:51.436Z",
+      "message": "web-io-wave18: verification self-reported (live-ui-verified)"
     }
   ]
 }
