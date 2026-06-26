@@ -90,11 +90,11 @@
       "finishedAt": "2026-06-26T10:00:55.075Z",
       "lastUpdate": "2026-06-26T10:00:56.439Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 12,
       "failureMode": null,
-      "verification": "unit-test-verified",
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-wave18",
@@ -114,11 +114,11 @@
       "finishedAt": "2026-06-26T10:06:55.848Z",
       "lastUpdate": "2026-06-26T10:06:55.848Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [

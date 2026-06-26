@@ -1,0 +1,8 @@
+[2026-06-26T09:09:32.542Z] backend-wave18: spawn failed after 3 transient sub-attempts: ConfigurationError: [invalid_model] Model 'gpt-5.5' does not match a known variant. Call GET /v1/models to list valid id+params combinations. run `bun cli.ts models --check` to re-probe the catalog against /v1/agents.
+[2026-06-26T09:10:30.872Z] backend-wave18: respawned by self-planner (was error)
+[2026-06-26T09:22:28.398Z] backend-wave18: verification self-reported (unit-test-verified)
+[2026-06-26T09:54:51.436Z] web-io-wave18: verification self-reported (live-ui-verified)
+[2026-06-26T09:54:53.487Z] web-org-wave18: verification self-reported (type-check-only)
+[2026-06-26T09:59:14.324Z] web-io-wave18: verification self-reported (live-ui-verified)
+[2026-06-26T09:59:14.325Z] web-org-wave18: verification self-reported (type-check-only)
+[2026-06-26T10:00:56.440Z] integrate-wave18: verification self-reported (unit-test-verified)
