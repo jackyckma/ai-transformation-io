@@ -15,12 +15,12 @@
       "handoffPath": "handoffs/backend-wave19.md",
       "startedAt": "2026-06-26T13:25:42.190Z",
       "finishedAt": "2026-06-26T13:34:55.652Z",
-      "lastUpdate": "2026-06-26T13:34:55.653Z",
+      "lastUpdate": "2026-06-26T13:34:58.768Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
+      "verification": "unit-test-verified",
       "attempts": 1
     },
     {
@@ -31,15 +31,15 @@
       "dependsOn": [
         "backend-wave19"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
+      "agentId": "bc-29d20594-e567-478d-9870-49b5fa500672",
+      "runId": "run-06331d73-6877-4da2-b9be-1788c84414bc",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
       "status": "running",
       "resultStatus": null,
       "handoffPath": null,
       "startedAt": "2026-06-26T13:34:56.974Z",
       "finishedAt": null,
-      "lastUpdate": "2026-06-26T13:34:56.974Z",
+      "lastUpdate": "2026-06-26T13:35:00.180Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -58,17 +58,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-26T13:35:00.357Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-26T13:35:00.357Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     },
     {
       "name": "integrate-wave19",
@@ -118,5 +119,10 @@
       "verification": null
     }
   ],
-  "attention": []
+  "attention": [
+    {
+      "at": "2026-06-26T13:34:58.768Z",
+      "message": "backend-wave19: verification self-reported (unit-test-verified)"
+    }
+  ]
 }
