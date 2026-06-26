@@ -63,9 +63,57 @@
       "handoffPath": "handoffs/web-org-wave18.md",
       "startedAt": "2026-06-26T09:25:23.844Z",
       "finishedAt": "2026-06-26T09:54:52.449Z",
-      "lastUpdate": "2026-06-26T09:54:52.450Z",
+      "lastUpdate": "2026-06-26T09:54:53.487Z",
       "note": null,
       "attempts": 1,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": "type-check-only"
+    },
+    {
+      "name": "integrate-wave18",
+      "type": "worker",
+      "branch": "orch/wave18-platform-depth/integrate-wave18",
+      "startingRef": "orch/wave18-platform-depth/web-org-wave18",
+      "dependsOn": [
+        "web-io-wave18",
+        "web-org-wave18"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": "2026-06-26T09:57:04.493Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-26T09:57:04.493Z",
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null,
+      "attempts": 1
+    },
+    {
+      "name": "verify-wave18",
+      "type": "verifier",
+      "branch": "orch/wave18-platform-depth/verify-wave18",
+      "startingRef": "orch/wave18-platform-depth/integrate-wave18",
+      "dependsOn": [
+        "integrate-wave18"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
@@ -88,6 +136,10 @@
     {
       "at": "2026-06-26T09:54:51.436Z",
       "message": "web-io-wave18: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-26T09:54:53.487Z",
+      "message": "web-org-wave18: verification self-reported (type-check-only)"
     }
   ]
 }
