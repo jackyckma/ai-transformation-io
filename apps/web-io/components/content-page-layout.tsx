@@ -10,8 +10,16 @@ import { OpenInAsk } from '@/components/open-in-ask';
 import { PageShell } from '@/components/page-shell';
 import { libraryAskActions } from '@/lib/ask-actions';
 
+export type RelatedLink = {
+  slug: string;
+  title: string;
+  pathname: string;
+  pillar: ContentDocument['pillar'];
+};
+
 type ContentPageLayoutProps = {
   doc: ContentDocument;
+  related?: RelatedLink[];
   backHref?: string;
   backLabel?: string;
 };
@@ -24,6 +32,7 @@ const PILLAR_LABEL: Record<ContentDocument['pillar'], string> = {
 
 export function ContentPageLayout({
   doc,
+  related = [],
   backHref = '/library',
   backLabel = '← All library',
 }: ContentPageLayoutProps) {
@@ -64,6 +73,28 @@ export function ContentPageLayout({
       <CompanionTopicPrompt topic={doc.title} className="mb-8" />
 
       <MarkdownBody content={doc.markdown} />
+
+      {related.length > 0 ? (
+        <aside className="mt-14 border-t border-[var(--border)] pt-8">
+          <h2 className="text-[11px] font-normal uppercase tracking-[0.12em] text-[var(--secondary)]">
+            More in Library
+          </h2>
+          <ul className="mt-4 divide-y divide-[var(--border)]">
+            {related.map((item) => (
+              <li key={item.slug} className="py-3 first:pt-0">
+                <Link href={item.pathname} className="group block">
+                  <span className="text-[11px] font-light tracking-wide text-[var(--muted)]">
+                    {PILLAR_LABEL[item.pillar]}
+                  </span>
+                  <span className="font-serif mt-1 block text-base font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
+                    {item.title}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      ) : null}
 
       <Link
         href={backHref}
