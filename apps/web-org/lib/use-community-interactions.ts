@@ -1,18 +1,22 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { CommunityInteractionKind } from '@ai-transformation/shared';
+import type { CommunityActionKind, CommunityInteractionKind } from '@ai-transformation/shared';
 
 import { getApiClient } from '@/lib/api-client';
 
 type ToggleKind = Extract<CommunityInteractionKind, 'follow' | 'join'>;
 
+/** Every kind whose done/pending state this hook tracks: the Wave 13 interactions plus Wave 14 intent actions. */
+type TrackedKind = CommunityInteractionKind | CommunityActionKind;
+
 type CommunityInteractionsState = {
   ready: boolean;
-  isDone: (kind: CommunityInteractionKind) => boolean;
-  isPending: (kind: CommunityInteractionKind) => boolean;
+  isDone: (kind: TrackedKind) => boolean;
+  isPending: (kind: TrackedKind) => boolean;
   toggle: (kind: ToggleKind) => Promise<void>;
   offerHelp: (body?: string) => Promise<void>;
+  act: (kind: CommunityActionKind, body?: string) => Promise<void>;
   error: string;
 };
 
@@ -27,8 +31,8 @@ export function useCommunityInteractions(
   objectId: string,
   { enabled, userId }: { enabled: boolean; userId?: string | null },
 ): CommunityInteractionsState {
-  const [done, setDone] = useState<Set<CommunityInteractionKind>>(new Set());
-  const [pending, setPending] = useState<Set<CommunityInteractionKind>>(new Set());
+  const [done, setDone] = useState<Set<TrackedKind>>(new Set());
+  const [pending, setPending] = useState<Set<TrackedKind>>(new Set());
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
 
@@ -44,7 +48,7 @@ export function useCommunityInteractions(
       try {
         const response = await getApiClient().community.listInteractions({ site: 'org', objectId });
         if (cancelled) return;
-        const next = new Set<CommunityInteractionKind>();
+        const next = new Set<TrackedKind>();
         for (const interaction of response.interactions) {
           if (!userId || interaction.userId === userId) {
             next.add(interaction.kind);
@@ -62,15 +66,15 @@ export function useCommunityInteractions(
     };
   }, [objectId, enabled, userId]);
 
-  const isDone = useCallback((kind: CommunityInteractionKind) => done.has(kind), [done]);
-  const isPending = useCallback((kind: CommunityInteractionKind) => pending.has(kind), [pending]);
+  const isDone = useCallback((kind: TrackedKind) => done.has(kind), [done]);
+  const isPending = useCallback((kind: TrackedKind) => pending.has(kind), [pending]);
 
-  const startPending = useCallback((kind: CommunityInteractionKind) => {
+  const startPending = useCallback((kind: TrackedKind) => {
     setPending((prev) => new Set(prev).add(kind));
     setError('');
   }, []);
 
-  const endPending = useCallback((kind: CommunityInteractionKind) => {
+  const endPending = useCallback((kind: TrackedKind) => {
     setPending((prev) => {
       const next = new Set(prev);
       next.delete(kind);
@@ -136,5 +140,33 @@ export function useCommunityInteractions(
     [done, enabled, objectId, startPending, endPending],
   );
 
-  return { ready, isDone, isPending, toggle, offerHelp, error };
+  /**
+   * Posts a Phase 2 intent verb (request_mentor, ask_for_intro, apply, …) as a
+   * real persisted community action. The listing endpoint only returns
+   * follow/offer_help/join, so the done state for the other kinds is tracked
+   * optimistically for this session.
+   */
+  const act = useCallback(
+    async (kind: CommunityActionKind, body?: string) => {
+      if (!enabled || done.has(kind)) return;
+      startPending(kind);
+      try {
+        const trimmed = body?.trim();
+        await getApiClient().community.actions({
+          site: 'org',
+          objectId,
+          kind,
+          ...(trimmed ? { body: trimmed } : {}),
+        });
+        setDone((prev) => new Set(prev).add(kind));
+      } catch {
+        setError('Could not record that action. Try again shortly.');
+      } finally {
+        endPending(kind);
+      }
+    },
+    [done, enabled, objectId, startPending, endPending],
+  );
+
+  return { ready, isDone, isPending, toggle, offerHelp, act, error };
 }

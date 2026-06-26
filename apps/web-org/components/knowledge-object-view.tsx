@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import type { Comment, ObjectRecord } from '@ai-transformation/shared';
+import { getSiteOrigin, type Comment, type ObjectRecord } from '@ai-transformation/shared';
 
 import { getApiClient } from '@/lib/api-client';
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useBookmarks } from '@/lib/use-bookmarks';
+import { AgentDeepLinks, AgentHintScript } from '@/components/agent-deep-links';
 import { MarkdownBody } from '@/components/markdown-body';
 import { PageShell } from '@/components/page-shell';
 import { SaveButton } from '@/components/save-button';
@@ -98,6 +99,7 @@ export function KnowledgeObjectView({ id }: { id: string }) {
   const title = objectTitle(object);
   const target = objectTarget(object);
   const actions = knowledgeActions(title, object.id);
+  const canonicalUrl = `${getSiteOrigin('org')}/knowledge/${encodeURIComponent(object.id)}`;
 
   return (
     <PageShell as="article">
@@ -135,12 +137,17 @@ export function KnowledgeObjectView({ id }: { id: string }) {
             </Link>
           ))}
         </div>
+        <div className="mt-3 border-t border-[var(--border)] pt-3 text-xs">
+          <AgentDeepLinks title={title} canonicalUrl={canonicalUrl} />
+        </div>
         {bookmarks.error ? (
           <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-200">
             {bookmarks.error}
           </p>
         ) : null}
       </header>
+
+      <AgentHintScript title={title} canonicalUrl={canonicalUrl} />
 
       <MarkdownBody content={object.body} />
 
