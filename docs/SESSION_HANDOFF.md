@@ -1,50 +1,46 @@
 # Session handoff
 
 **Date:** 2026-06-26  
-**Branch:** `orch/wave18-platform-depth/integrate-wave18`  
-**Latest commit:** `de2e0b8` — docs: mark wave18 platform depth shipped  
-**Push status:** pushed (`orch/wave18-platform-depth/integrate-wave18`)
+**Branch:** `main`  
+**Latest commit:** `e25e0ca` — Merge pull request #12 (Wave 18 platform depth)  
+**Push status:** merged to `origin/main`
 
 ## Active task
 
-- **Roadmap item:** `wave18-platform-depth`
-- **Definition of done:** [wave18-platform-depth.md](./waves/wave18-platform-depth.md)
-- **Status:** ✅ Implemented and integration-verified on the integration branch; draft PR to `main` prepared by this handoff.
+- **Roadmap item:** Wave 18 ✅ shipped · **Wave 19+** next (newsletter archive, agent credits ≥50 users)
+- **Definition of done:** See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 18 — LLM-assisted ranking | ✅ Shipped: optional rerank on matcher (`useLlmRerank`) + new `POST /api/v1/personal/rank-suggestions`, both with deterministic fallback on missing key or LLM failure |
-| Wave 18 — external agent deep links | ✅ Shipped: shared helper (`packages/shared/src/wave18-external-agent.ts`), discreet ChatGPT/Claude links on `.io` and `.org` targets, `/for-agents#deep-links` docs on both sites, JSON hint script on detail pages |
-| Wave 18 — Phase 2 intent verb UI parity (.org) | ✅ Shipped: `offer_help`/`request_mentor`/`ask_for_intro`/`apply` call persisted `community.actions()` from cards + detail actions via `getCommunityActions()`; Ask-prefill links remain secondary |
-| Verification | ✅ `pnpm turbo build` (6/6) and `pnpm --filter @ai-transformation/backend test` (62/62) |
-| Wave 19+ | ⏭️ Next: newsletter archive + agent credits/Stripe when active users reach threshold (≥50 users) |
+| Wave 18 on `main` | ✅ PR [#12](https://github.com/jackyckma/ai-transformation-io/pull/12) @ `e25e0ca` |
+| LLM-assisted ranking | ✅ Optional `useLlmRerank` on matcher + `/personal/rank-suggestions`; fallback when no key |
+| External deep links | ✅ ChatGPT/Claude on .io/.org detail + `/for-agents` docs |
+| Phase 2 verb UI | ✅ `community.actions()` for request_mentor / ask_for_intro / apply on .org |
+| Build + tests | ✅ turbo 6/6; backend **62/62** |
 
-## Known deferred follow-up (not fixed in Wave 18 integration)
+## Known follow-up (non-blocking)
 
-- Backend `listInteractionsForUser` read query currently returns only `follow` / `offer_help` / `join`.
-- Result: `.org` detail done-state for `request_mentor` / `ask_for_intro` / `apply` is optimistic per session.
-- Writes are persisted via `POST /api/community/actions` (and `/api/v1/community/actions` parity), but done-state read-back after reload remains incomplete until list query expansion.
+- Extend `listInteractionsForUser` read-back for `request_mentor` / `ask_for_intro` / `apply` so done-state survives reload (writes persist; UI optimistic today).
 
-## How to verify
+## Top priority next
 
-```bash
-pnpm install
-pnpm turbo build
-pnpm --filter @ai-transformation/backend test
-```
+1. **Newsletter pilot ops** on production (subscribers, compile, send, inbound Worker or manual reply).
+2. **Wave 19+** when scale warrants: public newsletter archive, agent credits (≥50 active users).
+3. Zeabur env: confirm `MINIMAX_API_KEY` if testing LLM assist live.
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| LLM rerank + rank suggestions | `apps/backend/src/lanes/community/index.ts`, `apps/backend/src/llm/llm.ts`, `packages/shared/src/ranking.ts` |
-| External deep links helper | `packages/shared/src/wave18-external-agent.ts` |
-| .io deep-link surfaces | `apps/web-io/components/external-agent-links.tsx`, `apps/web-io/components/content-page-layout.tsx`, `apps/web-io/components/library-browser.tsx`, `apps/web-io/components/insights-cards.tsx`, `apps/web-io/app/for-agents/page.tsx` |
-| .org Phase 2 verbs + deep links | `apps/web-org/lib/use-community-interactions.ts`, `apps/web-org/components/community-object-view.tsx`, `apps/web-org/components/community-highlights.tsx`, `apps/web-org/components/agent-deep-links.tsx`, `apps/web-org/app/for-agents/page.tsx` |
+| Wave 18 goal | `docs/waves/wave18-platform-depth.md` |
+| LLM rerank | `apps/backend/src/lanes/community/llm-rerank.ts` |
+| Rank suggestions | `apps/backend/src/lanes/personal/index.ts` |
+| Deep links | `packages/shared/src/wave18-external-agent.ts` |
+| Phase 2 actions | `apps/web-org/lib/use-community-interactions.ts` |
 
 ## Warnings
 
-- Do not edit `packages/shared/src/index.ts` for Wave 18 integration (agent-entry protocol assertion depends on current text).
-- Cloud env had no browser MCP; UI state was build/type validated rather than browser-screenshot verified for member-auth + live-LLM conditions.
+- LLM features noop/fallback without `MINIMAX_API_KEY`.
+- Zeabur manual restart if 502 after orchestrate-only commits on `main`.
