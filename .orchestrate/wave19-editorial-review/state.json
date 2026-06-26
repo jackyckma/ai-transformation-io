@@ -107,17 +107,18 @@
       "agentId": null,
       "runId": null,
       "parentAgentId": null,
-      "status": "pending",
+      "status": "running",
       "resultStatus": null,
       "handoffPath": null,
-      "startedAt": null,
+      "startedAt": "2026-06-26T13:59:57.017Z",
       "finishedAt": null,
-      "lastUpdate": null,
+      "lastUpdate": "2026-06-26T13:59:57.017Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": null,
+      "attempts": 1
     }
   ],
   "attention": [
@@ -144,6 +145,10 @@
     {
       "at": "2026-06-26T13:50:14.379Z",
       "message": "git-sync failed (integrate-wave19 pending -> running): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    },
+    {
+      "at": "2026-06-26T13:59:55.669Z",
+      "message": "git-sync failed (integrate-wave19 running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
     }
   ]
 }
