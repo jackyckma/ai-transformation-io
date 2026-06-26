@@ -2,6 +2,7 @@ import { z } from 'zod';
 import * as wave12 from './wave12-objects';
 import * as wave13 from './wave13-community';
 import * as wave14 from './wave14-community';
+import * as wave18 from './wave18-ranking';
 
 export * from './ask-modes';
 export * from './onboarding';
@@ -9,6 +10,8 @@ export * from './recommendation';
 export * from './wave12-objects';
 export * from './wave13-community';
 export * from './wave14-community';
+export * from './wave18-external-agent';
+export * from './wave18-ranking';
 
 export const healthResponseSchema = z.object({
   ok: z.boolean(),
@@ -1008,6 +1011,18 @@ export function createApiClient(baseUrl: string) {
         );
       },
     },
+    personal: {
+      async rankSuggestions(
+        payload: wave18.RankSuggestionsRequest,
+      ): Promise<wave18.RankSuggestionsResponse> {
+        const request = wave18.rankSuggestionsRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/personal/rank-suggestions',
+          wave18.rankSuggestionsResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+    },
     community: {
       async listByType(
         request: wave13.CommunityListByTypeRequest = {},
@@ -1060,6 +1075,14 @@ export function createApiClient(baseUrl: string) {
         return requestSessionJson(
           '/api/community/offers',
           wave13.communityInteractionWriteResponseSchema,
+          withJsonBody(request, { method: 'POST' }),
+        );
+      },
+      async actions(payload: wave14.CommunityActionRequest): Promise<wave14.CommunityActionResponse> {
+        const request = wave14.communityActionRequestSchema.parse(payload);
+        return requestSessionJson(
+          '/api/community/actions',
+          wave14.communityActionResponseSchema,
           withJsonBody(request, { method: 'POST' }),
         );
       },
@@ -1524,6 +1547,20 @@ export function createApiClient(baseUrl: string) {
           );
         },
       },
+      personal: {
+        async rankSuggestions(
+          payload: wave18.RankSuggestionsRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave18.RankSuggestionsResponse> {
+          const request = wave18.rankSuggestionsRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/personal/rank-suggestions',
+            wave18.rankSuggestionsResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+      },
       community: {
         async listByType(
           request: wave13.CommunityListByTypeRequest = {},
@@ -1591,6 +1628,18 @@ export function createApiClient(baseUrl: string) {
           return requestAgentJson(
             '/api/v1/community/offers',
             wave13.communityInteractionWriteResponseSchema,
+            options,
+            withJsonBody(request, { method: 'POST' }),
+          );
+        },
+        async actions(
+          payload: wave14.CommunityActionRequest,
+          options?: AgentRequestOptions,
+        ): Promise<wave14.CommunityActionResponse> {
+          const request = wave14.communityActionRequestSchema.parse(payload);
+          return requestAgentJson(
+            '/api/v1/community/actions',
+            wave14.communityActionResponseSchema,
             options,
             withJsonBody(request, { method: 'POST' }),
           );
