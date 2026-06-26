@@ -1,46 +1,51 @@
 # Session handoff
 
-**Date:** 2026-06-26  
+**Date:** 2026-06-20  
 **Branch:** `main`  
-**Latest commit:** `e25e0ca` — Merge pull request #12 (Wave 18 platform depth)  
-**Push status:** merged to `origin/main`
+**Latest commit:** `6e91a00` — fix(editorial): add full draft view before approve/reject  
+**Push status:** on `origin/main`
 
 ## Active task
 
-- **Roadmap item:** Wave 18 ✅ shipped · **Wave 19+** next (newsletter archive, agent credits ≥50 users)
-- **Definition of done:** See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12
+- **Roadmap item:** Wave 19 editorial-review orchestrate **kicked off** (`wave19-editorial-review`)
+- **Definition of done:** [docs/waves/wave19-editorial-review.md](./waves/wave19-editorial-review.md)
+- **Draft only (no kickoff):** [docs/waves/wave19-scale-archive.md](./waves/wave19-scale-archive.md) — newsletter archive + credits at ≥50 users
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 18 on `main` | ✅ PR [#12](https://github.com/jackyckma/ai-transformation-io/pull/12) @ `e25e0ca` |
-| LLM-assisted ranking | ✅ Optional `useLlmRerank` on matcher + `/personal/rank-suggestions`; fallback when no key |
-| External deep links | ✅ ChatGPT/Claude on .io/.org detail + `/for-agents` docs |
-| Phase 2 verb UI | ✅ `community.actions()` for request_mentor / ask_for_intro / apply on .org |
-| Build + tests | ✅ turbo 6/6; backend **62/62** |
+| Wave 18 on `main` | ✅ PR #12 @ `e25e0ca` |
+| Editorial full-body UI | ✅ `6e91a00` — await Zeabur deploy confirm |
+| Wave 19 editorial-review | 📋 orchestrate active |
+| Wave 19 scale-archive | 📝 goal drafted; kickoff after editorial-review + pilot send |
+| Orbita AT1b | 📋 ~5/day ramp; handoff inbox 0 open |
 
-## Known follow-up (non-blocking)
+## Wave 19 editorial-review pillars
 
-- Extend `listInteractionsForUser` read-back for `request_mentor` / `ask_for_intro` / `apply` so done-state survives reload (writes persist; UI optimistic today).
+1. L12 editorial-review agent (LLM metadata on pending drafts; no auto-approve)
+2. Agent catalog/index for published Wave 12 objects (+ capabilities text)
+3. `listInteractionsForUser` read-back for Phase 2 verbs
+4. UI P1 if time: article footer related links + inline save confirmation
 
 ## Top priority next
 
-1. **Newsletter pilot ops** on production (subscribers, compile, send, inbound Worker or manual reply).
-2. **Wave 19+** when scale warrants: public newsletter archive, agent credits (≥50 active users).
-3. Zeabur env: confirm `MINIMAX_API_KEY` if testing LLM assist live.
+1. **Poll orchestrate** `wave19-editorial-review` → review + merge PR when verifier passes.
+2. **Newsletter pilot ops** on production (first send still founder-led).
+3. **Orbita AT1b** volume continues; post handoff after editorial-review ships catalog path.
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| Wave 18 goal | `docs/waves/wave18-platform-depth.md` |
-| LLM rerank | `apps/backend/src/lanes/community/llm-rerank.ts` |
-| Rank suggestions | `apps/backend/src/lanes/personal/index.ts` |
-| Deep links | `packages/shared/src/wave18-external-agent.ts` |
-| Phase 2 actions | `apps/web-org/lib/use-community-interactions.ts` |
+| Wave 19 editorial goal | `docs/waves/wave19-editorial-review.md` |
+| Wave 19 scale goal (draft) | `docs/waves/wave19-scale-archive.md` |
+| L12 contract | `apps/backend/src/lanes/editorial-supply/INTERFACE.md` |
+| Orbita handoff | `~/Orbiter-AT-dogfood/state/STATUS.md` |
+| Orchestrate state | `.orchestrate/wave19-editorial-review/` |
 
 ## Warnings
 
-- LLM features noop/fallback without `MINIMAX_API_KEY`.
-- Zeabur manual restart if 502 after orchestrate-only commits on `main`.
+- Review agent v1 is **advisory only** — human approve on `/editorial` unchanged.
+- LLM review skips gracefully without `MINIMAX_API_KEY`.
+- First orchestrate kickoff may fail (~30 min); respawn from same goal if needed.

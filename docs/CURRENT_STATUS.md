@@ -1,10 +1,10 @@
 # Current status
 
-**Last updated:** 2026-06-26
+**Last updated:** 2026-06-20
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–18 (SITE_DESIGN_v2) ✅ · **Wave 18 platform-depth shipped** (LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb persistence on .org)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–18 (SITE_DESIGN_v2) ✅ · **Wave 19 editorial-review orchestrate kicked off** (AT1b: review agent, agent catalog index, interaction read-back, UI P1)
 
 ## What works (production)
 
@@ -65,7 +65,8 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 | **16** | ✅ Shipped — content supply (L12 editorial ingest/review, compile-draft extension, idempotent seed, .org `/editorial` admin queue, Orbita path docs) |
 | **17** | ✅ Shipped — newsletter pilot (subscribe/unsubscribe, admin send cap, inbound reply webhook, footer subscribe, `/newsletter` admin page) |
 | **18** | ✅ Shipped — LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb UI parity |
-| **19+** | Newsletter archive, agent credits (≥50 users) |
+| **19 editorial-review** | 📋 Active orchestrate — L12 review agent, Wave 12 content catalog, listInteractions read-back, UI P1 ([goal](waves/wave19-editorial-review.md)) |
+| **19 scale-archive** | 📝 Draft goal only — newsletter public archive, agent credits (≥50 users) ([goal](waves/wave19-scale-archive.md)) |
 
 ## Docs
 
