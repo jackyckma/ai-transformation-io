@@ -7,21 +7,21 @@
       "branch": "orch/wave19-editorial-review/backend-wave19",
       "startingRef": "main",
       "dependsOn": [],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-41ad764b-f845-42b3-9b1a-74f78fc96ad1",
+      "runId": "run-d30e5917-ecff-4c30-ab8f-e9ddeaab5b2c",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/backend-wave19.md",
       "startedAt": "2026-06-26T13:25:42.190Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-26T13:25:42.190Z",
+      "finishedAt": "2026-06-26T13:34:55.652Z",
+      "lastUpdate": "2026-06-26T13:34:58.768Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": "unit-test-verified"
     },
     {
       "name": "web-org-wave19",
@@ -31,20 +31,21 @@
       "dependsOn": [
         "backend-wave19"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "pending",
-      "resultStatus": null,
-      "handoffPath": null,
-      "startedAt": null,
-      "finishedAt": null,
-      "lastUpdate": null,
+      "agentId": "bc-29d20594-e567-478d-9870-49b5fa500672",
+      "runId": "run-06331d73-6877-4da2-b9be-1788c84414bc",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-org-wave19.md",
+      "startedAt": "2026-06-26T13:34:56.974Z",
+      "finishedAt": "2026-06-26T13:43:05.007Z",
+      "lastUpdate": "2026-06-26T13:43:07.497Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "web-io-wave19",
@@ -54,20 +55,21 @@
       "dependsOn": [
         "backend-wave19"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "pending",
-      "resultStatus": null,
-      "handoffPath": null,
-      "startedAt": null,
-      "finishedAt": null,
-      "lastUpdate": null,
+      "agentId": "bc-aace3a06-d7c1-47f6-bdfa-b036e58a30b4",
+      "runId": "run-1f2e6297-ea06-41b7-9bef-06c37e071240",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/web-io-wave19.md",
+      "startedAt": "2026-06-26T13:35:00.357Z",
+      "finishedAt": "2026-06-26T13:50:06.629Z",
+      "lastUpdate": "2026-06-26T13:50:09.129Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "live-ui-verified"
     },
     {
       "name": "integrate-wave19",
@@ -78,44 +80,87 @@
         "web-io-wave19",
         "web-org-wave19"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "pending",
-      "resultStatus": null,
-      "handoffPath": null,
-      "startedAt": null,
-      "finishedAt": null,
-      "lastUpdate": null,
+      "agentId": "bc-4061c63e-76d0-4f48-a3ab-72eb43b391e4",
+      "runId": "run-74395cd9-d7af-4b47-9349-c50cb5162e0f",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/integrate-wave19.md",
+      "startedAt": "2026-06-26T13:50:13.902Z",
+      "finishedAt": "2026-06-26T13:59:55.198Z",
+      "lastUpdate": "2026-06-26T13:59:57.672Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null
+      "verification": "unit-test-verified"
     },
     {
       "name": "verify-wave19",
       "type": "verifier",
-      "branch": "orch/wave19-editorial-review/verify-wave19",
+      "branch": "`orch/wave19-editorial-review/integrate-wave19` (no commits made — verifier left the planner-owned integration branch untouched per branch discipline)",
       "startingRef": "orch/wave19-editorial-review/integrate-wave19",
       "dependsOn": [
         "integrate-wave19"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "pending",
-      "resultStatus": null,
-      "handoffPath": null,
-      "startedAt": null,
-      "finishedAt": null,
-      "lastUpdate": null,
+      "agentId": "bc-238fb040-cc77-4c1f-96ec-fc6c1813c449",
+      "runId": "run-027d35c4-0754-4b4c-a507-f45bf599782d",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-wave19.md",
+      "startedAt": "2026-06-26T13:59:57.017Z",
+      "finishedAt": "2026-06-26T14:05:43.356Z",
+      "lastUpdate": "2026-06-26T14:05:43.357Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
       "verification": null
     }
   ],
-  "attention": []
+  "attention": [
+    {
+      "at": "2026-06-26T13:34:58.768Z",
+      "message": "backend-wave19: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-26T13:43:05.494Z",
+      "message": "git-sync failed (web-org-wave19 running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    },
+    {
+      "at": "2026-06-26T13:43:07.497Z",
+      "message": "web-org-wave19: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-26T13:50:07.125Z",
+      "message": "git-sync failed (web-io-wave19 running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    },
+    {
+      "at": "2026-06-26T13:50:09.129Z",
+      "message": "web-io-wave19: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-26T13:50:14.379Z",
+      "message": "git-sync failed (integrate-wave19 pending -> running): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    },
+    {
+      "at": "2026-06-26T13:59:55.669Z",
+      "message": "git-sync failed (integrate-wave19 running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    },
+    {
+      "at": "2026-06-26T13:59:57.426Z",
+      "message": "git-sync failed (verify-wave19 pending -> running): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    },
+    {
+      "at": "2026-06-26T13:59:57.672Z",
+      "message": "integrate-wave19: verification self-reported (unit-test-verified)"
+    },
+    {
+      "at": "2026-06-26T14:05:43.890Z",
+      "message": "git-sync failed (verify-wave19 running -> handed-off): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
+    }
+  ]
 }

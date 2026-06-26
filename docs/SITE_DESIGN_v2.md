@@ -336,7 +336,8 @@ Shipped on `main`: Phase 2 community types, experimental matcher, rule-based per
 | **16** | **Content supply** — editorial draft ingest + review queue on site; **Orbita client lane (L12)** optional parallel path for automated seeding | No |
 | **17** | **Newsletter pilot** (legacy Wave 10 scope) — small list, one send, reply capture | No (needs 15–16) |
 | **18** | ✅ Shipped — member-independent platform depth: LLM-assisted ranking fallback, external agent deep links, Phase 2 intent verb UI parity | No |
-| **19+** | Scale features — newsletter public archive, agent credits top-up (**defer until ~50 active users**; quota-only before that) | Yes (credits/archive) |
+| **19 editorial-review** | AT1b — L12 review agent, agent catalog, interaction read-back, UI P1 | No |
+| **19 scale-archive** | Newsletter public archive; agent credits top-up (**≥50 users**) | Yes (credits) |
 
 **Explicitly deprioritized vs old Wave 11+ list:**
 

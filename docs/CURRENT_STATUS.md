@@ -46,7 +46,6 @@ Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–19 (SITE_DESIGN_v2) ✅ · **Wav
 - **Wave 19 Wave-18 follow-up shipped:** `listInteractionsForUser` and community interaction listing now include `request_mentor`, `ask_for_intro`, and `apply`, so `.org` detail/list done-state survives reload after persisted actions.
 - **Wave 19 optional P1 polish status:** `.io` shipped both `More in Library` related links on article footer and inline save confirmation; `.org` optional `More in Knowledge` related links + inline followed confirmation remain deferred.
 - **Wave 19 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` passed (70/70, including review-pending, catalog discoverability, and interaction read-back coverage).
-- **Wave 18 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` passed (62/62, including new rerank/rank-suggestions coverage).
 - **Internal jobs (Wave 8)** — admin `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies`
 - ZSend domains **ai-transformation.io** + **.org** verified; `ZSEND_API_KEY` on Zeabur
 - Assessment backend and data products remain available (assessment now lives under Insights route in web-io)
@@ -70,8 +69,8 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 | **16** | ✅ Shipped — content supply (L12 editorial ingest/review, compile-draft extension, idempotent seed, .org `/editorial` admin queue, Orbita path docs) |
 | **17** | ✅ Shipped — newsletter pilot (subscribe/unsubscribe, admin send cap, inbound reply webhook, footer subscribe, `/newsletter` admin page) |
 | **18** | ✅ Shipped — LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb UI parity |
-| **19** | ✅ Shipped — editorial-review agent, objects catalog verify path, interaction kind read-back parity, .io/.org editorial UI updates |
-| **20+** | Newsletter archive, agent credits (≥50 users) |
+| **19 editorial-review** | ✅ Shipped — review agent, objects catalog, interaction read-back, .io P1 polish ([goal](waves/wave19-editorial-review.md)) |
+| **19 scale-archive** | 📝 Draft — newsletter public archive, agent credits (≥50 users) ([goal](waves/wave19-scale-archive.md)) |
 
 ## Docs
 

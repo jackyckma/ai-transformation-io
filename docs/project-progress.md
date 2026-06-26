@@ -359,7 +359,8 @@ See [EMAIL_NEWSLETTER.md](./EMAIL_NEWSLETTER.md) for ZSend send + Cloudflare Wor
 | **16** | Content supply — L12 editorial draft ingest + review; Orbita client optional |
 | **17** | Newsletter pilot (legacy Wave 10 scope) |
 | **18** | LLM ranking, agent deep links, Phase 2 intent UI parity |
-| **19+** | Newsletter archive; agent credits top-up (≥50 active users) |
+| **19 editorial-review** | L12 review agent, Wave 12 agent catalog, listInteractions read-back, UI P1 (AT1b) |
+| **19 scale-archive** | Newsletter archive; agent credits top-up (≥50 active users) |
 
 **Deprioritized:** Full forum (Discourse); function-primary nav; agent credits before scale.
 
@@ -400,7 +401,9 @@ Wave 17 (newsletter pilot — legacy Wave 10 scope)
     ↓
 Wave 18 (LLM ranking, deep links, …)
     ↓
-Wave 19+ (archive, credits at scale)
+Wave 19 editorial-review (AT1b — review agent, catalog, interactions)
+    ↓
+Wave 19 scale-archive (archive, credits at scale)
 ```
 
 Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wave 5 contributions + ZSend verified domains. **Wave 17 newsletter pilot needs Wave 8 infra + Wave 15–16 prerequisites.** Wave 11–14 complete on `main`.

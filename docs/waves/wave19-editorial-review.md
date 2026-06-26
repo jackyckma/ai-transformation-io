@@ -1,85 +1,66 @@
-# Wave 19 — Editorial review + agent discoverability
+# Wave 19 — Editorial review & agent discoverability
 
 **Slug:** `wave19-editorial-review`  
-**Ref:** `main` (follows Wave 18 platform depth)  
-**Authoritative spec:** [SITE_DESIGN_v2.md](../SITE_DESIGN_v2.md) §12 and L12 interface updates
+**Status:** ✅ Shipped (PR #13 merged 2026-06-26)  
+**Ref:** `main` after Wave 18  
+**Authoritative spec:** [L12 INTERFACE](../../apps/backend/src/lanes/editorial-supply/INTERFACE.md), [SITE_DESIGN_v2.md](../SITE_DESIGN_v2.md) §12
+
+**Prerequisites (met):** Wave 16 L12 ✅ · Orbita AT1a ✅ · `/editorial` full-body ✅ · Wave 18 ✅
 
 ---
 
-## Scope
-
-Wave 19 ships editorial-review quality signals for founder moderation, public post-publish discoverability for external agents, and the deferred interaction read-back parity from Wave 18.
+## What shipped
 
 ### Pillar 1 — Editorial-review agent (no auto-approve)
 
-- `POST /api/internal/editorial/review-pending` (admin session) reviews pending editorial drafts (`draft` / `pending`) and writes `metadata.editorial_agent`.
-- Optional `POST /api/internal/editorial/drafts/:id/review` reviews one draft.
-- Review metadata contract:
-  - success: `{ score, flags, summary, reviewedAt, model? }`
-  - graceful skip: `{ skipped: true, reviewedAt, reason }`
-- Uses `lanes/chat/llm.ts` config path (`MINIMAX_API_KEY` / `CHAT_LLM_*`).
-- **Invariant:** review endpoints never change publish lifecycle state (no auto-approve, no publish transition).
+- `POST /api/internal/editorial/review-pending` (admin) + optional `POST /api/internal/editorial/drafts/:id/review`
+- Writes `metadata.editorial_agent` — never changes publish state
+- Graceful skip when no LLM key
 
-### Pillar 2 — `/editorial` queue UI
+### Pillar 2 — `/editorial` UI
 
-- `.org` editorial draft cards now display agent score/flags/summary/model when `metadata.editorial_agent` exists.
-- Skip metadata renders as a muted skipped badge.
-- Queue header includes `Run agent review` action (`POST /api/internal/editorial/review-pending`).
-- Existing `View full article`, `Approve`, `Reject` flow remains unchanged.
+- Agent score/flags/summary on draft cards; **Run agent review** button
+- View full article + Approve/Reject unchanged
 
-### Pillar 3 — Agent content index + verify path
+### Pillar 3 — Agent catalog
 
-- New public endpoint: `GET /api/v1/objects/catalog?site=io|org`.
-- Catalog lists published public Wave 12 knowledge/community objects with:
-  - `id`, `slug`, `title`, `objectType`, `type`
-  - `human_url`, `api_url`
-  - `source: 'wave12_object'`
-- Legacy `GET /api/v1/content` and `GET /api/v1/content/:slug` stay intact and are tagged `source: 'knowledge_base'`.
-- `GET /api/v1/capabilities` documents post-publish verify via `GET /api/v1/objects/{id}` or `GET /api/v1/objects/catalog`.
+- `GET /api/v1/objects/catalog?site=io|org` — published Wave 12 objects (`source: wave12_object`)
+- Legacy content index tagged `source: knowledge_base`
 
-### Pillar 4 — Wave 18 follow-up interaction read-back
+### Pillar 4 — Interaction read-back
 
-- `listInteractionsForUser` and community interaction listing now include:
-  - `request_mentor`
-  - `ask_for_intro`
-  - `apply`
-- `.org` detail/list action done-state survives reload for these persisted interactions.
+- `request_mentor`, `ask_for_intro`, `apply` in listInteractions
 
-### Pillar 5 (optional polish) — status
+### Pillar 5 — UI P1 (partial)
 
-- ✅ `.io`: shipped `More in Library` related links footer on article pages.
-- ✅ `.io`: shipped inline Saved confirmation state for save/bookmark affordances.
-- ⏸️ `.org`: `More in Knowledge` related links and inline Followed confirmation are deferred.
+- ✅ .io: More in Library footer + inline Saved
+- ⏸️ .org: More in Knowledge + inline Followed (deferred)
+
+**Verification:** turbo 6/6 · backend **70/70**
 
 ---
 
-## Out of scope (unchanged)
-
-- No auto-approve workflow
-- No Stripe/credits
-- No newsletter archive
-
----
-
-## Definition of done
-
-1. Editorial review writes `metadata.editorial_agent` and never mutates publish state.
-2. `/editorial` UI surfaces review results and supports run-review action.
-3. External agents can verify newly published objects using catalog/object endpoints.
-4. Reload-safe interaction done-state works for `request_mentor` / `ask_for_intro` / `apply`.
-5. Build + backend tests pass on the integrated branch.
-
----
-
-## Verification commands
+## Kickoff command (historical)
 
 ```bash
-pnpm install
-pnpm turbo build
-pnpm --filter @ai-transformation/backend test
+bun ~/.cursor/plugins/cache/cursor-public/orchestrate/e46364b8be46000b7df0f260550cd712afbb8d36/skills/orchestrate/scripts/cli.ts kickoff \
+  "wave19-editorial-review: …" \
+  --ref main \
+  --repo https://github.com/jackyckma/ai-transformation-io \
+  --dispatcher-name "Jacky"
 ```
 
-Expected outcomes on the integration branch:
+(Full goal string in git history @ `75b9d79`.)
 
-- `pnpm turbo build`: pass for all workspace targets (`web-io`, `web-org`, `backend`, `combined`, `shared`, `content`)
-- `pnpm --filter @ai-transformation/backend test`: pass (`70/70`)
+---
+
+## Orbita handoff
+
+Posted: `~/Orbiter-AT-dogfood/inbox/at-to-orbita/2026-06-26-wave19-catalog-review-at.md`
+
+---
+
+## Notes
+
+- Early Orbita volume = training corpus; scores advisory only
+- Auto-approve policy remains **founder TBD** after calibration
