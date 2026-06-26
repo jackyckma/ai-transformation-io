@@ -12,6 +12,7 @@
 | [project-progress.md](project-progress.md) | Wave delivery (0–19+); Waves 15–17 realigned 2026-06 |
 | [SESSION_HANDOFF.md](SESSION_HANDOFF.md) | Resume point for the next agent session |
 | [waves/wave17-newsletter-pilot.md](waves/wave17-newsletter-pilot.md) | Wave 17 orchestrate goal (newsletter pilot) |
+| [waves/wave18-platform-depth.md](waves/wave18-platform-depth.md) | Wave 18 orchestrate goal (LLM rank, deep links, Phase 2 UI) |
 
 ## Product & UX
 

@@ -2,54 +2,64 @@
 
 **Date:** 2026-06-26  
 **Branch:** `main`  
-**Latest commit:** `d621b7a` — Merge pull request #11 (Wave 17 newsletter pilot)  
-**Push status:** merged to `origin/main`
+**Latest commit:** `ec8c237` — docs: hand off after Wave 17 merge  
+**Push status:** Wave 18 goal doc + kickoff pending commit
 
 ## Active task
 
-- **Roadmap item:** Wave 17 ✅ shipped · **Wave 18** next (LLM ranking, agent deep links, Phase 2 intent UI parity)
-- **Definition of done:** See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12
+- **Roadmap item:** `wave18-platform-depth` — orchestrate **running**
+- **Definition of done:** [wave18-platform-depth.md](./waves/wave18-platform-depth.md)
+
+## Orchestrate (Wave 18)
+
+| Field | Value |
+|-------|--------|
+| Slug | `wave18-platform-depth` |
+| Agent | [bc-b6402923…](https://cursor.com/agents/bc-b6402923-c5c1-4ffe-a72e-ba9a9a7b0193) |
+| Run | `run-6acde07b-ff61-46d8-bc00-c90fb7d222e5` |
+| Ref | `main` @ Wave 17 merged (`d621b7a`) |
+| Status | **running** (kickoff 2026-06-26) |
+
+**Scope:** LLM-assisted ranking (optional fallback), external ChatGPT/Claude deep links, Phase 2 community verb API UI parity on .org.
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 17 on `main` | ✅ PR [#11](https://github.com/jackyckma/ai-transformation-io/pull/11) @ `d621b7a` |
-| Subscribe / unsubscribe | ✅ `POST /api/newsletter/subscribe`, `/unsubscribe` |
-| Admin send | ✅ `POST /api/internal/newsletter/send-issue` (ADMIN_EMAILS, pilot cap) |
-| Inbound replies | ✅ `POST /api/webhooks/inbound-email` (secret-gated) |
-| UI | ✅ Footer subscribe + `/newsletter` admin on `.io` and `.org` |
-| Build + tests (post-merge) | ✅ turbo 6/6; backend 55/55 |
+| Wave 17 on `main` | ✅ PR #11 @ `d621b7a` |
+| Wave 18 orchestrate | ⏳ running |
+| Wave 19+ | Newsletter archive, credits (≥50 users) — deferred |
 
 ## Top priority next
 
-1. **Production pilot ops:** Zeabur env (`ZSEND_API_KEY`, `INBOUND_EMAIL_WEBHOOK_SECRET`, `NEWSLETTER_FROM_*`, `NEWSLETTER_PILOT_MAX`, `ADMIN_EMAILS`); seed ~10 subscribers; compile + send one issue.
-2. **Inbound:** Deploy Cloudflare Email Worker (`replies+{issueToken}@…`) **or** manual reply fallback for first test.
-3. **Wave 18:** Draft orchestrate goal when ready.
+1. Poll Wave 18; if ERROR ~35 min with no branches → re-kickoff from [wave18-platform-depth.md](./waves/wave18-platform-depth.md).
+2. When complete + verifier pass → review + merge draft PR (founder default).
+3. Production: newsletter pilot ops (subscribers, first send) can run in parallel.
 
-## How to run / verify
+## How to poll
 
 ```bash
-pnpm install
-pnpm turbo build
-pnpm --filter @ai-transformation/backend test
+git fetch origin
+git ls-remote origin 'refs/heads/orch/wave18*'
+gh pr list --limit 5
 ```
 
-Admin newsletter (ADMIN_EMAILS session):
-
-- https://ai-transformation.io/newsletter
-- https://ai-transformation.org/newsletter
+```bash
+curl -sS -H "Authorization: Bearer $CURSOR_API_KEY" \
+  "https://api.cursor.com/v1/agents/bc-b6402923-c5c1-4ffe-a72e-ba9a9a7b0193/runs/run-6acde07b-ff61-46d8-bc00-c90fb7d222e5"
+```
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| Wave 17 goal | `docs/waves/wave17-newsletter-pilot.md` |
-| Newsletter spec | `docs/EMAIL_NEWSLETTER.md` |
-| L6 backend | `apps/backend/src/lanes/newsletter/` |
-| Shared schemas | `packages/shared/src/wave17-newsletter.ts` |
+| Wave 18 goal | `docs/waves/wave18-platform-depth.md` |
+| Recommendations | `packages/shared/src/recommendation.ts`, `apps/web-io/lib/recommendations.ts` |
+| Community matcher | `apps/backend/src/lanes/community/index.ts` |
+| Phase 2 taxonomy | `packages/shared/src/wave13-community.ts` |
 
 ## Warnings
 
-- Cloudflare Worker **not** in repo — deploy separately per `EMAIL_NEWSLETTER.md`.
-- Zeabur manual restart if 502 after merge-only deploy.
+- First orchestrate kickoff may ERROR (~30 min); re-kickoff usually works.
+- Keep `packages/shared/src/index.ts` untouched if possible.
+- LLM features must fallback when `MINIMAX_API_KEY` unset.
