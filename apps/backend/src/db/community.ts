@@ -604,7 +604,10 @@ export function listInteractionsForUser(input: {
   const request = communityInteractionListRequestSchema.parse(input.request);
   const limit = request.limit ?? 30;
   const followWhere: string[] = ['f.user_id = @userId'];
-  const interactionWhere: string[] = ['i.user_id = @userId', `i.kind IN ('offer_help', 'join')`];
+  const interactionWhere: string[] = [
+    'i.user_id = @userId',
+    `i.kind IN ('offer_help', 'join', 'request_mentor', 'ask_for_intro', 'apply')`,
+  ];
   const outerWhere: string[] = [];
   const params: Record<string, unknown> = {
     userId: input.userId,

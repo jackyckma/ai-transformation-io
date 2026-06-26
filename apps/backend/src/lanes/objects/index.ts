@@ -325,6 +325,55 @@ objectsRouter.get('/objects', (c) => {
   });
 });
 
+objectsRouter.get('/objects/catalog', (c) => {
+  const site = resolveSite(c);
+  const origin = site === 'org' ? 'https://ai-transformation.org' : 'https://ai-transformation.io';
+  const limit = parseInteger(c.req.query('limit')) ?? 100;
+  const context: VisibilityQueryContext = {
+    site,
+    requesterUserId: null,
+    bearerOwnerUserId: null,
+    isAuthenticated: false,
+  };
+
+  const objects: Array<{
+    id: string;
+    slug: string | null;
+    title: string | null;
+    objectType: string;
+    type: string;
+    human_url: string;
+    api_url: string;
+    source: 'wave12_object';
+  }> = [];
+
+  for (const objectType of ['knowledge', 'community'] as const) {
+    const listed = listObjectsForRequester({
+      request: { site, status: 'published', visibility: 'public', objectType, limit },
+      context,
+    });
+    for (const record of listed.objects) {
+      const slug = record.publishedSlug;
+      const humanUrl =
+        record.objectType === 'knowledge'
+          ? `${origin}/${site === 'org' ? 'knowledge' : 'library'}/${slug ?? record.id}`
+          : `${origin}/community/${record.id}`;
+      objects.push({
+        id: record.id,
+        slug,
+        title: record.title ?? record.subject ?? null,
+        objectType: record.objectType,
+        type: record.type,
+        human_url: humanUrl,
+        api_url: `${origin}/api/v1/objects/${record.id}`,
+        source: 'wave12_object',
+      });
+    }
+  }
+
+  return c.json({ ok: true, site, origin, count: objects.length, objects });
+});
+
 objectsRouter.get('/objects/:id', (c) => {
   const requester = resolveRequester(c);
   const parsed = objectGetRequestSchema.safeParse({

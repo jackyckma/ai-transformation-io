@@ -27,8 +27,52 @@
 | `GET /api/internal/editorial/drafts/:id` | Admin session | Full draft body for review before approve/reject |
 | `POST /api/internal/editorial/drafts/:id/approve` | Admin session | Publish or queue for moderation per member prefs |
 | `POST /api/internal/editorial/drafts/:id/reject` | Admin session | Archive / discard |
+| `POST /api/internal/editorial/review-pending` | `ADMIN_EMAILS` session | Run the editorial-review agent over all pending/draft editorial drafts |
+| `POST /api/internal/editorial/drafts/:id/review` | `ADMIN_EMAILS` session | Run the editorial-review agent over one draft |
 
 Public read remains L11 + object store visibility — no new public routes required for v1.
+
+---
+
+## Editorial-review agent (Wave 19)
+
+`POST /api/internal/editorial/review-pending` reviews the pending-draft set (the
+same `status IN ('draft','pending')` + `metadata.editorial_source` set listed by
+`GET /drafts`). Optional JSON body `{ site?: 'io' | 'org', limit?: number }`
+scopes which drafts; default = all pending editorial drafts.
+
+For each draft it computes an LLM review and persists it to
+`metadata.editorial_agent` via `updateObjectLifecycle({ id, status: existing.status, metadata })`
+— **publish state never changes** (status/visibility/publishedSlug untouched).
+Review logic lives in `review.ts` and reuses `lanes/chat/llm.ts`
+(`resolveLlmConfig` / `isChatLlmConfigured` / `extractAssistantContent`,
+`MINIMAX_API_KEY` / `CHAT_LLM_*`). It **never throws** and the route never 500s:
+with no key or any LLM error it writes a skip result.
+
+`metadata.editorial_agent` shape (`EditorialAgentReview` in
+`@ai-transformation/shared` / `wave19-editorial.ts`):
+
+```jsonc
+// success
+{ "score": 0-100, "flags": ["tone", "factual-risk", ...], "summary": "...", "reviewedAt": "ISO", "model": "MiniMax-M3" }
+// graceful skip (no key / llm_error / malformed)
+{ "skipped": true, "reviewedAt": "ISO", "reason": "llm_not_configured" }
+```
+
+Responses:
+
+- `review-pending` → `{ ok: true, reviewed: number, results: Array<{ id, editorial_agent }> }`
+- `drafts/:id/review` → `{ ok: true, draft: <draftDetail with metadata.editorial_agent> }`
+
+### Related Wave 19 backend contracts (other lanes)
+
+- `GET /api/v1/objects/catalog?site=io|org` (objects lane, public, no auth) →
+  `{ ok, site, origin, count, objects: ObjectCatalogEntry[] }`. Each entry:
+  `{ id, slug, title, objectType, type, human_url, api_url: '${origin}/api/v1/objects/{id}', source: 'wave12_object' }`.
+  human_url: knowledge on io → `/library/{slug}`, knowledge on org → `/knowledge/{slug}`,
+  community → `/community/{id}`.
+- `GET /api/v1/content` (+ `/content/:slug`) entries are now tagged `source: 'knowledge_base'`.
+- `GET /api/v1/capabilities` documents the post-publish verify path (`objects/{id}` or `objects/catalog`).
 
 ---
 

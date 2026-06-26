@@ -52,7 +52,14 @@ export function getCommunityActions(type: wave12.CommunityObjectType): readonly 
   return communityPhase1ActionTaxonomy[type];
 }
 
-export const communityInteractionKindSchema = z.enum(['follow', 'offer_help', 'join']);
+export const communityInteractionKindSchema = z.enum([
+  'follow',
+  'offer_help',
+  'join',
+  'request_mentor',
+  'ask_for_intro',
+  'apply',
+]);
 export type CommunityInteractionKind = z.infer<typeof communityInteractionKindSchema>;
 
 const communityInteractionObjectIdSchema = z.string().trim().min(1).max(120);

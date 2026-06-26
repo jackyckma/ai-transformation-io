@@ -1,4 +1,4 @@
-import { objectDraftRequestSchema } from '@ai-transformation/shared';
+import { objectDraftRequestSchema, type EditorialAgentReview } from '@ai-transformation/shared';
 import { Hono } from 'hono';
 
 import {
@@ -18,6 +18,7 @@ import {
   type Requester,
 } from '../objects/index.js';
 import type { SessionVariables } from '../../types/session.js';
+import { reviewDraft } from './review.js';
 
 const editorialRouter = new Hono<{ Variables: SessionVariables }>();
 
@@ -166,6 +167,82 @@ editorialRouter.get('/drafts/:id', (c) => {
   }
 
   return c.json({ ok: true, draft: draftDetail(draft) });
+});
+
+editorialRouter.post('/review-pending', async (c) => {
+  const requester = resolveRequester(c);
+  const gate = requireAdmin(requester);
+  if (!gate.ok) {
+    return c.json({ ok: false, error: gate.error }, gate.status);
+  }
+
+  const scope: { site?: 'io' | 'org'; limit?: number } = {};
+  try {
+    const raw = await c.req.json();
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      const value = raw as Record<string, unknown>;
+      if (value.site === 'io' || value.site === 'org') {
+        scope.site = value.site;
+      }
+      if (typeof value.limit === 'number' && Number.isFinite(value.limit)) {
+        scope.limit = value.limit;
+      }
+    }
+  } catch {
+    // Body is optional — default to all pending/draft editorial drafts.
+  }
+
+  const drafts = listEditorialDrafts({ site: scope.site, limit: scope.limit });
+  const results: Array<{ id: string; editorial_agent: EditorialAgentReview }> = [];
+  for (const draft of drafts) {
+    const review = await reviewDraft({
+      title: draft.title ?? draft.subject ?? null,
+      body: draft.body,
+      objectType: draft.objectType,
+      type: draft.type,
+    });
+    updateObjectLifecycle({
+      id: draft.id,
+      status: draft.status,
+      metadata: { ...draft.metadata, editorial_agent: review },
+    });
+    results.push({ id: draft.id, editorial_agent: review });
+  }
+
+  return c.json({ ok: true, reviewed: results.length, results });
+});
+
+editorialRouter.post('/drafts/:id/review', async (c) => {
+  const requester = resolveRequester(c);
+  const gate = requireAdmin(requester);
+  if (!gate.ok) {
+    return c.json({ ok: false, error: gate.error }, gate.status);
+  }
+
+  const id = c.req.param('id');
+  const draft = getObjectById(id);
+  if (!draft || !isEditorialDraft(draft)) {
+    return c.json({ ok: false, error: 'Draft not found' }, 404);
+  }
+  if (draft.status !== 'draft' && draft.status !== 'pending') {
+    return c.json({ ok: false, error: 'Draft not found' }, 404);
+  }
+
+  const review = await reviewDraft({
+    title: draft.title ?? draft.subject ?? null,
+    body: draft.body,
+    objectType: draft.objectType,
+    type: draft.type,
+  });
+  const updated = updateObjectLifecycle({
+    id: draft.id,
+    status: draft.status,
+    metadata: { ...draft.metadata, editorial_agent: review },
+  });
+  if (!updated) {
+    return c.json({ ok: false, error: 'Draft not found' }, 404);
+  }
+  return c.json({ ok: true, draft: draftDetail(updated) });
 });
 
 editorialRouter.post('/drafts/:id/approve', (c) => {

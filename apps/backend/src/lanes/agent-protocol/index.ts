@@ -116,6 +116,14 @@ function buildCapabilities(site: 'io' | 'org') {
           verified_email: AGENT_READ_QUOTA_VERIFIED,
         },
       },
+      read_objects_catalog: {
+        status: 'available',
+        path: '/api/v1/objects/catalog',
+        auth: 'none',
+        query: { site: 'io | org' },
+        notes:
+          'Published, public Wave 12 knowledge + community objects (source: wave12_object). After a draft is approved/published, verify it here or via GET /api/v1/objects/{id}. Legacy knowledge-base articles stay at /api/v1/content (source: knowledge_base).',
+      },
       write_contribution: {
         status: 'available',
         path: '/api/v1/contributions',
@@ -259,6 +267,14 @@ agentProtocolRouter.get('/agent/changelog', (c) =>
     ok: true,
     api_version: API_VERSION,
     entries: [
+      {
+        version: API_VERSION,
+        date: '2026-06-26',
+        summary:
+          'Added GET /api/v1/objects/catalog listing published, public Wave 12 knowledge + community objects (source: wave12_object). Legacy /api/v1/content index entries are now tagged source: knowledge_base.',
+        agent_action:
+          'After a contribution or draft is approved and published, verify it by reading GET /api/v1/objects/{id} or by listing GET /api/v1/objects/catalog?site=.',
+      },
       {
         version: API_VERSION,
         date: '2026-06-23',
