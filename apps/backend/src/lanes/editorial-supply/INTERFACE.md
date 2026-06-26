@@ -1,13 +1,13 @@
 # L12 — Editorial supply INTERFACE
 
-**Status:** Planned (Wave 16) — contract first; implementation follows.  
+**Status:** Live (Wave 16 + Wave 19 extension).  
 **Purpose:** Ingest editorial drafts into the Wave 12 object store with founder review before publish. Optional **Orbita client** posts drafts via L11 Bearer token — Orbita runtime lives in [jackyckma/orbita](https://github.com/jackyckma/orbita), not in this repo.
 
 ---
 
 ## Owns
 
-- `apps/backend/src/lanes/editorial-supply/**` (to be created)
+- `apps/backend/src/lanes/editorial-supply/**`
 - `.editorial-orbita/` — runbooks, Orbita `client_id` docs (no secrets)
 
 ## Does NOT own
@@ -18,7 +18,7 @@
 
 ---
 
-## Provides (planned v1)
+## Provides (live v1)
 
 | Endpoint | Auth | Purpose |
 |----------|------|---------|
@@ -106,8 +106,9 @@ If Orbita is down, founder uses admin UI or curl against internal draft endpoint
 
 ## Data
 
-- Drafts stored as Wave 12 objects with `status: draft` (or dedicated `editorial_drafts` metadata table if needed — decide at implement time).
-- Approved objects → existing submit/publish flow (Wave 12 moderation).
+- Drafts are stored as Wave 12 objects with `status: draft|pending` and editorial marker metadata (`editorial_source`).
+- Review output persists at `metadata.editorial_agent` and never mutates publish lifecycle state.
+- Approved objects continue through the existing submit/publish flow (Wave 12 moderation).
 
 ---
 
@@ -116,6 +117,7 @@ If Orbita is down, founder uses admin UI or curl against internal draft endpoint
 - **16a:** Internal draft ingest + admin list/approve (manual)
 - **16b:** Orbita scheduled session → draft API (parallel lane)
 - **16c:** Seed N knowledge + M community objects for home/newsletter
+- **19:** Editorial-review agent metadata + public objects catalog verify path + interaction read-back parity follow-up
 
 ---
 

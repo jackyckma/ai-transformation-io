@@ -4,7 +4,7 @@
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–18 (SITE_DESIGN_v2) ✅ · **Wave 18 platform-depth shipped** (LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb persistence on .org)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–19 (SITE_DESIGN_v2) ✅ · **Wave 19 editorial-review + agent discoverability shipped** (review-pending agent metadata, objects catalog verify path, interaction kind read-back parity)
 
 ## What works (production)
 
@@ -40,7 +40,12 @@ Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–18 (SITE_DESIGN_v2) ✅ · **Wav
 - **Wave 18 personal rank suggestions shipped:** new `POST /api/v1/personal/rank-suggestions` ranks `.io`/`.org` candidate summaries with profile context, returning ranked candidate IDs and reasons with the same deterministic fallback behavior.
 - **Wave 18 external-agent deep links shipped:** shared helper `packages/shared/src/wave18-external-agent.ts` now powers discreet ChatGPT/Claude compose links on `.io` library/article/insights and `.org` knowledge/community detail pages; both `/for-agents` pages include a deep-link section with examples; detail pages expose a machine-readable JSON hint block for agent consumers.
 - **Wave 18 Phase 2 intent verb UI parity shipped (.org):** `offer_help`, `request_mentor`, `ask_for_intro`, and `apply` now call persisted `community.actions()` endpoints from detail actions and list/card affordances via `getCommunityActions()`, with Ask-prefill links retained as secondary actions; community match panel shows `Experimental · LLM assist` only when rerank is actually applied.
-- **Wave 18 known deferred follow-up:** backend `listInteractionsForUser` currently reads only follow/offer_help/join, so `.org` detail done-state for `request_mentor`/`ask_for_intro`/`apply` is optimistic within-session. Actions persist via `POST /community/actions`, but full done-state read-back after reload remains deferred.
+- **Wave 19 editorial-review agent shipped (no auto-approve):** `POST /api/internal/editorial/review-pending` and optional `POST /api/internal/editorial/drafts/:id/review` run the LLM review over editorial drafts (`draft`/`pending`) and write `metadata.editorial_agent` (`score`, `flags`, `summary`, `reviewedAt`, optional `model`) without changing publish lifecycle state; if `MINIMAX_API_KEY` / `CHAT_LLM_*` is missing, the backend writes a graceful skip payload (`{ skipped: true, reason, reviewedAt }`) instead of failing.
+- **Wave 19 `/editorial` review queue UI shipped (.org):** draft cards now surface agent score/summary/flags/model when `metadata.editorial_agent` exists, show a skipped badge when review is skipped, and add a `Run agent review` action that posts to `/api/internal/editorial/review-pending`; existing View full article + Approve/Reject behavior is unchanged.
+- **Wave 19 agent discoverability shipped:** public `GET /api/v1/objects/catalog?site=io|org` now lists published Wave 12 knowledge/community objects with `source: 'wave12_object'` and direct `human_url` + `api_url`; legacy `GET /api/v1/content` and `GET /api/v1/content/:slug` remain intact and are tagged `source: 'knowledge_base'`; `GET /api/v1/capabilities` now documents post-publish verify via `GET /api/v1/objects/{id}` or `GET /api/v1/objects/catalog`.
+- **Wave 19 Wave-18 follow-up shipped:** `listInteractionsForUser` and community interaction listing now include `request_mentor`, `ask_for_intro`, and `apply`, so `.org` detail/list done-state survives reload after persisted actions.
+- **Wave 19 optional P1 polish status:** `.io` shipped both `More in Library` related links on article footer and inline save confirmation; `.org` optional `More in Knowledge` related links + inline followed confirmation remain deferred.
+- **Wave 19 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` passed (70/70, including review-pending, catalog discoverability, and interaction read-back coverage).
 - **Wave 18 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` passed (62/62, including new rerank/rank-suggestions coverage).
 - **Internal jobs (Wave 8)** — admin `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies`
 - ZSend domains **ai-transformation.io** + **.org** verified; `ZSEND_API_KEY` on Zeabur
@@ -65,7 +70,8 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 | **16** | ✅ Shipped — content supply (L12 editorial ingest/review, compile-draft extension, idempotent seed, .org `/editorial` admin queue, Orbita path docs) |
 | **17** | ✅ Shipped — newsletter pilot (subscribe/unsubscribe, admin send cap, inbound reply webhook, footer subscribe, `/newsletter` admin page) |
 | **18** | ✅ Shipped — LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb UI parity |
-| **19+** | Newsletter archive, agent credits (≥50 users) |
+| **19** | ✅ Shipped — editorial-review agent, objects catalog verify path, interaction kind read-back parity, .io/.org editorial UI updates |
+| **20+** | Newsletter archive, agent credits (≥50 users) |
 
 ## Docs
 

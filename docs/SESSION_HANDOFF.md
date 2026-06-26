@@ -1,46 +1,65 @@
 # Session handoff
 
 **Date:** 2026-06-26  
-**Branch:** `main`  
-**Latest commit:** `e25e0ca` — Merge pull request #12 (Wave 18 platform depth)  
-**Push status:** merged to `origin/main`
+**Branch:** `orch/wave19-editorial-review/integrate-wave19`  
+**Latest commit:** pending this Wave 19 integration/docs commit  
+**Push status:** pending push + draft PR creation from `orch/wave19-editorial-review/integrate-wave19`
 
 ## Active task
 
-- **Roadmap item:** Wave 18 ✅ shipped · **Wave 19+** next (newsletter archive, agent credits ≥50 users)
-- **Definition of done:** See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12
+- **Roadmap item:** **Wave 19 ✅ shipped** — editorial-review agent + agent discoverability per L12 interface and Orbita dogfood handoff
+- **Definition of done:** See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [wave19-editorial-review.md](./waves/wave19-editorial-review.md)
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 18 on `main` | ✅ PR [#12](https://github.com/jackyckma/ai-transformation-io/pull/12) @ `e25e0ca` |
-| LLM-assisted ranking | ✅ Optional `useLlmRerank` on matcher + `/personal/rank-suggestions`; fallback when no key |
-| External deep links | ✅ ChatGPT/Claude on .io/.org detail + `/for-agents` docs |
-| Phase 2 verb UI | ✅ `community.actions()` for request_mentor / ask_for_intro / apply on .org |
-| Build + tests | ✅ turbo 6/6; backend **62/62** |
-
-## Known follow-up (non-blocking)
-
-- Extend `listInteractionsForUser` read-back for `request_mentor` / `ask_for_intro` / `apply` so done-state survives reload (writes persist; UI optimistic today).
+| Editorial review agent (backend) | ✅ `POST /api/internal/editorial/review-pending` + `POST /api/internal/editorial/drafts/:id/review` write `metadata.editorial_agent` only (no publish-state mutation, no auto-approve) |
+| No-key behavior | ✅ Graceful skip payload persisted (`{ skipped: true, reason, reviewedAt }`) when LLM key/config is unavailable |
+| .org editorial queue UI | ✅ Draft cards show score/flags/summary/model or skipped badge; queue header includes `Run agent review`; existing Approve/Reject/View full article flow unchanged |
+| Agent discoverability | ✅ `GET /api/v1/objects/catalog?site=` lists published Wave 12 objects (`source: 'wave12_object'`); legacy `/api/v1/content` stays available with `source: 'knowledge_base'`; capabilities now document verify path |
+| Wave 18 follow-up read-back | ✅ `listInteractionsForUser`/community listing include `request_mentor`/`ask_for_intro`/`apply`; `.org` done-state survives reload |
+| Optional P1 polish | ✅ `.io` shipped `More in Library` + inline Saved confirmation; ⏸️ `.org` `More in Knowledge` + inline Followed confirmation deferred |
+| Verification | ✅ `pnpm turbo build` (all targets) + backend test suite **70/70** |
 
 ## Top priority next
 
-1. **Newsletter pilot ops** on production (subscribers, compile, send, inbound Worker or manual reply).
-2. **Wave 19+** when scale warrants: public newsletter archive, agent credits (≥50 active users).
-3. Zeabur env: confirm `MINIMAX_API_KEY` if testing LLM assist live.
+1. **Wave 20+ roadmap:** newsletter archive and agent credits once active-user scale justifies it (≥50 users).
+2. Keep Orbita weekly process aligned with post-publish verify path (`/api/v1/objects/catalog` + `/api/v1/objects/{id}`).
+3. Optional follow-up PR for deferred `.org` pillar-5 polish (`knowledge-object-view` related links + inline followed feedback).
+
+## What was tried / decisions
+
+- Used a diamond integration strategy: backend ancestor + web-org branch + merge web-io branch, preserving both web parents.
+- Kept no behavior drift in approval/rejection lifecycle; editorial review writes metadata only.
+- Did not touch `packages/shared/src/index.ts` because a backend agent-protocol test asserts that text contract.
+
+## How to run / verify
+
+```bash
+pnpm install
+pnpm turbo build
+pnpm --filter @ai-transformation/backend test
+```
+
+Manual API spot checks:
+
+- `POST /api/internal/editorial/review-pending` (admin session)
+- `GET /api/v1/objects/catalog?site=io|org`
+- `GET /api/v1/objects/{id}` for post-publish verify
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| Wave 18 goal | `docs/waves/wave18-platform-depth.md` |
-| LLM rerank | `apps/backend/src/lanes/community/llm-rerank.ts` |
-| Rank suggestions | `apps/backend/src/lanes/personal/index.ts` |
-| Deep links | `packages/shared/src/wave18-external-agent.ts` |
-| Phase 2 actions | `apps/web-org/lib/use-community-interactions.ts` |
+| Wave 19 scope doc | `docs/waves/wave19-editorial-review.md` |
+| Editorial review endpoints | `apps/backend/src/lanes/editorial-supply/index.ts` |
+| Editorial metadata schema usage | `apps/web-org/components/editorial-queue.tsx` |
+| Catalog endpoint + source tagging | `apps/backend/src/lanes/objects/index.ts`, `apps/backend/src/lanes/agent-protocol/content-loader.ts` |
+| Interaction read-back expansion | `apps/backend/src/db/community.ts` |
+| Orbita runbook updates | `.editorial-orbita/README.md`, `.editorial-orbita/runbooks/weekly-seed.md` |
 
 ## Warnings
 
-- LLM features noop/fallback without `MINIMAX_API_KEY`.
-- Zeabur manual restart if 502 after orchestrate-only commits on `main`.
+- Editorial review scoring depends on `MINIMAX_API_KEY` / `CHAT_LLM_*`; without config the system records a skip result by design.
+- Keep `.orchestrate/` run-local bookkeeping out of commits/PRs.

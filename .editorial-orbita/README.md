@@ -34,6 +34,8 @@ A scheduled Orbita agent session drafts **knowledge** and **community** objects 
 |--------|------|---------|
 | `POST` | `/api/internal/editorial/drafts` | Create a draft knowledge/community object (also accepts an L11 Bearer) |
 | `GET` | `/api/internal/editorial/drafts?site=org` | List pending editorial drafts (`status` draft/pending) |
+| `POST` | `/api/internal/editorial/review-pending` | Run editorial-review agent on pending drafts; writes `metadata.editorial_agent` only |
+| `POST` | `/api/internal/editorial/drafts/:id/review` | Run editorial-review agent for a single draft |
 | `POST` | `/api/internal/editorial/drafts/:id/approve` | Publish the draft (`status` → published) |
 | `POST` | `/api/internal/editorial/drafts/:id/reject` | Archive the draft (`status` → archived) |
 
@@ -44,6 +46,8 @@ A scheduled Orbita agent session drafts **knowledge** and **community** objects 
 | `POST` | `/api/internal/editorial/drafts` | Create a draft with `Authorization: Bearer <token>` |
 | `POST` | `/api/v1/objects/drafts` | Create a draft object (Wave 12 object store) |
 | `POST` | `/api/v1/objects` | Create an object directly (Wave 12 object store) |
+| `GET` | `/api/v1/objects/catalog?site=io|org` | List published public Wave 12 objects (`source: wave12_object`) for post-publish verify |
+| `GET` | `/api/v1/objects/{id}` | Fetch one published object for final verification |
 
 Draft payload (both routes) is the Wave 12 `objectDraftRequest`:
 
@@ -87,10 +91,22 @@ Orbita cron/webhook
   → agent reads brand-voice.md + EDITORIAL_POLICY (skill/memory)
   → tool/http POST ai-transformation API (Bearer from vault)
   → draft object in DB
+  → founder optionally POST /api/internal/editorial/review-pending (or /drafts/:id/review) to score draft before approval
   → founder GET /api/internal/editorial/drafts → approve
   → published on /knowledge or /community
+  → verify with GET /api/v1/objects/catalog?site=org and GET /api/v1/objects/{id}
   → Wave 17 compile-draft can include in newsletter
 ```
+
+---
+
+## Post-publish verify (Orbita dogfood)
+
+After a draft is approved/published, confirm discoverability through the public agent path:
+
+1. `GET /api/v1/objects/catalog?site=org` (or `site=io`) and locate the object by `id`/`slug`.
+2. Read `GET /api/v1/objects/{id}` to confirm title/body/metadata are visible from the Wave 12 object store.
+3. Keep using `GET /api/v1/content` only for legacy knowledge-base entries (`source: knowledge_base`).
 
 ---
 
