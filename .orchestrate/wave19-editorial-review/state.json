@@ -1,0 +1,121 @@
+{
+  "rootSlug": "wave19-editorial-review",
+  "tasks": [
+    {
+      "name": "backend-wave19",
+      "type": "worker",
+      "branch": "orch/wave19-editorial-review/backend-wave19",
+      "startingRef": "main",
+      "dependsOn": [],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "running",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": "2026-06-26T13:25:42.190Z",
+      "finishedAt": null,
+      "lastUpdate": "2026-06-26T13:25:42.190Z",
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null,
+      "attempts": 1
+    },
+    {
+      "name": "web-org-wave19",
+      "type": "worker",
+      "branch": "orch/wave19-editorial-review/web-org-wave19",
+      "startingRef": "orch/wave19-editorial-review/backend-wave19",
+      "dependsOn": [
+        "backend-wave19"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "web-io-wave19",
+      "type": "worker",
+      "branch": "orch/wave19-editorial-review/web-io-wave19",
+      "startingRef": "orch/wave19-editorial-review/backend-wave19",
+      "dependsOn": [
+        "backend-wave19"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "integrate-wave19",
+      "type": "worker",
+      "branch": "orch/wave19-editorial-review/integrate-wave19",
+      "startingRef": "orch/wave19-editorial-review/web-org-wave19",
+      "dependsOn": [
+        "web-io-wave19",
+        "web-org-wave19"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    },
+    {
+      "name": "verify-wave19",
+      "type": "verifier",
+      "branch": "orch/wave19-editorial-review/verify-wave19",
+      "startingRef": "orch/wave19-editorial-review/integrate-wave19",
+      "dependsOn": [
+        "integrate-wave19"
+      ],
+      "agentId": null,
+      "runId": null,
+      "parentAgentId": null,
+      "status": "pending",
+      "resultStatus": null,
+      "handoffPath": null,
+      "startedAt": null,
+      "finishedAt": null,
+      "lastUpdate": null,
+      "note": null,
+      "slackTs": null,
+      "prNumber": null,
+      "failureMode": null,
+      "verification": null
+    }
+  ],
+  "attention": []
+}
