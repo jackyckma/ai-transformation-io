@@ -24,6 +24,7 @@
 |----------|------|---------|
 | `POST /api/internal/editorial/drafts` | `ADMIN_EMAILS` session **or** L11 Bearer with editorial scope | Create draft knowledge/community object |
 | `GET /api/internal/editorial/drafts` | Admin session | List pending review |
+| `GET /api/internal/editorial/drafts/:id` | Admin session | Full draft body for review before approve/reject |
 | `POST /api/internal/editorial/drafts/:id/approve` | Admin session | Publish or queue for moderation per member prefs |
 | `POST /api/internal/editorial/drafts/:id/reject` | Admin session | Archive / discard |
 

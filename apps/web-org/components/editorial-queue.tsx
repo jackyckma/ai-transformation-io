@@ -20,6 +20,11 @@ type EditorialDraft = {
   metadata?: Record<string, unknown> | null;
 };
 
+type EditorialDraftDetail = EditorialDraft & {
+  body: string;
+  updatedAt: string;
+};
+
 const ACCESS_DENIED = /\b40[13]\b/;
 
 const SITE_LABEL: Record<string, string> = {
@@ -173,40 +178,13 @@ export function EditorialQueue() {
             ) : (
               <ul className="space-y-4">
                 {drafts.map((draft) => (
-                  <li
+                  <DraftCard
                     key={draft.id}
-                    className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5"
-                  >
-                    <article>
-                      <header className="space-y-2">
-                        <h2 className="font-serif text-lg font-normal tracking-tight">
-                          {draftHeading(draft)}
-                        </h2>
-                        <p className="text-xs font-light tracking-wide text-[var(--muted)]">
-                          {OBJECT_TYPE_LABEL[draft.objectType] ?? draft.objectType} ·{' '}
-                          {subtypeLabel(draft.type as ObjectSubtype)} ·{' '}
-                          {SITE_LABEL[draft.site] ?? draft.site} · {formatDate(draft.createdAt)}
-                          {sourceLabel(draft.metadata) ? ` · ${sourceLabel(draft.metadata)}` : ''}
-                        </p>
-                      </header>
-                      <p className="mt-4 whitespace-pre-wrap text-sm font-light leading-relaxed text-[var(--muted)]">
-                        {draft.bodyExcerpt}
-                      </p>
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        <ActionButton
-                          label="Approve"
-                          onClick={() => void act(draft, 'approve')}
-                          disabled={actingId === draft.id}
-                        />
-                        <ActionButton
-                          label="Reject"
-                          onClick={() => void act(draft, 'reject')}
-                          disabled={actingId === draft.id}
-                          danger
-                        />
-                      </div>
-                    </article>
-                  </li>
+                    draft={draft}
+                    acting={actingId === draft.id}
+                    onApprove={() => void act(draft, 'approve')}
+                    onReject={() => void act(draft, 'reject')}
+                  />
                 ))}
               </ul>
             )}
@@ -214,6 +192,98 @@ export function EditorialQueue() {
         ) : null}
       </div>
     </section>
+  );
+}
+
+function DraftCard({
+  draft,
+  acting,
+  onApprove,
+  onReject,
+}: {
+  draft: EditorialDraft;
+  acting: boolean;
+  onApprove: () => void;
+  onReject: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [detail, setDetail] = useState<EditorialDraftDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
+
+  async function loadDetail() {
+    if (detail) {
+      setExpanded(true);
+      return;
+    }
+    setDetailLoading(true);
+    setDetailError('');
+    try {
+      const res = await fetch(
+        `${apiBase()}/api/internal/editorial/drafts/${encodeURIComponent(draft.id)}`,
+        { credentials: 'include' },
+      );
+      if (!res.ok) {
+        throw new Error(`Editorial draft detail failed: ${res.status}`);
+      }
+      const body = (await res.json()) as { ok: boolean; draft?: EditorialDraftDetail };
+      if (!body.draft) {
+        throw new Error('Missing draft payload');
+      }
+      setDetail(body.draft);
+      setExpanded(true);
+    } catch {
+      setDetailError('Could not load the full article. Please try again.');
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  function toggleExpanded() {
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+    void loadDetail();
+  }
+
+  const bodyText = expanded && detail ? detail.body : draft.bodyExcerpt;
+
+  return (
+    <li className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5">
+      <article>
+        <header className="space-y-2">
+          <h2 className="font-serif text-lg font-normal tracking-tight">{draftHeading(draft)}</h2>
+          <p className="text-xs font-light tracking-wide text-[var(--muted)]">
+            {OBJECT_TYPE_LABEL[draft.objectType] ?? draft.objectType} ·{' '}
+            {subtypeLabel(draft.type as ObjectSubtype)} · {SITE_LABEL[draft.site] ?? draft.site} ·{' '}
+            {formatDate(draft.createdAt)}
+            {sourceLabel(draft.metadata) ? ` · ${sourceLabel(draft.metadata)}` : ''}
+          </p>
+        </header>
+        <div
+          className={`mt-4 whitespace-pre-wrap text-sm font-light leading-relaxed text-[var(--foreground)] ${
+            expanded ? 'max-h-[min(70vh,32rem)] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-4' : 'text-[var(--muted)]'
+          }`}
+        >
+          {bodyText}
+        </div>
+        {detailError ? (
+          <p role="alert" className="mt-2 text-xs text-red-700 dark:text-red-200">
+            {detailError}
+          </p>
+        ) : null}
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <ActionButton
+            label={detailLoading ? 'Loading…' : expanded ? 'Show excerpt' : 'View full article'}
+            onClick={() => void toggleExpanded()}
+            disabled={acting || detailLoading}
+          />
+          <ActionButton label="Approve" onClick={onApprove} disabled={acting} />
+          <ActionButton label="Reject" onClick={onReject} disabled={acting} danger />
+        </div>
+      </article>
+    </li>
   );
 }
 

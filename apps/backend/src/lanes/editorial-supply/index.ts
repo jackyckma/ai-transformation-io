@@ -46,6 +46,35 @@ function bodyExcerpt(body: string, max = 280): string {
   return `${trimmed.slice(0, max - 1)}…`;
 }
 
+function draftListItem(draft: NonNullable<ReturnType<typeof getObjectById>>) {
+  return {
+    id: draft.id,
+    objectType: draft.objectType,
+    type: draft.type,
+    site: draft.site,
+    title: draft.title ?? draft.subject ?? null,
+    bodyExcerpt: bodyExcerpt(draft.body),
+    status: draft.status,
+    visibility: draft.visibility,
+    publishedSlug: draft.publishedSlug,
+    createdAt: draft.createdAt,
+    metadata: draft.metadata,
+  };
+}
+
+function draftDetail(draft: NonNullable<ReturnType<typeof getObjectById>>) {
+  return {
+    ...draftListItem(draft),
+    body: draft.body,
+    updatedAt: draft.updatedAt,
+  };
+}
+
+function isEditorialDraft(draft: NonNullable<ReturnType<typeof getObjectById>>): boolean {
+  const source = draft.metadata?.editorial_source;
+  return typeof source === 'string' && source.length > 0;
+}
+
 editorialRouter.post('/drafts', async (c) => {
   const requester = resolveRequester(c);
   const adminSession = isAdminSession(requester);
@@ -116,20 +145,27 @@ editorialRouter.get('/drafts', (c) => {
 
   return c.json({
     ok: true,
-    drafts: drafts.map((draft) => ({
-      id: draft.id,
-      objectType: draft.objectType,
-      type: draft.type,
-      site: draft.site,
-      title: draft.title ?? draft.subject ?? null,
-      bodyExcerpt: bodyExcerpt(draft.body),
-      status: draft.status,
-      visibility: draft.visibility,
-      publishedSlug: draft.publishedSlug,
-      createdAt: draft.createdAt,
-      metadata: draft.metadata,
-    })),
+    drafts: drafts.map((draft) => draftListItem(draft)),
   });
+});
+
+editorialRouter.get('/drafts/:id', (c) => {
+  const requester = resolveRequester(c);
+  const gate = requireAdmin(requester);
+  if (!gate.ok) {
+    return c.json({ ok: false, error: gate.error }, gate.status);
+  }
+
+  const id = c.req.param('id');
+  const draft = getObjectById(id);
+  if (!draft || !isEditorialDraft(draft)) {
+    return c.json({ ok: false, error: 'Draft not found' }, 404);
+  }
+  if (draft.status !== 'draft' && draft.status !== 'pending') {
+    return c.json({ ok: false, error: 'Draft not found' }, 404);
+  }
+
+  return c.json({ ok: true, draft: draftDetail(draft) });
 });
 
 editorialRouter.post('/drafts/:id/approve', (c) => {

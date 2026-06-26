@@ -113,6 +113,23 @@ describe('Wave 16 editorial supply lane', () => {
     };
     expect(listJson.drafts.some((draft) => draft.id === createJson.object.id)).toBe(true);
 
+    const detailResponse = await app.request(
+      `http://localhost/api/internal/editorial/drafts/${createJson.object.id}`,
+      {
+        headers: {
+          host: 'ai-transformation.org',
+          cookie: `atx_session=${adminSession.id}`,
+        },
+      },
+    );
+    expect(detailResponse.status).toBe(200);
+    const detailJson = (await detailResponse.json()) as {
+      ok: true;
+      draft: { body: string; bodyExcerpt: string };
+    };
+    expect(detailJson.draft.body).toBe(KNOWLEDGE_DRAFT.body);
+    expect(detailJson.draft.body.length).toBeGreaterThan(0);
+
     const approveResponse = await app.request(
       `http://localhost/api/internal/editorial/drafts/${createJson.object.id}/approve`,
       {
