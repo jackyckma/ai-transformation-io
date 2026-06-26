@@ -1,7 +1,7 @@
 # Site design v2 — product & IA spec
 
 **Status:** **Approved** (founder 2026-06-23) — Wave 11+ north star; gradual migration from Waves 0–9 shipped shell  
-**Last updated:** 2026-06-23  
+**Last updated:** 2026-06-26  
 **Related:** [project-progress.md](./project-progress.md) · [CURRENT_STATUS.md](./CURRENT_STATUS.md)
 
 Supersedes IA/product direction in [POSITIONING-UX.md](./POSITIONING-UX.md) and site IA sections of [product-architecture.md](./product-architecture.md) for **new work**. Historical Waves 0–10 decisions remain valid until Wave 11 removes/replaces shipped UI.
@@ -287,15 +287,14 @@ Assessment **lives under Insights** as a data type (not standalone nav item). Co
 - Ask Submit / Find Help → API same as external agent
 - Phase 2 community types + matching stubs
 
-### Phase 4 — Personalization depth (Wave 14 ✅)
+### Phase 4 — Personalization depth (Wave 14 ✅, Wave 18 extension ✅)
 
-Shipped on `main`: Phase 2 community types, experimental matcher, rule-based personalization v2 (.io + .org).
+Shipped on `main`: Phase 2 community types, experimental matcher, rule-based personalization v2 (.io + .org), plus Wave 18 extensions for optional LLM-assisted rerank with deterministic fallback, external ChatGPT/Claude deep links, and Phase 2 intent-verb UI parity on `.org`.
 
-**Deferred to post–Wave 14 waves (see §12):**
+**Deferred beyond Wave 18 (see §12):**
 
-- LLM-assisted ranking (Wave 18)
-- External agent deep links (Wave 18)
-- Newsletter integration with Knowledge objects (Wave 17 — newsletter pilot)
+- Newsletter public archive + broader Knowledge-object integration (Wave 19+)
+- Agent credits/Stripe top-up (Wave 19+, defer until ~50 active users)
 
 ---
 
@@ -336,7 +335,7 @@ Shipped on `main`: Phase 2 community types, experimental matcher, rule-based per
 | **15** | **Production UI readiness** — comparative audit + polish backlog (see [UI_READINESS_AUDIT.md](./UI_READINESS_AUDIT.md)); not friend interviews | No |
 | **16** | **Content supply** — editorial draft ingest + review queue on site; **Orbita client lane (L12)** optional parallel path for automated seeding | No |
 | **17** | **Newsletter pilot** (legacy Wave 10 scope) — small list, one send, reply capture | No (needs 15–16) |
-| **18** | Member-independent platform features — LLM-assisted ranking, external agent deep links, Phase 2 intent verb UI parity | No |
+| **18** | ✅ Shipped — member-independent platform depth: LLM-assisted ranking fallback, external agent deep links, Phase 2 intent verb UI parity | No |
 | **19+** | Scale features — newsletter public archive, agent credits top-up (**defer until ~50 active users**; quota-only before that) | Yes (credits/archive) |
 
 **Explicitly deprioritized vs old Wave 11+ list:**
