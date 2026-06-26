@@ -14,6 +14,7 @@ import harvestRouter from './lanes/harvest/index.js';
 import newsletterInternalRouter from './lanes/newsletter/internal.js';
 import newsletterRouter from './lanes/newsletter/index.js';
 import objectsRouter from './lanes/objects/index.js';
+import personalRouter from './lanes/personal/index.js';
 import { sessionMiddleware } from './middleware/session.js';
 import type { SessionVariables } from './types/session.js';
 
@@ -50,6 +51,7 @@ export function createApp() {
   app.route('/api', harvestRouter);
   app.route('/api', objectsRouter);
   app.route('/api', communityRouter);
+  app.route('/api', personalRouter);
   app.route('/api', chatRouter);
   app.route('/api', newsletterRouter);
   app.route('/api/internal/agent', agentRouter);
@@ -59,6 +61,7 @@ export function createApp() {
   app.route('/api/assessment', assessmentRouter);
   app.route('/api/v1', objectsRouter);
   app.route('/api/v1', communityRouter);
+  app.route('/api/v1', personalRouter);
   app.route('/api/v1', agentProtocolRouter);
 
   return app;

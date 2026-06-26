@@ -40,14 +40,6 @@ export const PUBLIC_COMMUNITY_TYPES: CommunityObjectType[] = [
   'community_announcement',
 ];
 
-/** Action verbs per community type (§5.3). Reply/Follow stay Wave 13 stubs. */
-export const COMMUNITY_TYPE_VERBS: Record<string, string[]> = {
-  discussion: ['Reply', 'Follow', 'Save'],
-  help_request: ['Offer help', 'Save'],
-  event: ['Join', 'Follow', 'Save'],
-  community_announcement: ['Read', 'Save'],
-};
-
 /** Human labels for the shared community action taxonomy verbs (§5.3). */
 export const COMMUNITY_VERB_LABEL: Record<CommunityActionVerb, string> = {
   reply: 'Reply',

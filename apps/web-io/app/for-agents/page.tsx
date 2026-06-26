@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { buildAgentQuickStart, getSiteOrigin } from '@ai-transformation/shared';
+import {
+  buildAgentQuickStart,
+  buildExternalAgentLinks,
+  getSiteOrigin,
+} from '@ai-transformation/shared';
 import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
@@ -12,6 +16,12 @@ export default function ForAgentsPage() {
   const origin = getSiteOrigin('io');
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? origin;
   const quickStart = buildAgentQuickStart('io', apiBase);
+
+  const deepLinkExample = buildExternalAgentLinks({
+    title: 'AI governance framework',
+    canonicalUrl: `${origin}/library/ai-governance-framework`,
+    site: 'io',
+  });
 
   return (
     <PageShell as="article">
@@ -110,6 +120,34 @@ export default function ForAgentsPage() {
           <code>missing_token</code> / <code>invalid_token</code> (401), <code>validation_error</code> (400).
           Content reads include <code>X-RateLimit-*</code> headers.
         </p>
+
+        <h2 id="deep-links">External-agent deep links</h2>
+        <p className="text-sm font-light text-[var(--muted)]">
+          Library articles and insight cards carry discreet <strong>Continue with an external agent</strong>{' '}
+          links beside Open in Ask. Each link opens ChatGPT or Claude with a pre-filled prompt that already
+          contains the page URL and a suggested question, so a reader can hand the page to their own agent in
+          one click. The detail page also embeds a machine-readable hint as a{' '}
+          <code>&lt;script type=&quot;application/json&quot; data-agent-hint=&quot;external-agent&quot;&gt;</code>{' '}
+          block (canonical url + suggested prompts) for agents that parse the page.
+        </p>
+        <p className="text-sm font-light text-[var(--muted)]">
+          Build the same links yourself: <code>q</code> is a URL-encoded prompt that includes the page URL.
+        </p>
+        <ul>
+          {deepLinkExample.map((link) => (
+            <li key={link.provider}>
+              <strong>{link.label}:</strong>{' '}
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all underline hover:text-[var(--foreground)]"
+              >
+                {link.url}
+              </a>
+            </li>
+          ))}
+        </ul>
 
         <h2>Example prompts for Claude or similar</h2>
         <ul>

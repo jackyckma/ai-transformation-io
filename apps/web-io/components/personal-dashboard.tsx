@@ -62,6 +62,53 @@ export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboa
     }).slice(0, 5);
   }, [pages, profile, curatedSlugs, recent, bookmarks, weakestGap]);
 
+  // Optional, experimental re-rank layer. The rule-based order above stays the
+  // default and fallback; we only reorder when the backend confirms it used an LLM.
+  const [llmRank, setLlmRank] = useState<{ order: string[]; model?: string } | null>(null);
+
+  useEffect(() => {
+    if (recommended.length === 0) {
+      setLlmRank(null);
+      return;
+    }
+    let cancelled = false;
+    const candidates = recommended.map(({ page }) => ({
+      id: page.slug,
+      title: page.title,
+      summary: page.description,
+      kind: page.pillar,
+    }));
+    const context = profile
+      ? { profileSummary: `${profile.role} in ${profile.industry}` }
+      : undefined;
+    void getApiClient()
+      .personal.rankSuggestions({ site: 'io', candidates, context, useLlmRerank: true })
+      .then((res) => {
+        if (cancelled) return;
+        setLlmRank(
+          res.llmAssisted && res.ranked.length > 0
+            ? { order: res.ranked.map((entry) => entry.id), model: res.rerankModel }
+            : null,
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setLlmRank(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [recommended, profile]);
+
+  const displayed = useMemo(() => {
+    if (!llmRank) return recommended;
+    const rank = new Map(llmRank.order.map((id, index) => [id, index]));
+    return [...recommended].sort(
+      (a, b) =>
+        (rank.get(a.page.slug) ?? Number.MAX_SAFE_INTEGER) -
+        (rank.get(b.page.slug) ?? Number.MAX_SAFE_INTEGER),
+    );
+  }, [recommended, llmRank]);
+
   const greetingName = user.name?.trim() || user.email.split('@')[0];
 
   return (
@@ -96,7 +143,22 @@ export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboa
 
       <section>
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-serif text-lg font-normal tracking-tight">Recommended for you</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-serif text-lg font-normal tracking-tight">Recommended for you</h2>
+            {llmRank ? (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/5 px-2 py-0.5 text-[11px] font-light text-[var(--secondary)]"
+                title={
+                  llmRank.model
+                    ? `Re-ranked with ${llmRank.model}`
+                    : 'Re-ranked by an experimental LLM layer'
+                }
+              >
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent)]" aria-hidden />
+                Experimental · LLM assist
+              </span>
+            ) : null}
+          </div>
           <Link
             href="/library"
             className="text-sm font-light text-[var(--secondary)] hover:text-[var(--foreground)]"
@@ -105,7 +167,7 @@ export function PersonalDashboard({ user, pages, curatedSlugs }: PersonalDashboa
           </Link>
         </div>
         <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-          {recommended.map(({ page, reasons }) => (
+          {displayed.map(({ page, reasons }) => (
             <li
               key={page.slug}
               className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4"

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AssessmentGapId } from '@ai-transformation/shared';
 
+import { ExternalAgentLinks } from '@/components/external-agent-links';
 import { OpenInAsk } from '@/components/open-in-ask';
 import { SaveToContext } from '@/components/save-to-context';
 import { getApiClient } from '@/lib/api-client';
@@ -108,6 +109,11 @@ export function InsightsCards() {
               <OpenInAsk contextId={card.id} actions={insightAskActions(card.title, card.source)} />
               <SaveToContext target={{ targetType: 'object', targetId: card.id }} title={card.title} />
             </div>
+            <ExternalAgentLinks
+              title={card.title}
+              path={`/insights#${card.id}`}
+              className="mt-2"
+            />
           </li>
         ))}
       </ul>

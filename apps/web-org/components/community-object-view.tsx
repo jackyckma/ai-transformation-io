@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   getCommunityActions,
+  getSiteOrigin,
   type Comment,
+  type CommunityActionKind,
   type CommunityActionVerb,
   type CommunityObjectRecord,
   type CommunityObjectType,
@@ -12,6 +14,7 @@ import {
 } from '@ai-transformation/shared';
 
 import { getApiClient } from '@/lib/api-client';
+import { AgentDeepLinks, AgentHintScript } from '@/components/agent-deep-links';
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useBookmarks } from '@/lib/use-bookmarks';
 import { useCommunityInteractions } from '@/lib/use-community-interactions';
@@ -31,15 +34,34 @@ import {
 
 type LoadState = 'loading' | 'ready' | 'not-found' | 'error';
 
-/** Verbs handled by routing to the on-site Ask companion with a prefilled prompt (§6). */
-const ASK_VERBS: CommunityActionVerb[] = [
-  'draft_reply',
-  'turn_into_field_note',
-  'draft_via_ask',
-  'apply',
-  'request_mentor',
-  'ask_for_intro',
-];
+/**
+ * Phase 2 intent verbs that are REAL persisted community actions via
+ * `community.actions()`. The on-site Ask companion stays available as a
+ * secondary "Draft via Ask" affordance next to each.
+ */
+const INTENT_ACTION_KINDS = ['offer_help', 'request_mentor', 'ask_for_intro', 'apply'] as const;
+type IntentActionKind = (typeof INTENT_ACTION_KINDS)[number];
+
+function isIntentActionKind(verb: CommunityActionVerb): verb is IntentActionKind {
+  return (INTENT_ACTION_KINDS as readonly string[]).includes(verb);
+}
+
+/** Verbs that only route to the on-site Ask companion with a prefilled prompt (§6). */
+const SECONDARY_ASK_VERBS: CommunityActionVerb[] = ['draft_reply', 'turn_into_field_note', 'draft_via_ask'];
+
+const INTENT_DONE_LABEL: Record<IntentActionKind, string> = {
+  offer_help: 'Help offered',
+  request_mentor: 'Mentor requested',
+  ask_for_intro: 'Intro requested',
+  apply: 'Applied',
+};
+
+const INTENT_PLACEHOLDER: Record<IntentActionKind, string> = {
+  offer_help: 'Add a short note about how you can help (optional)',
+  request_mentor: "Add a short note about what you're looking for (optional)",
+  ask_for_intro: 'Add a short note about the introduction you need (optional)',
+  apply: 'Add a short note about your interest (optional)',
+};
 
 function askLinkFor(verb: CommunityActionVerb, title: string, typeLabel: string, id: string) {
   switch (verb) {
@@ -61,6 +83,8 @@ function askLinkFor(verb: CommunityActionVerb, title: string, typeLabel: string,
       );
     case 'ask_for_intro':
       return askPrefillHref('ask', `Help me ask for an introduction related to "${title}".`, id);
+    case 'offer_help':
+      return askPrefillHref('ask', `Help me offer help on "${title}" — draft a short note about what I can contribute.`, id);
     default:
       return askPrefillHref('ask', `Draft a thoughtful reply to the community ${typeLabel} "${title}".`, id);
   }
@@ -147,9 +171,11 @@ export function CommunityObjectView({ id }: { id: string }) {
   const target = objectTarget(object);
   const typeLabel = COMMUNITY_TYPE_LABEL[object.type] ?? object.type;
   const verbs = getCommunityActions(object.type);
-  const askLinks = verbs.filter((verb) => ASK_VERBS.includes(verb));
+  const intentVerbs = verbs.filter(isIntentActionKind);
+  const secondaryAskLinks = verbs.filter((verb) => SECONDARY_ASK_VERBS.includes(verb));
   const fieldEntries = communityTypeFieldEntries(object.type, object.metadata);
   const matchEligible = isMatchEligible(object.type);
+  const canonicalUrl = `${getSiteOrigin('org')}/community/${encodeURIComponent(object.id)}`;
 
   return (
     <PageShell as="article">
@@ -171,7 +197,8 @@ export function CommunityObjectView({ id }: { id: string }) {
 
         <ActiveActions
           verbs={verbs}
-          askLinks={askLinks}
+          intentVerbs={intentVerbs}
+          secondaryAskLinks={secondaryAskLinks}
           title={title}
           typeLabel={typeLabel}
           objectId={object.id}
@@ -192,7 +219,13 @@ export function CommunityObjectView({ id }: { id: string }) {
             {interactions.error}
           </p>
         ) : null}
+
+        <div className="mt-4 border-t border-[var(--border)] pt-3 text-xs">
+          <AgentDeepLinks title={title} canonicalUrl={canonicalUrl} />
+        </div>
       </header>
+
+      <AgentHintScript title={title} canonicalUrl={canonicalUrl} />
 
       <div className="markdown-body">
         <p className="whitespace-pre-wrap text-[15px] font-light leading-relaxed text-[var(--foreground)]">
@@ -212,15 +245,6 @@ export function CommunityObjectView({ id }: { id: string }) {
 
       {verbs.includes('reply') ? (
         <ReplyComposer objectId={object.id} isMember={isMember} onPosted={addReply} />
-      ) : null}
-
-      {verbs.includes('offer_help') ? (
-        <OfferHelpComposer
-          isMember={isMember}
-          offered={interactions.isDone('offer_help')}
-          pending={interactions.isPending('offer_help')}
-          onOffer={interactions.offerHelp}
-        />
       ) : null}
 
       <RepliesList replies={replies} />
@@ -273,7 +297,8 @@ function TypeFields({ entries }: { entries: ReturnType<typeof communityTypeField
 
 function ActiveActions({
   verbs,
-  askLinks,
+  intentVerbs,
+  secondaryAskLinks,
   title,
   typeLabel,
   objectId,
@@ -284,7 +309,8 @@ function ActiveActions({
   interactions,
 }: {
   verbs: readonly CommunityActionVerb[];
-  askLinks: CommunityActionVerb[];
+  intentVerbs: IntentActionKind[];
+  secondaryAskLinks: CommunityActionVerb[];
   title: string;
   typeLabel: string;
   objectId: string;
@@ -333,14 +359,30 @@ function ActiveActions({
             <Link href="/join" className="text-[var(--accent)] underline underline-offset-4">
               Sign in
             </Link>{' '}
-            to save, follow, and reply.
+            to save, follow, reply, and respond.
           </p>
         ) : null}
       </div>
 
-      {askLinks.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-          {askLinks.map((verb) => (
+      {isMember && intentVerbs.length > 0 ? (
+        <div className="mt-4 space-y-3">
+          {intentVerbs.map((verb) => (
+            <IntentAction
+              key={verb}
+              verb={verb}
+              done={interactions.isDone(verb)}
+              pending={interactions.isPending(verb)}
+              onSubmit={(body) => interactions.act(verb, body)}
+              askHref={askLinkFor(verb, title, lowerType, objectId)}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      {secondaryAskLinks.length > 0 ? (
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+          <span className="text-[var(--secondary)]">With the on-site agent</span>
+          {secondaryAskLinks.map((verb) => (
             <Link
               key={verb}
               href={askLinkFor(verb, title, lowerType, objectId)}
@@ -351,6 +393,99 @@ function ActiveActions({
           ))}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * A Phase 2 intent verb rendered as a real persisted action. Collapsed to a
+ * single button until clicked, then reveals an optional short body field before
+ * posting via `community.actions()`. A "Draft via Ask" link stays as a
+ * secondary affordance for members who want the agent to write it for them.
+ */
+function IntentAction({
+  verb,
+  done,
+  pending,
+  onSubmit,
+  askHref,
+}: {
+  verb: IntentActionKind;
+  done: boolean;
+  pending: boolean;
+  onSubmit: (body?: string) => Promise<void>;
+  askHref: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [body, setBody] = useState('');
+  const label = communityVerbLabel(verb);
+
+  if (done) {
+    return (
+      <p className="text-sm font-light text-[var(--accent)]">{INTENT_DONE_LABEL[verb]}. The author can follow up with you.</p>
+    );
+  }
+
+  if (!open) {
+    return (
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90"
+        >
+          {label}
+        </button>
+        <Link
+          href={askHref}
+          className="text-xs text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
+        >
+          Draft via Ask
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
+      <label htmlFor={`intent-${verb}`} className="text-xs font-normal uppercase tracking-wide text-[var(--secondary)]">
+        {label}
+      </label>
+      <textarea
+        id={`intent-${verb}`}
+        value={body}
+        onChange={(event) => setBody(event.target.value)}
+        rows={3}
+        placeholder={INTENT_PLACEHOLDER[verb]}
+        className="mt-2 w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm outline-none ring-[var(--accent)] transition focus:ring-2"
+      />
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => void onSubmit(body)}
+          disabled={pending}
+          className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {pending ? 'Sending…' : `Send ${label.toLowerCase()}`}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            setBody('');
+          }}
+          disabled={pending}
+          className="text-xs text-[var(--muted)] underline underline-offset-4 hover:text-[var(--foreground)] disabled:opacity-60"
+        >
+          Cancel
+        </button>
+        <Link
+          href={askHref}
+          className="text-xs text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
+        >
+          Draft via Ask
+        </Link>
+      </div>
     </div>
   );
 }
@@ -401,13 +536,23 @@ function MatchPanel({
   const [state, setState] = useState<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle');
   const [candidates, setCandidates] = useState<MatchCandidate[]>([]);
   const [note, setNote] = useState('');
+  const [llmAssisted, setLlmAssisted] = useState(false);
+  const [rerankModel, setRerankModel] = useState('');
 
   const runMatch = useCallback(async () => {
     setState('loading');
     try {
-      const response = await getApiClient().community.match({ site: 'org', objectId, type, limit: 5 });
+      const response = await getApiClient().community.match({
+        site: 'org',
+        objectId,
+        type,
+        limit: 5,
+        useLlmRerank: true,
+      });
       setCandidates(response.candidates);
       setNote(response.note ?? '');
+      setLlmAssisted(response.llmAssisted);
+      setRerankModel(response.rerankModel ?? '');
       setState(response.candidates.length > 0 ? 'ready' : 'empty');
     } catch {
       setState('error');
@@ -472,6 +617,25 @@ function MatchPanel({
 
           {state === 'ready' ? (
             <>
+              {llmAssisted ? (
+                <p className="mt-4">
+                  <span
+                    title={
+                      rerankModel
+                        ? `Ordering refreshed by ${rerankModel}`
+                        : 'Ordering refreshed by a language model'
+                    }
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/50 bg-[var(--accent)]/10 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--accent)]"
+                  >
+                    Experimental · LLM assist
+                    {rerankModel ? (
+                      <span className="font-normal normal-case tracking-normal text-[var(--secondary)]">
+                        {rerankModel}
+                      </span>
+                    ) : null}
+                  </span>
+                </p>
+              ) : null}
               {note ? (
                 <p className="mt-4 text-xs font-light italic text-[var(--secondary)]">{note}</p>
               ) : null}
@@ -672,69 +836,6 @@ function ReplyComposer({
           ) : null}
         </div>
       </div>
-    </section>
-  );
-}
-
-function OfferHelpComposer({
-  isMember,
-  offered,
-  pending,
-  onOffer,
-}: {
-  isMember: boolean;
-  offered: boolean;
-  pending: boolean;
-  onOffer: (body?: string) => Promise<void>;
-}) {
-  const [body, setBody] = useState('');
-
-  if (!isMember) {
-    return (
-      <section className="mt-10 border-t border-[var(--border)] pt-8">
-        <h2 className="font-serif text-lg font-normal tracking-tight">Offer help</h2>
-        <p className="mt-3 text-sm font-light text-[var(--muted)]">
-          <Link href="/join" className="text-[var(--accent)] underline underline-offset-4">
-            Sign in
-          </Link>{' '}
-          to offer help on this request.
-        </p>
-      </section>
-    );
-  }
-
-  return (
-    <section className="mt-10 border-t border-[var(--border)] pt-8" aria-labelledby="community-offer">
-      <h2 id="community-offer" className="font-serif text-lg font-normal tracking-tight">
-        Offer help
-      </h2>
-      {offered ? (
-        <p className="mt-3 text-sm font-light text-[var(--accent)]">
-          You offered to help. The author can follow up with you.
-        </p>
-      ) : (
-        <div className="mt-4 space-y-3">
-          <label htmlFor="community-offer-input" className="sr-only">
-            How can you help?
-          </label>
-          <textarea
-            id="community-offer-input"
-            value={body}
-            onChange={(event) => setBody(event.target.value)}
-            rows={3}
-            placeholder="Add a short note about how you can help (optional)"
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none ring-[var(--accent)] transition focus:ring-2"
-          />
-          <button
-            type="button"
-            onClick={() => void onOffer(body)}
-            disabled={pending}
-            className="inline-flex min-h-9 items-center rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {pending ? 'Sending…' : 'Offer help'}
-          </button>
-        </div>
-      )}
     </section>
   );
 }

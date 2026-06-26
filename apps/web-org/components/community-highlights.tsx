@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   getCommunityActions,
+  type CommunityActionVerb,
   type CommunityObjectRecord,
+  type CommunityObjectType,
 } from '@ai-transformation/shared';
 import { CompanionAskStrip } from '@ai-transformation/chat-ui';
 
@@ -17,6 +19,7 @@ import {
   COMMUNITY_TYPE_LABEL,
   VISIBILITY_LABEL,
   communityHref,
+  communityVerbLabel,
   formatDate,
   isMatchEligible,
   objectExcerpt,
@@ -30,6 +33,18 @@ import {
 } from '@/lib/community-highlights';
 
 type LoadState = 'loading' | 'ready' | 'error';
+
+/**
+ * Verbs that point the reader to the detail page's primary action, in priority
+ * order. Phase 2 intent verbs (request_mentor, apply, ask_for_intro) surface as
+ * a primary affordance on the card; `reply` covers discussions and questions.
+ */
+const CARD_PRIMARY_VERBS: CommunityActionVerb[] = ['reply', 'request_mentor', 'apply', 'ask_for_intro'];
+
+function cardPrimaryVerb(type: CommunityObjectType): CommunityActionVerb | null {
+  const verbs = getCommunityActions(type);
+  return CARD_PRIMARY_VERBS.find((verb) => verbs.includes(verb)) ?? null;
+}
 
 export function CommunityHighlights() {
   const { user, audience } = useAuthUser();
@@ -171,7 +186,10 @@ function ObjectCard({
     userId,
   });
   const detailHref = communityHref(object.id);
-  const openLabel = object.type === 'discussion' || object.type === 'question' ? 'Reply' : 'Open';
+  const primaryVerb = cardPrimaryVerb(object.type);
+  const openLabel = primaryVerb ? communityVerbLabel(primaryVerb) : 'Open';
+  const primaryIsIntent =
+    primaryVerb === 'request_mentor' || primaryVerb === 'apply' || primaryVerb === 'ask_for_intro';
   const matchEligible = isMatchEligible(object.type);
 
   return (
@@ -236,7 +254,11 @@ function ObjectCard({
         ) : null}
         <Link
           href={detailHref}
-          className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          className={
+            primaryIsIntent
+              ? 'rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--accent-fg)] transition hover:opacity-90'
+              : 'rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]'
+          }
         >
           {openLabel}
         </Link>

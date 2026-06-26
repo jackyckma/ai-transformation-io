@@ -94,6 +94,7 @@ export const matchExperimentRequestSchema = z.object({
   objectId: communityObjectIdSchema,
   type: wave12.communityObjectTypeSchema.optional(),
   limit: z.number().int().min(1).max(20).default(5),
+  useLlmRerank: z.boolean().optional(),
 });
 export type MatchExperimentRequest = z.infer<typeof matchExperimentRequestSchema>;
 
@@ -103,6 +104,8 @@ export const matchExperimentResponseSchema = z.object({
   type: wave12.communityObjectTypeSchema,
   generatedAt: z.string(),
   candidates: z.array(matchCandidateSchema),
+  llmAssisted: z.boolean(),
+  rerankModel: z.string().trim().min(1).max(120).optional(),
   note: z.string().trim().min(1).max(500).optional(),
 });
 export type MatchExperimentResponse = z.infer<typeof matchExperimentResponseSchema>;
@@ -120,6 +123,41 @@ export const matchFeedbackResponseSchema = z.object({
   recorded: z.literal(true),
 });
 export type MatchFeedbackResponse = z.infer<typeof matchFeedbackResponseSchema>;
+
+export const communityActionKindSchema = z.enum([
+  'offer_help',
+  'request_mentor',
+  'ask_for_intro',
+  'apply',
+  'collaborate',
+]);
+export type CommunityActionKind = z.infer<typeof communityActionKindSchema>;
+
+export const communityActionRequestSchema = z.object({
+  site: wave12.siteSchema,
+  objectId: communityObjectIdSchema,
+  kind: communityActionKindSchema,
+  body: z.string().trim().min(1).max(8000).optional(),
+});
+export type CommunityActionRequest = z.infer<typeof communityActionRequestSchema>;
+
+export const communityActionInteractionSchema = z.object({
+  id: z.string().min(1),
+  objectId: communityObjectIdSchema,
+  userId: z.string().min(1).nullable(),
+  site: wave12.siteSchema,
+  kind: communityActionKindSchema,
+  body: z.string().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type CommunityActionInteraction = z.infer<typeof communityActionInteractionSchema>;
+
+export const communityActionResponseSchema = z.object({
+  ok: z.literal(true),
+  interaction: communityActionInteractionSchema,
+});
+export type CommunityActionResponse = z.infer<typeof communityActionResponseSchema>;
 
 export const activitySummaryTopicSchema = z.object({
   topic: z.string().trim().min(1).max(120),

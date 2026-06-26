@@ -1,10 +1,10 @@
 # Current status
 
-**Last updated:** 2026-06-25
+**Last updated:** 2026-06-26
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–17 (SITE_DESIGN_v2) ✅ · **Wave 17 newsletter pilot shipped** (subscribe/unsubscribe, admin send, inbound replies, .io/.org newsletter UI)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–18 (SITE_DESIGN_v2) ✅ · **Wave 18 platform-depth shipped** (LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb persistence on .org)
 
 ## What works (production)
 
@@ -36,6 +36,12 @@ Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–17 (SITE_DESIGN_v2) ✅ · **Wav
 - **Wave 17 newsletter pilot shipped:** backend now serves `POST /api/newsletter/subscribe`, `POST /api/newsletter/unsubscribe`, `POST /api/internal/newsletter/send-issue` (admin + pilot cap), and `POST /api/webhooks/inbound-email` (secret-gated reply ingest to `newsletter_reply` contributions with issue linkage).
 - **Wave 17 admin/newsletter UI shipped on both sites:** `.io` and `.org` footers include low-key subscribe forms, and `/newsletter` admin page supports compile preview, issues list, and guarded send flow.
 - **Wave 17 integration verification:** `pnpm turbo build` passed for all packages and `pnpm --filter @ai-transformation/backend test` passed (55/55).
+- **Wave 18 optional LLM rerank shipped (backend + session parity):** `POST /api/v1/community/match` and session `POST /api/community/match` accept `useLlmRerank`; matcher now returns `llmAssisted`/`rerankModel` when LLM reorder is applied, and gracefully falls back to deterministic ranking/reasons when `MINIMAX_API_KEY` or `CHAT_LLM_*` is not configured or when LLM calls fail.
+- **Wave 18 personal rank suggestions shipped:** new `POST /api/v1/personal/rank-suggestions` ranks `.io`/`.org` candidate summaries with profile context, returning ranked candidate IDs and reasons with the same deterministic fallback behavior.
+- **Wave 18 external-agent deep links shipped:** shared helper `packages/shared/src/wave18-external-agent.ts` now powers discreet ChatGPT/Claude compose links on `.io` library/article/insights and `.org` knowledge/community detail pages; both `/for-agents` pages include a deep-link section with examples; detail pages expose a machine-readable JSON hint block for agent consumers.
+- **Wave 18 Phase 2 intent verb UI parity shipped (.org):** `offer_help`, `request_mentor`, `ask_for_intro`, and `apply` now call persisted `community.actions()` endpoints from detail actions and list/card affordances via `getCommunityActions()`, with Ask-prefill links retained as secondary actions; community match panel shows `Experimental · LLM assist` only when rerank is actually applied.
+- **Wave 18 known deferred follow-up:** backend `listInteractionsForUser` currently reads only follow/offer_help/join, so `.org` detail done-state for `request_mentor`/`ask_for_intro`/`apply` is optimistic within-session. Actions persist via `POST /community/actions`, but full done-state read-back after reload remains deferred.
+- **Wave 18 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` passed (62/62, including new rerank/rank-suggestions coverage).
 - **Internal jobs (Wave 8)** — admin `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies`
 - ZSend domains **ai-transformation.io** + **.org** verified; `ZSEND_API_KEY` on Zeabur
 - Assessment backend and data products remain available (assessment now lives under Insights route in web-io)
@@ -58,7 +64,7 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 |------|--------|
 | **16** | ✅ Shipped — content supply (L12 editorial ingest/review, compile-draft extension, idempotent seed, .org `/editorial` admin queue, Orbita path docs) |
 | **17** | ✅ Shipped — newsletter pilot (subscribe/unsubscribe, admin send cap, inbound reply webhook, footer subscribe, `/newsletter` admin page) |
-| **18** | LLM ranking, agent deep links, Phase 2 intent UI parity |
+| **18** | ✅ Shipped — LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb UI parity |
 | **19+** | Newsletter archive, agent credits (≥50 users) |
 
 ## Docs

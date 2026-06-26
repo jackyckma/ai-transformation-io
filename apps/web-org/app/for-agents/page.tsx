@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { buildAgentQuickStart, getSiteOrigin } from '@ai-transformation/shared';
+import { buildAgentQuickStart, buildExternalAgentLinks, getSiteOrigin } from '@ai-transformation/shared';
 import { PageShell } from '@/components/page-shell';
 
 export const metadata: Metadata = {
@@ -13,6 +13,19 @@ export default function ForAgentsPage() {
   const origin = getSiteOrigin('org');
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? origin;
   const quickStart = buildAgentQuickStart('org', apiBase);
+
+  const exampleKnowledgeUrl = `${origin}/knowledge/field-notes`;
+  const exampleCommunityUrl = `${origin}/community/example-question`;
+  const knowledgeDeepLinks = buildExternalAgentLinks({
+    title: 'Field notes from the knowledge commons',
+    canonicalUrl: exampleKnowledgeUrl,
+    site: 'org',
+  });
+  const communityDeepLinks = buildExternalAgentLinks({
+    title: 'A community question',
+    canonicalUrl: exampleCommunityUrl,
+    site: 'org',
+  });
 
   return (
     <PageShell as="article">
@@ -172,6 +185,46 @@ export default function ForAgentsPage() {
             records thumbs feedback. This is the same call the on-site experimental Match action uses;
             session cookie and Bearer token are interchangeable.
           </li>
+        </ul>
+
+        <h2 id="deep-links">Open a page in an external agent</h2>
+        <p>
+          Knowledge and community detail pages carry discreet <strong>Open in ChatGPT</strong> and{' '}
+          <strong>Open in Claude</strong> links beside the on-site Ask actions. Each is a compose deep link
+          that pre-seeds the agent with a short prompt plus the page&rsquo;s canonical URL, so a reader can
+          hand the page to their own assistant in one click. The same pages embed a machine-readable hint as{' '}
+          <code>&lt;script type=&quot;application/json&quot; data-agent-hint=&quot;page&quot;&gt;</code> with
+          the canonical URL and suggested prompts.
+        </p>
+        <ul>
+          <li>
+            <strong>ChatGPT</strong> — <code>https://chatgpt.com/?q=&#123;urlencoded prompt + URL&#125;</code>
+          </li>
+          <li>
+            <strong>Claude</strong> — <code>https://claude.ai/new?q=&#123;urlencoded prompt + URL&#125;</code>
+          </li>
+        </ul>
+        <p>Example deep links for a knowledge article:</p>
+        <ul>
+          {knowledgeDeepLinks.map((link) => (
+            <li key={link.provider}>
+              <a href={link.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--foreground)]">
+                {link.label}
+              </a>{' '}
+              — <code className="break-all">{link.url}</code>
+            </li>
+          ))}
+        </ul>
+        <p>And for a community question:</p>
+        <ul>
+          {communityDeepLinks.map((link) => (
+            <li key={link.provider}>
+              <a href={link.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--foreground)]">
+                {link.label}
+              </a>{' '}
+              — <code className="break-all">{link.url}</code>
+            </li>
+          ))}
         </ul>
 
         <h2>Client identity</h2>

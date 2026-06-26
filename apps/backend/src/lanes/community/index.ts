@@ -30,6 +30,8 @@ import {
 } from '../../db/community.js';
 import { getObjectByIdForRequester, listObjectsForRequester } from '../../db/objects.js';
 import { createComment, listComments } from '../../db/personal.js';
+import { isChatLlmConfigured } from '../chat/llm.js';
+import { rerankMatchCandidates } from './llm-rerank.js';
 import type { SessionVariables } from '../../types/session.js';
 import {
   getValidationErrorMessage,
@@ -757,14 +759,30 @@ communityRouter.post('/community/match', async (c) => {
     .sort((left, right) => right.score - left.score || left.objectId.localeCompare(right.objectId))
     .slice(0, parsed.data.limit);
 
+  let rankedCandidates = candidates;
+  let llmAssisted = false;
+  let rerankModel: string | undefined;
+  if (parsed.data.useLlmRerank && isChatLlmConfigured()) {
+    const reranked = await rerankMatchCandidates({
+      source: { type: loaded.object.type, title: getObjectTitle(loaded.object) },
+      candidates,
+    });
+    if (reranked) {
+      rankedCandidates = reranked.candidates;
+      llmAssisted = true;
+      rerankModel = reranked.rerankModel;
+    }
+  }
+
   recordMatchRun({
     userId: user.id,
     site: parsed.data.site,
     objectId: loaded.object.id,
-    candidateCount: candidates.length,
+    candidateCount: rankedCandidates.length,
     metadata: {
       sourceType: loaded.object.type,
       limit: parsed.data.limit,
+      llmAssisted,
     },
   });
 
@@ -773,8 +791,12 @@ communityRouter.post('/community/match', async (c) => {
     objectId: loaded.object.id,
     type: loaded.object.type,
     generatedAt: new Date().toISOString(),
-    candidates,
-    note: 'Experimental deterministic matcher using type compatibility and overlap signals.',
+    candidates: rankedCandidates,
+    llmAssisted,
+    ...(rerankModel ? { rerankModel } : {}),
+    note: llmAssisted
+      ? 'Experimental matcher with optional LLM re-ranking applied on top of deterministic signals.'
+      : 'Experimental deterministic matcher using type compatibility and overlap signals.',
   });
   return c.json(response);
 });
