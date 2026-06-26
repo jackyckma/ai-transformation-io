@@ -80,15 +80,15 @@
         "web-io-wave19",
         "web-org-wave19"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-4061c63e-76d0-4f48-a3ab-72eb43b391e4",
+      "runId": "run-74395cd9-d7af-4b47-9349-c50cb5162e0f",
+      "parentAgentId": "bc-9fd40d57-7f8e-4e03-b3a9-c3a02cad0f26",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/integrate-wave19.md",
       "startedAt": "2026-06-26T13:50:13.902Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-26T13:50:13.902Z",
+      "finishedAt": "2026-06-26T13:59:55.198Z",
+      "lastUpdate": "2026-06-26T13:59:55.198Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -140,6 +140,10 @@
     {
       "at": "2026-06-26T13:50:09.129Z",
       "message": "web-io-wave19: verification self-reported (live-ui-verified)"
+    },
+    {
+      "at": "2026-06-26T13:50:14.379Z",
+      "message": "git-sync failed (integrate-wave19 pending -> running): Command failed: git -C /workspace/.orchestrate/wave19-editorial-review push\nTo https://github.com/jackyckma/ai-transformation-io\n ! [rejected]        main -> main (fetch first)\nerror: failed to push s…"
     }
   ]
 }
