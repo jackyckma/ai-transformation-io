@@ -34,6 +34,18 @@ export type ContributionForCompile = {
   createdAt: string;
 };
 
+type UpsertSubscriberInput = {
+  email: string;
+  list: NewsletterList;
+  status?: SubscriberStatus;
+  userId?: string | null;
+};
+
+type UnsubscribeSubscriberInput = {
+  email: string;
+  list: NewsletterList;
+};
+
 export function runNewsletterMigrations(db: ReturnType<typeof getDb>): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS issues (
@@ -197,6 +209,86 @@ export function createIssueDraft(input: {
   return row;
 }
 
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+export function upsertSubscriber(input: UpsertSubscriberInput): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  const status = input.status ?? 'active';
+
+  db.prepare(
+    `INSERT INTO subscribers (
+      id,
+      email,
+      list,
+      status,
+      user_id,
+      subscribed_at,
+      unsubscribed_at
+    ) VALUES (
+      @id,
+      @email,
+      @list,
+      @status,
+      @userId,
+      @subscribedAt,
+      @unsubscribedAt
+    )
+    ON CONFLICT(email, list) DO UPDATE SET
+      status = excluded.status,
+      user_id = COALESCE(excluded.user_id, subscribers.user_id),
+      subscribed_at = CASE
+        WHEN excluded.status = 'active' THEN excluded.subscribed_at
+        ELSE subscribers.subscribed_at
+      END,
+      unsubscribed_at = CASE
+        WHEN excluded.status = 'active' THEN NULL
+        WHEN excluded.status = 'unsubscribed' THEN excluded.unsubscribed_at
+        ELSE subscribers.unsubscribed_at
+      END`,
+  ).run({
+    id: randomUUID(),
+    email: normalizeEmail(input.email),
+    list: input.list,
+    status,
+    userId: input.userId ?? null,
+    subscribedAt: now,
+    unsubscribedAt: status === 'unsubscribed' ? now : null,
+  });
+}
+
+export function listActiveSubscribers(list: NewsletterList): string[] {
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT email
+      FROM subscribers
+      WHERE list = @list
+        AND status = 'active'
+      ORDER BY subscribed_at DESC`,
+    )
+    .all({ list }) as Array<{ email: string }>;
+  return rows.map((row) => row.email);
+}
+
+export function unsubscribeSubscriber(input: UnsubscribeSubscriberInput): void {
+  const db = getDb();
+  const unsubscribedAt = new Date().toISOString();
+  db.prepare(
+    `UPDATE subscribers
+    SET status = 'unsubscribed',
+        unsubscribed_at = @unsubscribedAt
+    WHERE email = @email
+      AND list = @list`,
+  ).run({
+    email: normalizeEmail(input.email),
+    list: input.list,
+    unsubscribedAt,
+  });
+}
+
 export function getIssueById(id: string): IssueRow | null {
   const db = getDb();
   const row = db
@@ -219,6 +311,81 @@ export function getIssueById(id: string): IssueRow | null {
     )
     .get({ id }) as IssueRow | undefined;
   return row ?? null;
+}
+
+export function getIssueByReplyToToken(replyToToken: string): IssueRow | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT
+        id,
+        site,
+        list,
+        slug,
+        title,
+        draft_md AS draftMd,
+        status,
+        reply_to_token AS replyToToken,
+        provider_id AS providerId,
+        sent_at AS sentAt,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+      FROM issues
+      WHERE reply_to_token = @replyToToken`,
+    )
+    .get({ replyToToken }) as IssueRow | undefined;
+  return row ?? null;
+}
+
+export function markIssueSent(id: string, providerId: string): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  db.prepare(
+    `UPDATE issues
+    SET status = 'sent',
+        provider_id = @providerId,
+        sent_at = @sentAt,
+        updated_at = @updatedAt
+    WHERE id = @id`,
+  ).run({
+    id,
+    providerId,
+    sentAt: now,
+    updatedAt: now,
+  });
+}
+
+export function listRecentIssues(limit = 20): IssueRow[] {
+  const db = getDb();
+  const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(Math.floor(limit), 100)) : 20;
+  return db
+    .prepare(
+      `SELECT
+        id,
+        site,
+        list,
+        slug,
+        title,
+        draft_md AS draftMd,
+        status,
+        reply_to_token AS replyToToken,
+        provider_id AS providerId,
+        sent_at AS sentAt,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+      FROM issues
+      ORDER BY created_at DESC
+      LIMIT @limit`,
+    )
+    .all({ limit: safeLimit }) as IssueRow[];
+}
+
+export function linkIssueContribution(issueId: string, contributionId: string, role = 'reply'): void {
+  const db = getDb();
+  db.prepare(
+    `INSERT OR IGNORE INTO issue_contributions (issue_id, contribution_id, role)
+    VALUES (@issueId, @contributionId, @role)`,
+  ).run({ issueId, contributionId, role });
 }
 
 export function updateIssueDraft(id: string, draftMd: string): IssueRow | null {

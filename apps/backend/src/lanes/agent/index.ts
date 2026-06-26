@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import {
   createIssueDraft,
   listContributionsSince,
+  listRecentIssues,
   listNewsletterReplyContributions,
 } from '../../db/newsletter.js';
 import { listObjectsForRequester } from '../../db/objects.js';
@@ -104,6 +105,31 @@ agentRouter.post('/cluster-replies', async (c) => {
   const replies = listNewsletterReplyContributions(50);
   const { ok: _ok, ...cluster } = clusterNewsletterReplies(replies);
   return c.json({ ok: true, job: 'cluster_replies', ...cluster });
+});
+
+agentRouter.get('/issues', (c) => {
+  const admin = getAuthenticatedAdmin(c);
+  if (admin instanceof Response) {
+    return admin;
+  }
+
+  const rawLimit = c.req.query('limit');
+  const parsedLimit = rawLimit ? Number.parseInt(rawLimit, 10) : 20;
+  const limit = Number.isFinite(parsedLimit) ? parsedLimit : 20;
+
+  const issues = listRecentIssues(limit).map((issue) => ({
+    id: issue.id,
+    site: issue.site,
+    list: issue.list,
+    slug: issue.slug,
+    title: issue.title,
+    status: issue.status,
+    providerId: issue.providerId,
+    sentAt: issue.sentAt,
+    createdAt: issue.createdAt,
+  }));
+
+  return c.json({ ok: true, issues });
 });
 
 export default agentRouter;

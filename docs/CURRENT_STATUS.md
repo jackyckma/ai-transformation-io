@@ -4,7 +4,7 @@
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–16 (SITE_DESIGN_v2) ✅ · **Wave 16 shipped on `main`** (`58a174b`, PR #10)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–17 (SITE_DESIGN_v2) ✅ · **Wave 17 newsletter pilot shipped** (subscribe/unsubscribe, admin send, inbound replies, .io/.org newsletter UI)
 
 ## What works (production)
 
@@ -33,7 +33,9 @@ Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–16 (SITE_DESIGN_v2) ✅ · **Wav
 - **Wave 14 personalization v2 live:** .io recommendations now include bookmarks in ranking and personalized Insights relevance ordering for signed-in users; .org dashboard now uses real interaction/follow/bookmark/contribution signals from `GET /api/v1/personal/activity-summary`.
 - **Visibility enforcement unchanged and active:** all community/object reads and matcher candidate pools still rely on Wave 12 query-time visibility filtering (`buildVisibilityFilter`).
 - **Agent API v1** — read, authorize, write (`/api/v1/*`); **quota-only** (3/10 reads/day); credits top-up deferred until ~50 active users
-- **Newsletter infra (Wave 8)** — `issues` / `subscribers` tables, `NoopNewsletterProvider` + `ZeaburZSendProvider`, webhooks stub; **pilot send not live** (Wave 17)
+- **Wave 17 newsletter pilot shipped:** backend now serves `POST /api/newsletter/subscribe`, `POST /api/newsletter/unsubscribe`, `POST /api/internal/newsletter/send-issue` (admin + pilot cap), and `POST /api/webhooks/inbound-email` (secret-gated reply ingest to `newsletter_reply` contributions with issue linkage).
+- **Wave 17 admin/newsletter UI shipped on both sites:** `.io` and `.org` footers include low-key subscribe forms, and `/newsletter` admin page supports compile preview, issues list, and guarded send flow.
+- **Wave 17 integration verification:** `pnpm turbo build` passed for all packages and `pnpm --filter @ai-transformation/backend test` passed (55/55).
 - **Internal jobs (Wave 8)** — admin `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies`
 - ZSend domains **ai-transformation.io** + **.org** verified; `ZSEND_API_KEY` on Zeabur
 - Assessment backend and data products remain available (assessment now lives under Insights route in web-io)
@@ -55,7 +57,7 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 | Wave | Focus |
 |------|--------|
 | **16** | ✅ Shipped — content supply (L12 editorial ingest/review, compile-draft extension, idempotent seed, .org `/editorial` admin queue, Orbita path docs) |
-| **17** | Newsletter pilot (legacy Wave 10 scope; now unblocked by Wave 16 seed supply) |
+| **17** | ✅ Shipped — newsletter pilot (subscribe/unsubscribe, admin send cap, inbound reply webhook, footer subscribe, `/newsletter` admin page) |
 | **18** | LLM ranking, agent deep links, Phase 2 intent UI parity |
 | **19+** | Newsletter archive, agent credits (≥50 users) |
 
