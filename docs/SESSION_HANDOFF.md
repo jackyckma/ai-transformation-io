@@ -1,51 +1,50 @@
 # Session handoff
 
-**Date:** 2026-06-20  
+**Date:** 2026-06-26  
 **Branch:** `main`  
-**Latest commit:** `6e91a00` — fix(editorial): add full draft view before approve/reject  
-**Push status:** on `origin/main`
+**Latest commit:** merge PR #13 — Wave 19 editorial-review  
+**Push status:** merged to `origin/main`
 
 ## Active task
 
-- **Roadmap item:** Wave 19 editorial-review orchestrate **kicked off** (`wave19-editorial-review`)
-- **Definition of done:** [docs/waves/wave19-editorial-review.md](./waves/wave19-editorial-review.md)
-- **Draft only (no kickoff):** [docs/waves/wave19-scale-archive.md](./waves/wave19-scale-archive.md) — newsletter archive + credits at ≥50 users
+- **Roadmap item:** Wave 19 editorial-review ✅ shipped · **Wave 19 scale-archive** draft next (after newsletter pilot send)
+- **Definition of done:** [wave19-editorial-review.md](./waves/wave19-editorial-review.md) · scale: [wave19-scale-archive.md](./waves/wave19-scale-archive.md)
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 18 on `main` | ✅ PR #12 @ `e25e0ca` |
-| Editorial full-body UI | ✅ `6e91a00` — await Zeabur deploy confirm |
-| Wave 19 editorial-review | 📋 orchestrate active |
-| Wave 19 scale-archive | 📝 goal drafted; kickoff after editorial-review + pilot send |
-| Orbita AT1b | 📋 ~5/day ramp; handoff inbox 0 open |
+| Wave 19 on `main` | ✅ PR [#13](https://github.com/jackyckma/ai-transformation-io/pull/13) merged |
+| Editorial review agent | ✅ `review-pending` + `editorial_agent` metadata (no auto-approve) |
+| Objects catalog | ✅ `GET /api/v1/objects/catalog?site=` |
+| Interaction read-back | ✅ Phase 2 verbs survive reload |
+| Build + tests | ✅ turbo 6/6; backend **70/70** |
+| Orbita handoff | ✅ `~/Orbiter-AT-dogfood/inbox/at-to-orbita/2026-06-26-wave19-catalog-review-at.md` |
 
-## Wave 19 editorial-review pillars
+## Deferred (non-blocking)
 
-1. L12 editorial-review agent (LLM metadata on pending drafts; no auto-approve)
-2. Agent catalog/index for published Wave 12 objects (+ capabilities text)
-3. `listInteractionsForUser` read-back for Phase 2 verbs
-4. UI P1 if time: article footer related links + inline save confirmation
+- `.org` P1: `More in Knowledge` footer + inline Followed confirmation
+- Wave 19 scale-archive (newsletter archive + credits at ≥50 users)
+- Editorial auto-approve policy (founder TBD after calibration)
 
 ## Top priority next
 
-1. **Poll orchestrate** `wave19-editorial-review` → review + merge PR when verifier passes.
-2. **Newsletter pilot ops** on production (first send still founder-led).
-3. **Orbita AT1b** volume continues; post handoff after editorial-review ships catalog path.
+1. **Zeabur deploy** — confirm `/editorial` Run agent review + catalog on prod
+2. **Newsletter pilot ops** — first send (Wave 17 founder-led)
+3. **Orbita** — adopt `objects/catalog` in daily dedup after prod deploy
+4. **Founder pre-decisions** — see `docs/FOUNDER_WAVE_DECISIONS.md` (batch wave alignment)
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| Wave 19 editorial goal | `docs/waves/wave19-editorial-review.md` |
-| Wave 19 scale goal (draft) | `docs/waves/wave19-scale-archive.md` |
-| L12 contract | `apps/backend/src/lanes/editorial-supply/INTERFACE.md` |
-| Orbita handoff | `~/Orbiter-AT-dogfood/state/STATUS.md` |
-| Orchestrate state | `.orchestrate/wave19-editorial-review/` |
+| Wave 19 scope | `docs/waves/wave19-editorial-review.md` |
+| Scale draft | `docs/waves/wave19-scale-archive.md` |
+| Editorial review | `apps/backend/src/lanes/editorial-supply/review.ts` |
+| Catalog | `apps/backend/src/lanes/objects/index.ts` |
+| `/editorial` UI | `apps/web-org/components/editorial-queue.tsx` |
 
 ## Warnings
 
-- Review agent v1 is **advisory only** — human approve on `/editorial` unchanged.
-- LLM review skips gracefully without `MINIMAX_API_KEY`.
-- First orchestrate kickoff may fail (~30 min); respawn from same goal if needed.
+- Editorial review skips without `MINIMAX_API_KEY` — by design
+- Zeabur manual restart if 502 after merge-only commits

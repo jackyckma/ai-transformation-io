@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { ObjectSubtype } from '@ai-transformation/shared';
-import { resolveClientApiUrl } from '@ai-transformation/shared';
+import type { EditorialAgentReview, ObjectSubtype } from '@ai-transformation/shared';
+import { editorialAgentReviewSchema, resolveClientApiUrl } from '@ai-transformation/shared';
 
 import { formatDate, subtypeLabel } from '@/lib/object-display';
 
@@ -66,6 +66,15 @@ function sourceLabel(metadata: EditorialDraft['metadata']): string | null {
   return SOURCE_LABEL[source] ?? source;
 }
 
+function readAgentReview(metadata: EditorialDraft['metadata']): EditorialAgentReview | null {
+  const raw = metadata?.editorial_agent;
+  if (!raw || typeof raw !== 'object') {
+    return null;
+  }
+  const parsed = editorialAgentReviewSchema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
+}
+
 export function EditorialQueue() {
   const [drafts, setDrafts] = useState<EditorialDraft[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +82,8 @@ export function EditorialQueue() {
   const [accessDenied, setAccessDenied] = useState(false);
   const [actingId, setActingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
+  const [reviewing, setReviewing] = useState(false);
+  const [reviewError, setReviewError] = useState('');
 
   async function loadQueue() {
     setIsLoading(true);
@@ -104,6 +115,30 @@ export function EditorialQueue() {
     void loadQueue();
   }, []);
 
+  async function runAgentReview() {
+    setReviewing(true);
+    setReviewError('');
+    try {
+      const res = await fetch(`${apiBase()}/api/internal/editorial/review-pending`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        throw new Error(`Agent review failed: ${res.status}`);
+      }
+      await loadQueue();
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : '';
+      if (ACCESS_DENIED.test(message)) {
+        setAccessDenied(true);
+        return;
+      }
+      setReviewError("Couldn't run the agent review. Please try again.");
+    } finally {
+      setReviewing(false);
+    }
+  }
+
   async function act(draft: EditorialDraft, action: 'approve' | 'reject') {
     setActingId(draft.id);
     setActionError('');
@@ -131,12 +166,32 @@ export function EditorialQueue() {
   return (
     <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
       <header className="border-b border-[var(--border)] pb-6">
-        <p className="text-xs font-light tracking-wide text-[var(--muted)]">Editorial</p>
-        <h1 className="mt-3 font-serif text-3xl font-normal tracking-tight md:text-4xl">Editorial drafts</h1>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-light tracking-wide text-[var(--muted)]">Editorial</p>
+            <h1 className="mt-3 font-serif text-3xl font-normal tracking-tight md:text-4xl">Editorial drafts</h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => void runAgentReview()}
+            disabled={reviewing}
+            className="inline-flex items-center rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {reviewing ? 'Running agent review…' : 'Run agent review'}
+          </button>
+        </div>
         <p className="mt-4 max-w-2xl text-sm font-light leading-relaxed text-[var(--muted)]">
           Review drafts ingested for the knowledge commons before they go live. Approve to publish, or
           reject to archive — both sites share this queue.
         </p>
+        <p className="mt-2 max-w-2xl text-xs font-light leading-relaxed text-[var(--muted)]">
+          Run agent review to score pending drafts and surface flags. It never changes publish state.
+        </p>
+        {reviewError ? (
+          <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-200">
+            {reviewError}
+          </p>
+        ) : null}
       </header>
 
       <div className="mt-8">
@@ -248,6 +303,7 @@ function DraftCard({
   }
 
   const bodyText = expanded && detail ? detail.body : draft.bodyExcerpt;
+  const agentReview = readAgentReview(draft.metadata);
 
   return (
     <li className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5">
@@ -261,6 +317,7 @@ function DraftCard({
             {sourceLabel(draft.metadata) ? ` · ${sourceLabel(draft.metadata)}` : ''}
           </p>
         </header>
+        {agentReview ? <AgentReviewBlock review={agentReview} /> : null}
         <div
           className={`mt-4 whitespace-pre-wrap text-sm font-light leading-relaxed text-[var(--foreground)] ${
             expanded ? 'max-h-[min(70vh,32rem)] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-4' : 'text-[var(--muted)]'
@@ -284,6 +341,46 @@ function DraftCard({
         </div>
       </article>
     </li>
+  );
+}
+
+function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
+  if ('skipped' in review) {
+    return (
+      <div className="mt-4 rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)] px-4 py-3">
+        <p className="text-[11px] font-normal uppercase tracking-wide text-[var(--muted)]">Agent review</p>
+        <p className="mt-1 text-xs font-light text-[var(--muted)]">
+          Agent review skipped{review.reason ? ` · ${review.reason}` : ''}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">Agent review</p>
+        <span className="text-xs font-medium text-[var(--foreground)]">Score {review.score}/100</span>
+      </div>
+      {review.summary ? (
+        <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">{review.summary}</p>
+      ) : null}
+      {review.flags.length > 0 ? (
+        <ul className="mt-3 flex flex-wrap gap-1.5">
+          {review.flags.map((flag) => (
+            <li
+              key={flag}
+              className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[11px] font-light text-[var(--secondary)]"
+            >
+              {flag}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {review.model ? (
+        <p className="mt-2 text-[11px] font-light text-[var(--secondary)]">Reviewed by {review.model}</p>
+      ) : null}
+    </div>
   );
 }
 

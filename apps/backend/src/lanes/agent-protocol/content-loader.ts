@@ -99,6 +99,7 @@ export type ContentListEntry = {
   pathname: string;
   api_url: string;
   human_url: string;
+  source: 'knowledge_base';
 };
 
 function contentUrls(site: 'io' | 'org', slug: string, pathname: string): Pick<ContentListEntry, 'api_url' | 'human_url'> {
@@ -129,6 +130,7 @@ export function listContent(site: 'io' | 'org'): ContentListEntry[] {
         pillar: entry.pillar,
         pathname,
         ...contentUrls(site, slug, pathname),
+        source: 'knowledge_base',
       },
     ];
   });
@@ -152,6 +154,7 @@ export function getContent(slug: string, site: 'io' | 'org'): ContentDocument | 
     pillar: entry.pillar,
     pathname,
     ...contentUrls(site, slug, pathname),
+    source: 'knowledge_base',
     markdown,
   };
 }

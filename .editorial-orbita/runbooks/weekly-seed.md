@@ -36,8 +36,17 @@ Admin review + publish (ADMIN_EMAILS session cookie):
 
 ```bash
 GET  /api/internal/editorial/drafts?site=org      # list pending
+POST /api/internal/editorial/review-pending       # optional: score pending drafts before approval
+POST /api/internal/editorial/drafts/:id/review    # optional: score one draft
 POST /api/internal/editorial/drafts/:id/approve   # publish → /knowledge or /community
 POST /api/internal/editorial/drafts/:id/reject    # archive
+```
+
+Post-publish verify (public agent path):
+
+```bash
+GET /api/v1/objects/catalog?site=org              # discover published Wave 12 objects
+GET /api/v1/objects/{id}                          # verify exact published object payload
 ```
 
 Idempotent local seed (founder fallback — no Orbita):
@@ -62,9 +71,11 @@ pnpm tsx scripts/seed-editorial-content.ts   # or: pnpm seed:editorial
    ```
 
 3. **Verify drafts** — admin list or DB; no public visibility until approved
-4. **Founder approve** — publish via internal approve endpoint or moderation UI
-5. **Spot-check** — `/knowledge`, `/community`, home curated slots
-6. **Log gaps** — Orbita issues → orbita repo feedback file
+4. **Optional agent review** — founder runs `review-pending` (or single draft review) to attach `metadata.editorial_agent` before approve
+5. **Founder approve** — publish via internal approve endpoint or moderation UI
+6. **Post-publish verify** — check `GET /api/v1/objects/catalog?site=org` then `GET /api/v1/objects/{id}`
+7. **Spot-check** — `/knowledge`, `/community`, home curated slots
+8. **Log gaps** — Orbita issues → orbita repo feedback file
 
 ---
 
