@@ -18,6 +18,7 @@ import { AgentDeepLinks, AgentHintScript } from '@/components/agent-deep-links';
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useBookmarks } from '@/lib/use-bookmarks';
 import { useCommunityInteractions } from '@/lib/use-community-interactions';
+import { ConfirmCheckGlyph, useJustConfirmed } from '@/lib/use-just-confirmed';
 import { askPrefillHref } from '@/lib/ask-prefill';
 import { PageShell } from '@/components/page-shell';
 import { SaveButton } from '@/components/save-button';
@@ -341,6 +342,7 @@ function ActiveActions({
                 pending={interactions.isPending('follow')}
                 activeLabel="Following"
                 idleLabel="Follow"
+                confirmLabel="Followed"
                 onClick={() => void interactions.toggle('follow')}
               />
             ) : null}
@@ -495,27 +497,37 @@ function InteractionButton({
   pending,
   activeLabel,
   idleLabel,
+  confirmLabel,
   onClick,
 }: {
   active: boolean;
   pending: boolean;
   activeLabel: string;
   idleLabel: string;
+  /** When set, a brief inline check + this label flashes on a successful idle→active toggle. */
+  confirmLabel?: string;
   onClick: () => void;
 }) {
+  const { justConfirmed, markInteracted } = useJustConfirmed(active);
+  const showConfirm = Boolean(confirmLabel) && justConfirmed && active && !pending;
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => {
+        markInteracted();
+        onClick();
+      }}
       disabled={pending}
       aria-pressed={active}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
         active
           ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]'
           : 'border-[var(--border)] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
       }`}
     >
-      {pending ? 'Saving…' : active ? activeLabel : idleLabel}
+      {showConfirm ? <ConfirmCheckGlyph /> : null}
+      {pending ? 'Saving…' : showConfirm ? confirmLabel : active ? activeLabel : idleLabel}
     </button>
   );
 }

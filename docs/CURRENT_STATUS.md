@@ -1,10 +1,10 @@
 # Current status
 
-**Last updated:** 2026-06-26
+**Last updated:** 2026-06-27
 
 ## Summary
 
-Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–19 (SITE_DESIGN_v2) ✅ · **Wave 19 editorial-review + agent discoverability shipped** (review-pending agent metadata, objects catalog verify path, interaction kind read-back parity)
+Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–19 (SITE_DESIGN_v2) ✅ · **Wave 21 .org UI P1 polish shipped** (More in Knowledge footer + inline Followed/Saved confirmation on .org) · Wave 19 editorial-review + agent discoverability shipped (review-pending agent metadata, objects catalog verify path, interaction kind read-back parity)
 
 ## What works (production)
 
@@ -44,7 +44,8 @@ Wave 0–9 ✅ · Agent API v1 ✅ · Wave 11–19 (SITE_DESIGN_v2) ✅ · **Wav
 - **Wave 19 `/editorial` review queue UI shipped (.org):** draft cards now surface agent score/summary/flags/model when `metadata.editorial_agent` exists, show a skipped badge when review is skipped, and add a `Run agent review` action that posts to `/api/internal/editorial/review-pending`; existing View full article + Approve/Reject behavior is unchanged.
 - **Wave 19 agent discoverability shipped:** public `GET /api/v1/objects/catalog?site=io|org` now lists published Wave 12 knowledge/community objects with `source: 'wave12_object'` and direct `human_url` + `api_url`; legacy `GET /api/v1/content` and `GET /api/v1/content/:slug` remain intact and are tagged `source: 'knowledge_base'`; `GET /api/v1/capabilities` now documents post-publish verify via `GET /api/v1/objects/{id}` or `GET /api/v1/objects/catalog`.
 - **Wave 19 Wave-18 follow-up shipped:** `listInteractionsForUser` and community interaction listing now include `request_mentor`, `ask_for_intro`, and `apply`, so `.org` detail/list done-state survives reload after persisted actions.
-- **Wave 19 optional P1 polish status:** `.io` shipped both `More in Library` related links on article footer and inline save confirmation; `.org` optional `More in Knowledge` related links + inline followed confirmation remain deferred.
+- **Wave 19 optional P1 polish status:** `.io` shipped both `More in Library` related links on article footer and inline save confirmation; `.org` optional `More in Knowledge` related links + inline followed confirmation remain deferred. **(Now shipped in Wave 21 — see below.)**
+- **Wave 21 .org UI P1 polish shipped (frontend-only, no backend):** `.org` knowledge detail (`/knowledge/[id]`) now shows a secondary `More in Knowledge` footer listing up to 4 other published knowledge entries (same-subtype-first, current article excluded) sourced from the existing `objects.list({ site:'org', objectType:'knowledge', status:'published' })` call — renders nothing on empty/failure. The `.org` Follow affordance flashes a brief inline check + `Followed` (~1.6s, matching `.io` save-to-context) on a successful follow then settles into the persistent `Following` state; unfollow shows no confirmation. The shared `.org` SaveButton flashes the same brief check on a successful save (backward-compatible for all callers). No `useCommunityInteractions` behavior change; no new dependency/toast lib.
 - **Wave 19 integration verification:** `pnpm turbo build` passed for all 6 build targets and `pnpm --filter @ai-transformation/backend test` passed (70/70, including review-pending, catalog discoverability, and interaction read-back coverage).
 - **Internal jobs (Wave 8)** — admin `POST /api/agent/compile-draft`, `POST /api/agent/cluster-replies`
 - ZSend domains **ai-transformation.io** + **.org** verified; `ZSEND_API_KEY` on Zeabur
