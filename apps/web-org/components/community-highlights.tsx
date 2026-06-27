@@ -195,7 +195,7 @@ function ObjectCard({
   return (
     <li className="list-row">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
+        <span className="rounded-sm bg-[var(--brand)]/12 px-2 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--brand)]">
           {typeLabel}
         </span>
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
@@ -359,7 +359,7 @@ function SampleCard({ item }: { item: CommunityHighlight }) {
   return (
     <li className="list-row">
       <div className="flex items-center gap-2">
-        <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
+        <span className="rounded-sm bg-[var(--brand)]/12 px-2 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--brand)]">
           {typeMeta.label}
         </span>
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">

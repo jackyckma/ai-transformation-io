@@ -118,7 +118,7 @@ function KnowledgeListRow({ item }: { item: KnowledgeItem }) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-normal uppercase tracking-wide">
-            <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[var(--accent)]">
+            <span className="rounded-sm bg-[var(--brand)]/12 px-2 py-0.5 text-[var(--brand)]">
               {PILLAR_TYPE_LABEL[item.pillar]}
             </span>
             <span className="text-[var(--secondary)]">public</span>

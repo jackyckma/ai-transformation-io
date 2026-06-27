@@ -182,7 +182,7 @@ export function CommunityObjectView({ id }: { id: string }) {
     <PageShell as="article">
       <header className="mb-8 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 md:p-6">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
+          <span className="rounded-full border border-[var(--brand)]/35 bg-[var(--brand)]/10 px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--brand)]">
             {typeLabel}
           </span>
           <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">

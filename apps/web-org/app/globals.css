@@ -1,19 +1,20 @@
 @import 'tailwindcss';
 
 :root {
-  /* 60% — page ground */
-  --background: #f3f5f4;
-  --foreground: #14241c;
-  /* 30% — structure (nav rails, tree panels, list hover) */
-  --surface: #e3ebe6;
-  --surface-raised: #f8fbf9;
-  --border: #b8cfc4;
-  --muted: #4a6458;
-  --secondary: #5a7366;
-  /* 10% — actions & focus */
-  --accent: #2d6a4f;
-  --accent-fg: #f4fbf7;
-  --card: var(--surface-raised);
+  /* 60% — neutral reading ground (white / light grey) */
+  --background: #f7f7f6;
+  --foreground: #1a1f1c;
+  --muted: #5c6360;
+  --border: #dddcd8;
+  /* 30% — brand secondary (original sage green — structure, labels) */
+  --brand: #2d6a4f;
+  --surface: #e4ebe6;
+  --surface-raised: #ffffff;
+  --secondary: #3f5f4c;
+  /* 10% — complementary highlight (muted rose / terracotta vs green) */
+  --accent: #a24d57;
+  --accent-fg: #fffaf9;
+  --card: #ffffff;
   --layout-shell: 72rem;
   --layout-read: 48rem;
   --layout-prose: 42rem;
@@ -24,16 +25,17 @@
 }
 
 .dark {
-  --background: #0b1410;
-  --foreground: #dcebe2;
-  --surface: #152019;
-  --surface-raised: #121c17;
-  --border: #2a4034;
-  --muted: #8faaa0;
-  --secondary: #b0c9bc;
-  --accent: #6ec99a;
-  --accent-fg: #0b1410;
-  --card: var(--surface-raised);
+  --background: #121514;
+  --foreground: #e8ece9;
+  --muted: #9aa39e;
+  --border: #2e3833;
+  --brand: #6ec99a;
+  --surface: #1a2420;
+  --surface-raised: #161d19;
+  --secondary: #8faaa0;
+  --accent: #d4848f;
+  --accent-fg: #121514;
+  --card: #161d19;
 }
 
 body {
@@ -198,7 +200,7 @@ body {
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--secondary);
+  color: var(--brand);
 }
 
 .index-tree-list {

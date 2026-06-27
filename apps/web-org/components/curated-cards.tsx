@@ -110,7 +110,7 @@ export function FeatureSpotlightCard({
         />
         <div className="p-5 md:p-6">
           <p className="flex flex-wrap items-center gap-x-2 text-xs font-light tracking-wide text-[var(--muted)]">
-            <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2 py-0.5 uppercase tracking-wide text-[var(--accent)]">
+            <span className="rounded-full border border-[var(--brand)]/35 bg-[var(--brand)]/10 px-2 py-0.5 uppercase tracking-wide text-[var(--brand)]">
               {category}
             </span>
             {date ? <span>Updated {date}</span> : null}

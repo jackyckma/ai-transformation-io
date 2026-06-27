@@ -90,7 +90,7 @@ export function KnowledgeObjects({ isMember }: { isMember: boolean }) {
             <li key={object.id} className="list-row">
               <Link href={`/knowledge/${encodeURIComponent(object.id)}`} className="group block">
                 <span className="flex flex-wrap items-center gap-2 text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
-                  <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[var(--accent)]">
+                  <span className="rounded-sm bg-[var(--brand)]/12 px-2 py-0.5 text-[var(--brand)]">
                     {subtypeLabel(object.type)}
                   </span>
                   <span aria-hidden>·</span>
