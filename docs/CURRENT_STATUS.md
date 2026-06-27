@@ -69,8 +69,9 @@ See [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md) §12 and [UI_READINESS_AUDIT.md](./
 | **16** | ✅ Shipped — content supply (L12 editorial ingest/review, compile-draft extension, idempotent seed, .org `/editorial` admin queue, Orbita path docs) |
 | **17** | ✅ Shipped — newsletter pilot (subscribe/unsubscribe, admin send cap, inbound reply webhook, footer subscribe, `/newsletter` admin page) |
 | **18** | ✅ Shipped — LLM-assisted rerank fallback, external-agent deep links, Phase 2 intent verb UI parity |
-| **19 editorial-review** | ✅ Shipped — review agent, objects catalog, interaction read-back, .io P1 polish ([goal](waves/wave19-editorial-review.md)) |
-| **19 scale-archive** | 📝 Draft — newsletter public archive, agent credits (≥50 users) ([goal](waves/wave19-scale-archive.md)) |
+| **19 editorial-review** | ✅ Shipped — review agent, objects catalog, interaction read-back ([goal](waves/wave19-editorial-review.md)) |
+| **19 scale-archive** | Split: **20a** archive deferred · **20b** credits @ ≥50 users ([decisions](FOUNDER_WAVE_DECISIONS.md)) |
+| **21** | 📋 Active orchestrate — .org P1 polish ([goal](waves/wave21-ui-p1-org-polish.md)) |
 
 ## Docs
 

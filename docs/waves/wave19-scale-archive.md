@@ -12,7 +12,12 @@
 
 Wave 19 is the **scale gate** from SITE_DESIGN_v2 §12: public newsletter archive and agent credits — only after product surface + editorial pipeline are stable.
 
-**Kickoff when:** founder has run ≥1 newsletter pilot send **and** either (a) wants public issue pages, or (b) active registered users approach **~50** (credits threshold).
+**Kickoff when:**
+
+- **Credits (20b):** active registered users ≥ **50** (founder locked 2026-06-26)
+- **Archive (20a):** **deferred** — founder does not want public issue archive until sent newsletter volume warrants it; URL reserved: `.io` `/newsletter/archive` (B4 locked)
+
+Do **not** kickoff archive until founder reopens B3 in `FOUNDER_WAVE_DECISIONS.md`.
 
 ---
 

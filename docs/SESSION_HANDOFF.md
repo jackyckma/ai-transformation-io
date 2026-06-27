@@ -7,8 +7,9 @@
 
 ## Active task
 
-- **Roadmap item:** Wave 19 editorial-review ✅ shipped · **Wave 19 scale-archive** draft next (after newsletter pilot send)
-- **Definition of done:** [wave19-editorial-review.md](./waves/wave19-editorial-review.md) · scale: [wave19-scale-archive.md](./waves/wave19-scale-archive.md)
+- **Wave 21** ui-p1-org-polish orchestrate **kicked off**
+- **Founder decisions:** all locked in [FOUNDER_WAVE_DECISIONS.md](./FOUNDER_WAVE_DECISIONS.md)
+- **Human ops:** Zeabur deploy Wave 19 + newsletter send @ ~10 subs
 
 ## Current status
 
