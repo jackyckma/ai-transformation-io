@@ -323,9 +323,53 @@ export function getUserByEmail(email: string): UserRow | null {
   return row ?? null;
 }
 
+function normalizeUserEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function releasedEmailForUserId(userId: string): string {
+  return `released+${userId}@users.invalid`;
+}
+
+/** Free unique email/google_sub slots before linking the canonical Google account row. */
+function releaseUserIdentityConflicts(
+  db: Database.Database,
+  opts: { keepUserId: string; email: string; googleSub: string },
+): void {
+  const normalizedEmail = normalizeUserEmail(opts.email);
+
+  const emailConflict = db
+    .prepare(`SELECT id FROM users WHERE email = @email AND id != @keepUserId`)
+    .get({ email: normalizedEmail, keepUserId: opts.keepUserId }) as { id: string } | undefined;
+
+  if (emailConflict) {
+    db.prepare(
+      `UPDATE users
+      SET email = @releasedEmail,
+          google_sub = NULL
+      WHERE id = @id`,
+    ).run({
+      id: emailConflict.id,
+      releasedEmail: releasedEmailForUserId(emailConflict.id),
+    });
+  }
+
+  const subConflict = db
+    .prepare(`SELECT id FROM users WHERE google_sub = @googleSub AND id != @keepUserId`)
+    .get({ googleSub: opts.googleSub, keepUserId: opts.keepUserId }) as { id: string } | undefined;
+
+  if (subConflict) {
+    db.prepare(`UPDATE users SET google_sub = NULL WHERE id = @id`).run({ id: subConflict.id });
+  }
+}
+
 export function upsertUserByGoogle(input: UpsertUserByGoogleInput): UserRow {
   const db = getDb();
   const now = new Date().toISOString();
+  const normalized: UpsertUserByGoogleInput = {
+    ...input,
+    email: normalizeUserEmail(input.email),
+  };
 
   const tx = db.transaction((data: UpsertUserByGoogleInput) => {
     const existingByGoogle = db
@@ -344,6 +388,11 @@ export function upsertUserByGoogle(input: UpsertUserByGoogleInput): UserRow {
       .get({ googleSub: data.googleSub }) as UserRow | undefined;
 
     if (existingByGoogle) {
+      releaseUserIdentityConflicts(db, {
+        keepUserId: existingByGoogle.id,
+        email: data.email,
+        googleSub: data.googleSub,
+      });
       db.prepare(
         `UPDATE users
         SET email = @email,
@@ -381,6 +430,11 @@ export function upsertUserByGoogle(input: UpsertUserByGoogleInput): UserRow {
       .get({ email: data.email }) as UserRow | undefined;
 
     if (existingByEmail) {
+      releaseUserIdentityConflicts(db, {
+        keepUserId: existingByEmail.id,
+        email: data.email,
+        googleSub: data.googleSub,
+      });
       db.prepare(
         `UPDATE users
         SET google_sub = @googleSub,
@@ -439,7 +493,7 @@ export function upsertUserByGoogle(input: UpsertUserByGoogleInput): UserRow {
     return created;
   });
 
-  return tx(input);
+  return tx(normalized);
 }
 
 export function createSession(userId: string, ttlMs: number): { id: string; expiresAt: string } {

@@ -92,6 +92,61 @@ describe('Wave 4 auth + session backend', () => {
     });
   });
 
+  it('updates email on Google login when another user row holds the new address', async () => {
+    const { db } = await loadBackend();
+    const sqlite = db.getDb();
+    const now = new Date().toISOString();
+
+    const primary = db.upsertUserByGoogle({
+      googleSub: 'google-sub-founder',
+      email: 'jackymama@gmail.com',
+      name: 'Founder',
+      picture: null,
+    });
+
+    sqlite
+      .prepare(
+        `INSERT INTO users (
+          id,
+          google_sub,
+          email,
+          name,
+          picture,
+          created_at,
+          last_login_at
+        ) VALUES (
+          @id,
+          NULL,
+          @email,
+          NULL,
+          NULL,
+          @createdAt,
+          NULL
+        )`,
+      )
+      .run({
+        id: 'stale-user-id',
+        email: 'jackyma.berlin@gmail.com',
+        createdAt: now,
+      });
+
+    const updated = db.upsertUserByGoogle({
+      googleSub: 'google-sub-founder',
+      email: 'jackyma.berlin@gmail.com',
+      name: 'Founder',
+      picture: null,
+    });
+
+    expect(updated.id).toBe(primary.id);
+    expect(updated.email).toBe('jackyma.berlin@gmail.com');
+
+    const stale = sqlite
+      .prepare('SELECT email, google_sub AS googleSub FROM users WHERE id = ?')
+      .get('stale-user-id') as { email: string; googleSub: string | null };
+    expect(stale.email).toBe('released+stale-user-id@users.invalid');
+    expect(stale.googleSub).toBeNull();
+  });
+
   it('deduplicates users by google_sub upsert', async () => {
     const { db } = await loadBackend();
 
