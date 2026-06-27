@@ -15,6 +15,8 @@ Optional: `.agents/instructions/lane-based-development.md` for multi-module prod
 
 Do not duplicate long policy here — keep this file a thin pointer.
 
+**Continual learning:** `.agents/instructions/continual-learning.md` — after a run, reply **≤300 words** (繁體中文); if no durable updates, exactly `No high-signal memory updates.`
+
 ## Git workflow
 
 Branch from **`main`**, open PR to **`main`**, unless `project-guidelines.md` states otherwise.
@@ -50,6 +52,7 @@ When work touches Orbita integration, L12 editorial supply, or `.editorial-orbit
 - Site design: content-first editorial; Ask page with modes (Ask/Capture/Submit/Find Help per site); agent-native contextual actions → on-site Ask prefill; not product-marketing chrome. Mobile: hamburger + bottom ribbon; companion via `/ask` (not persistent sidebar). Distinct .io vs .org palettes; find UI gaps via competitive research against community sites (not founder friend interviews); abstract decoration imagery still prototype-grade until polish waves. Cross-agent handoff: write copyable repo markdown files (e.g. `docs/orbita-at1a-answers-for-orbita-agent.md`) rather than long chat-rendered blocks.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
 - After completing shippable work (content, UI, fixes, docs tied to production), default to commit, push to `main`, and Zeabur deploy without asking — unless the user says otherwise, the change is exploratory, or a critical product decision is pending.
+- Continual-learning / memory sync: user-facing reply **≤300 words** (繁體中文); if no durable updates, exactly `No high-signal memory updates.` — no per-bullet diff dumps.
 
 ## Learned Workspace Facts
 

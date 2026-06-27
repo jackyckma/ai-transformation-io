@@ -23,5 +23,6 @@ For **product, IA, or nav work**, read `docs/SITE_DESIGN_v2.md` (approved Wave 1
 - Read `docs/CURRENT_STATUS.md` and roadmap docs before large changes.
 - Do not add Playwright or similar to `package.json` without explicit user approval.
 - For Zeabur ops: load Zeabur skills when configured in project-guidelines.
+- **Continual learning** (skill or hook follow-up): read `.agents/instructions/continual-learning.md`; user-facing reply **≤300 words** (繁體中文); if no updates, exactly `No high-signal memory updates.`
 
 See `.agents/README.md` if present.

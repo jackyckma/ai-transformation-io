@@ -14,3 +14,4 @@ Lane-specific skills live here as `lane-<name>/SKILL.md` — see `lane-based-dev
 | Skill | When to load |
 |-------|--------------|
 | `curated-home-refresh/` | Propose `data/curated/*.json` changes — founder approves PR |
+| `continual-learning/` | Hook follow-up or manual memory sync — brief ≤300-word user reply |
