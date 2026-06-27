@@ -71,28 +71,31 @@ export function LibraryBrowser({ pages, collections, reviewedLabel }: LibraryBro
       </div>
 
       {tab === 'all' ? (
-        <div className="mt-6">
-          <Filters
-            pillars={pillars}
-            pillar={pillar}
-            onPillar={setPillar}
-            collections={collections}
-            collectionId={collectionId}
-            onCollection={setCollectionId}
-          />
+        <div className="mt-6 index-layout">
+          <div className="surface-panel w-full shrink-0 p-4 md:w-56 md:sticky md:top-[calc(var(--site-header-h)+1rem)]">
+            <Filters
+              pillars={pillars}
+              pillar={pillar}
+              onPillar={setPillar}
+              collections={collections}
+              collectionId={collectionId}
+              onCollection={setCollectionId}
+            />
+          </div>
 
-          <p className="mt-6 text-xs font-light text-[var(--muted)]">
+          <div className="min-w-0 flex-1">
+          <p className="text-xs font-light text-[var(--muted)]">
             {filtered.length} {filtered.length === 1 ? 'article' : 'articles'}
             {reviewedLabel ? (
               <span className="text-[var(--secondary)]"> · Reviewed {reviewedLabel}</span>
             ) : null}
           </p>
 
-          <ul className="mt-2 divide-y divide-[var(--border)]">
+          <ul className="list-rows mt-2">
             {filtered.map((page) => (
-              <li key={page.slug} className="py-6 first:pt-2">
+              <li key={page.slug} className="list-row">
                 <Link href={page.pathname} className="group block">
-                  <p className="text-xs font-light tracking-wide text-[var(--muted)]">
+                  <p className="text-xs font-light tracking-wide text-[var(--secondary)]">
                     {PILLAR_LABEL[page.pillar]}
                   </p>
                   <h2 className="font-serif mt-2 text-xl font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
@@ -123,6 +126,7 @@ export function LibraryBrowser({ pages, collections, reviewedLabel }: LibraryBro
               No articles match this filter. Clear it to see the full library.
             </p>
           ) : null}
+          </div>
         </div>
       ) : (
         <MyLibrary pages={pages} />

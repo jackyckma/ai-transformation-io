@@ -82,29 +82,28 @@ export function KnowledgeObjects({ isMember }: { isMember: boolean }) {
         Field notes, derived articles, and references contributed by the community.
         {isMember ? ' You also see members-only knowledge here.' : ''}
       </p>
-      <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+      <ul className="list-rows mt-4">
         {objects.map((object) => {
           const target = objectTarget(object);
           const title = objectTitle(object);
           return (
-            <li
-              key={object.id}
-              className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition hover:border-[var(--accent)]/40"
-            >
-              <Link href={`/knowledge/${encodeURIComponent(object.id)}`} className="group">
+            <li key={object.id} className="list-row">
+              <Link href={`/knowledge/${encodeURIComponent(object.id)}`} className="group block">
                 <span className="flex flex-wrap items-center gap-2 text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
-                  <span>{subtypeLabel(object.type)}</span>
+                  <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[var(--accent)]">
+                    {subtypeLabel(object.type)}
+                  </span>
                   <span aria-hidden>·</span>
                   <span>{VISIBILITY_LABEL[object.visibility]}</span>
                 </span>
-                <h3 className="font-serif mt-1 text-base font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
+                <h3 className="font-serif mt-2 text-lg font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
                   {title}
                 </h3>
-                <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">
+                <p className="mt-2 max-w-2xl text-sm font-light leading-relaxed text-[var(--muted)]">
                   {objectExcerpt(object.body)}
                 </p>
               </Link>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border)] pt-3">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-light text-[var(--secondary)]">
                   {formatDate(object.updatedAt)}
                 </span>

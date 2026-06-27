@@ -107,7 +107,7 @@ export function CommunityHighlights() {
       {state === 'loading' ? <CommunitySkeleton /> : null}
 
       {hasLiveObjects ? (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="list-rows">
           {objects.map((object) => (
             <ObjectCard
               key={object.id}
@@ -138,7 +138,7 @@ export function CommunityHighlights() {
         </p>
       ) : null}
 
-      <section className="mt-10 rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)] p-6 md:p-8">
+      <section className="surface-panel mt-10 p-6 md:p-8">
         <h2 className="font-serif text-lg font-normal tracking-tight">
           {isMember ? 'Your opportunity layer' : 'Want to take part?'}
         </h2>
@@ -193,16 +193,16 @@ function ObjectCard({
   const matchEligible = isMatchEligible(object.type);
 
   return (
-    <li className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+    <li className="list-row">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
+        <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
           {typeLabel}
         </span>
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
           {VISIBILITY_LABEL[object.visibility]}
         </span>
       </div>
-      <h3 className="font-serif mt-3 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
+      <h3 className="font-serif mt-2 text-lg font-normal leading-snug tracking-tight text-[var(--foreground)]">
         <Link href={detailHref} className="hover:text-[var(--accent)]">
           {title}
         </Link>
@@ -214,7 +214,7 @@ function ObjectCard({
         Updated {formatDate(object.updatedAt)}
       </p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-3">
+      <div className="mt-4 flex flex-wrap items-center gap-2 pt-1">
         {isMember && verbs.includes('save') ? (
           <SaveButton
             target={target}
@@ -316,20 +316,16 @@ function CardActionButton({
 
 function CommunitySkeleton() {
   return (
-    <ul className="grid gap-4 sm:grid-cols-2" aria-hidden>
+    <ul className="list-rows" aria-hidden>
       {Array.from({ length: 4 }).map((_, index) => (
-        <li
-          key={index}
-          className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5"
-        >
+        <li key={index} className="list-row">
           <div className="flex items-center gap-2">
-            <span className="h-4 w-20 rounded-full bg-[var(--border)] motion-safe:animate-pulse" />
-            <span className="h-4 w-14 rounded-full bg-[var(--border)] motion-safe:animate-pulse" />
+            <span className="h-4 w-20 rounded-sm bg-[var(--border)] motion-safe:animate-pulse" />
+            <span className="h-4 w-14 rounded-sm bg-[var(--border)] motion-safe:animate-pulse" />
           </div>
-          <span className="mt-3 h-5 w-3/4 rounded bg-[var(--border)] motion-safe:animate-pulse" />
-          <span className="mt-3 h-4 w-full rounded bg-[var(--border)] motion-safe:animate-pulse" />
-          <span className="mt-2 h-4 w-5/6 rounded bg-[var(--border)] motion-safe:animate-pulse" />
-          <span className="mt-4 h-3 w-24 rounded bg-[var(--border)] motion-safe:animate-pulse" />
+          <span className="mt-3 block h-5 w-3/4 rounded bg-[var(--border)] motion-safe:animate-pulse" />
+          <span className="mt-3 block h-4 w-full rounded bg-[var(--border)] motion-safe:animate-pulse" />
+          <span className="mt-2 block h-4 w-5/6 rounded bg-[var(--border)] motion-safe:animate-pulse" />
         </li>
       ))}
     </ul>
@@ -348,7 +344,7 @@ function FallbackHighlights({ note }: { note: string }) {
         </h2>
         <p className="text-sm font-light text-[var(--muted)]">{note}</p>
       </div>
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <ul className="list-rows">
         {COMMUNITY_HIGHLIGHTS.map((item) => (
           <SampleCard key={item.id} item={item} />
         ))}
@@ -361,9 +357,9 @@ function SampleCard({ item }: { item: CommunityHighlight }) {
   const typeMeta = COMMUNITY_TYPE_META[item.type];
 
   return (
-    <li className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+    <li className="list-row">
       <div className="flex items-center gap-2">
-        <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2.5 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
+        <span className="rounded-sm bg-[var(--accent)]/12 px-2 py-0.5 text-[11px] font-normal uppercase tracking-wide text-[var(--accent)]">
           {typeMeta.label}
         </span>
         <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">

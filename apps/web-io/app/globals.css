@@ -1,14 +1,19 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f7f2ea;
+  /* 60% — page ground */
+  --background: #f6f2eb;
   --foreground: #1a1612;
-  --accent: #8f5e2c;
-  --accent-fg: #faf6f0;
+  /* 30% — structure */
+  --surface: #e8dfd2;
+  --surface-raised: #fffdf9;
+  --border: #cfc4b5;
   --muted: #6b5c4f;
   --secondary: #5c4f44;
-  --card: #fffdf9;
-  --border: #e6d9c8;
+  /* 10% — actions */
+  --accent: #8f5e2c;
+  --accent-fg: #faf6f0;
+  --card: var(--surface-raised);
   --layout-shell: 72rem;
   --layout-read: 48rem;
   --layout-prose: 42rem;
@@ -21,12 +26,14 @@
 .dark {
   --background: #14110e;
   --foreground: #ece5dc;
-  --accent: #c9924f;
-  --accent-fg: #14110e;
+  --surface: #1f1a15;
+  --surface-raised: #1c1814;
+  --border: #3d342b;
   --muted: #a8947f;
   --secondary: #c9b8a3;
-  --card: #1c1814;
-  --border: #3d342b;
+  --accent: #c9924f;
+  --accent-fg: #14110e;
+  --card: var(--surface-raised);
 }
 
 body {
@@ -165,4 +172,43 @@ body {
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.surface-panel {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.list-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-row {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.list-row:first-child {
+  padding-top: 0.5rem;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.index-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .index-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+  }
 }

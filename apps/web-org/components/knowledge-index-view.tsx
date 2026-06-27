@@ -1,13 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { CompanionAskStrip } from '@ai-transformation/chat-ui';
 
 import { useAuthUser } from '@/lib/use-auth-user';
-import { knowledgeActions } from '@/lib/ask-prefill';
-import type { KnowledgeIndex, KnowledgeItem } from '@/lib/knowledge-index';
+import type { KnowledgeIndex } from '@/lib/knowledge-index';
 import { formatDate } from '@/lib/object-display';
+import { KnowledgeBrowser } from '@/components/knowledge-browser';
 import { KnowledgeObjects } from '@/components/knowledge-objects';
 import { MyLibraryPanel } from '@/components/my-library-panel';
 import { MyArticlesPanel, MyCommentsPanel } from '@/components/my-articles-panel';
@@ -20,12 +19,6 @@ const MEMBER_TABS: { id: Tab; label: string }[] = [
   { id: 'articles', label: 'My articles' },
   { id: 'comments', label: 'My comments' },
 ];
-
-const PILLAR_TYPE_LABEL: Record<KnowledgeItem['pillar'], string> = {
-  framework: 'Framework',
-  function: 'Guide',
-  resource: 'Reference',
-};
 
 export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
   const { audience } = useAuthUser();
@@ -57,7 +50,7 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
       </div>
 
       {isMember ? (
-        <div role="tablist" aria-label="Knowledge views" className="mb-8 flex flex-wrap gap-2 text-sm">
+        <div role="tablist" aria-label="Knowledge views" className="mb-8 flex flex-wrap gap-1 border-b border-[var(--border)]">
           {MEMBER_TABS.map((item) => (
             <button
               key={item.id}
@@ -65,10 +58,10 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
               role="tab"
               aria-selected={activeTab === item.id}
               onClick={() => setTab(item.id)}
-              className={`rounded-full border px-4 py-1.5 transition ${
+              className={`-mb-px border-b-2 px-3 pb-2.5 pt-1 text-sm transition ${
                 activeTab === item.id
-                  ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--foreground)]'
-                  : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)]/40'
+                  ? 'border-[var(--accent)] font-normal text-[var(--foreground)]'
+                  : 'border-transparent font-light text-[var(--secondary)] hover:text-[var(--foreground)]'
               }`}
             >
               {item.label}
@@ -79,7 +72,7 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
 
       {activeTab === 'browse' ? (
         <>
-          <BrowseCategories index={index} />
+          <KnowledgeBrowser index={index} />
           <KnowledgeObjects isMember={isMember} />
         </>
       ) : null}
@@ -89,55 +82,3 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
     </div>
   );
 }
-
-function BrowseCategories({ index }: { index: KnowledgeIndex }) {
-  return (
-    <div className="space-y-10">
-      {index.categories.map((category) => (
-        <section key={category.id} aria-labelledby={`kb-${category.id}`}>
-          <h2
-            id={`kb-${category.id}`}
-            className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]"
-          >
-            {category.title}
-          </h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {category.items.map((item) => (
-              <li
-                key={item.slug}
-                className="flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition hover:border-[var(--accent)]/40"
-              >
-                <Link href={item.href} className="group">
-                  <span className="flex flex-wrap items-center gap-2 text-[11px] font-normal uppercase tracking-wide">
-                    <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2 py-0.5 text-[var(--accent)]">
-                      {PILLAR_TYPE_LABEL[item.pillar]}
-                    </span>
-                    <span className="text-[var(--secondary)]">public</span>
-                  </span>
-                  <h3 className="font-serif mt-2 text-base font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">
-                    {item.description}
-                  </p>
-                </Link>
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-[var(--border)] pt-3 text-xs">
-                  {knowledgeActions(item.title, item.slug).map((action) => (
-                    <Link
-                      key={action.label}
-                      href={action.href}
-                      className="text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
-                    >
-                      {action.label}
-                    </Link>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
-  );
-}
-
