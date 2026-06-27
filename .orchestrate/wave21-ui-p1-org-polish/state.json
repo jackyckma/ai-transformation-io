@@ -17,11 +17,11 @@
       "finishedAt": "2026-06-27T13:37:41.727Z",
       "lastUpdate": "2026-06-27T13:37:45.073Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": 14,
       "failureMode": null,
-      "verification": "type-check-only",
-      "attempts": 1
+      "verification": "type-check-only"
     },
     {
       "name": "verify-wave21",
@@ -41,11 +41,11 @@
       "finishedAt": "2026-06-27T13:43:02.954Z",
       "lastUpdate": "2026-06-27T13:43:02.955Z",
       "note": null,
+      "attempts": 1,
       "slackTs": null,
       "prNumber": null,
       "failureMode": null,
-      "verification": null,
-      "attempts": 1
+      "verification": null
     }
   ],
   "attention": [
