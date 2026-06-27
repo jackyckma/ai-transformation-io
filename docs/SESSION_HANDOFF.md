@@ -1,13 +1,17 @@
 # Session handoff
 
-**Date:** 2026-06-26  
-**Branch:** `main`  
+**Date:** 2026-06-27  
+**Branch:** `orch/wave21-ui-p1-org-polish/web-org-wave21`  
 **Latest commit:** merge PR #13 — Wave 19 editorial-review  
-**Push status:** merged to `origin/main`
+**Push status:** merged to `origin/main`; Wave 21 on feature branch (draft PR)
 
 ## Active task
 
-- **Wave 21** ui-p1-org-polish orchestrate **kicked off**
+- **Wave 21** ui-p1-org-polish — **.org UI P1 polish shipped on feature branch** (draft PR to `main`)
+  - Landed: (1) `More in Knowledge` footer on `/knowledge/[id]` — ≤4 siblings, same-subtype-first, current excluded, from existing `objects.list` call (no backend); renders nothing on empty/failure. (2) Inline `Followed` confirmation on the `.org` follow button (~1.6s check, matching `.io` save-to-context) settling to persistent `Following`; unfollow shows nothing. (3) Optional: same brief-check confirmation shipped on the shared `.org` SaveButton (backward-compatible).
+  - Not touched: `use-community-interactions.ts` (no behavior change); confirmation logic lives in a new `apps/web-org/lib/use-just-confirmed.tsx` helper + the button components.
+  - Build + typecheck: `pnpm --filter @ai-transformation/web-org build` ✅ · `pnpm --filter @ai-transformation/web-org typecheck` (tsc --noEmit) ✅.
+  - Deferred: nothing from the Wave 21 scope (all three deliverables, including the optional SaveButton item, shipped). Wave 20+ scale-archive / credits remain next.
 - **Founder decisions:** all locked in [FOUNDER_WAVE_DECISIONS.md](./FOUNDER_WAVE_DECISIONS.md)
 - **Human ops:** Zeabur deploy Wave 19 + newsletter send @ ~10 subs
 
@@ -24,7 +28,7 @@
 
 ## Deferred (non-blocking)
 
-- `.org` P1: `More in Knowledge` footer + inline Followed confirmation
+- ~~`.org` P1: `More in Knowledge` footer + inline Followed confirmation~~ ✅ shipped in Wave 21
 - Wave 19 scale-archive (newsletter archive + credits at ≥50 users)
 - Editorial auto-approve policy (founder TBD after calibration)
 

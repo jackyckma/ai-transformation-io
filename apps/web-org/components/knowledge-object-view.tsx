@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { getSiteOrigin, type Comment, type ObjectRecord } from '@ai-transformation/shared';
+import {
+  getSiteOrigin,
+  type Comment,
+  type KnowledgeObjectRecord,
+  type ObjectRecord,
+  type ObjectSubtype,
+} from '@ai-transformation/shared';
 
 import { getApiClient } from '@/lib/api-client';
 import { useAuthUser } from '@/lib/use-auth-user';
@@ -153,6 +159,8 @@ export function KnowledgeObjectView({ id }: { id: string }) {
 
       <ObjectComments objectId={object.id} isMember={isMember} />
 
+      <MoreInKnowledge currentId={object.id} currentType={object.type} />
+
       <Link
         href="/knowledge"
         className="mt-12 inline-block text-sm font-light text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -160,6 +168,72 @@ export function KnowledgeObjectView({ id }: { id: string }) {
         ← All knowledge
       </Link>
     </PageShell>
+  );
+}
+
+/**
+ * Secondary editorial footer listing up to 4 other published knowledge entries,
+ * same-subtype-first, drawn from the same published-objects list the index uses
+ * (no new backend). Renders nothing on empty or failure.
+ */
+function MoreInKnowledge({ currentId, currentType }: { currentId: string; currentType: ObjectSubtype }) {
+  const [siblings, setSiblings] = useState<KnowledgeObjectRecord[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await getApiClient().objects.list({
+          site: 'org',
+          objectType: 'knowledge',
+          status: 'published',
+        });
+        if (cancelled) return;
+        const others = response.objects.filter(
+          (object): object is KnowledgeObjectRecord =>
+            object.objectType === 'knowledge' && object.id !== currentId,
+        );
+        const sameType = others.filter((object) => object.type === currentType);
+        const rest = others.filter((object) => object.type !== currentType);
+        setSiblings([...sameType, ...rest].slice(0, 4));
+      } catch {
+        if (!cancelled) {
+          setSiblings([]);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentId, currentType]);
+
+  if (siblings.length === 0) {
+    return null;
+  }
+
+  return (
+    <section aria-labelledby="more-in-knowledge" className="mt-12 border-t border-[var(--border)] pt-8">
+      <h2
+        id="more-in-knowledge"
+        className="text-xs font-normal uppercase tracking-[0.12em] text-[var(--secondary)]"
+      >
+        More in Knowledge
+      </h2>
+      <ul className="mt-4 space-y-3">
+        {siblings.map((sibling) => (
+          <li key={sibling.id}>
+            <Link href={`/knowledge/${encodeURIComponent(sibling.id)}`} className="group block">
+              <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">
+                {subtypeLabel(sibling.type)}
+              </span>
+              <span className="font-serif mt-0.5 block text-base font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">
+                {objectTitle(sibling)}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

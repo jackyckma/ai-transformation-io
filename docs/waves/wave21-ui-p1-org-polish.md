@@ -42,17 +42,21 @@ bun /home/jackyma/.cursor/plugins/cache/cursor-public/orchestrate/e46364b8be4600
 
 ## Definition of done
 
-1. Knowledge detail shows related Knowledge links footer (secondary, not hero).
-2. Follow action shows brief inline confirmation consistent with .io Saved pattern.
-3. `pnpm --filter @ai-transformation/web-org` build + typecheck pass.
-4. One draft PR to main.
+1. ✅ Knowledge detail shows related Knowledge links footer (secondary, not hero) — `More in Knowledge` in `apps/web-org/components/knowledge-object-view.tsx`: ≤4 other published knowledge entries, same-subtype-first, current article excluded, links to `/knowledge/<id>`, sourced from the existing `objects.list({ site:'org', objectType:'knowledge', status:'published' })` call (no new backend); renders nothing on empty/failure.
+2. ✅ Follow action shows brief inline confirmation consistent with .io Saved pattern — `InteractionButton` follow in `apps/web-org/components/community-object-view.tsx` flashes a `~1.6s` check + `Followed` on a successful idle→active follow, then settles to persistent `Following`; unfollow shows nothing. Implemented via new helper `apps/web-org/lib/use-just-confirmed.tsx` (`CONFIRM_MS = 1600`); `use-community-interactions.ts` unchanged.
+3. ✅ `pnpm --filter @ai-transformation/web-org` build + typecheck pass.
+4. ✅ One draft PR to main.
+
+### Optional item
+
+- ✅ **Shipped** — the shared `.org` `SaveButton` (`apps/web-org/components/save-button.tsx`, used by both knowledge and community detail) flashes the same brief check on a successful save via the same `useJustConfirmed` helper. Backward-compatible for every caller (props unchanged); toggle-off shows no confirmation. Shipped because it reuses the exact same low-risk helper and required no caller changes.
 
 ---
 
-## Suggested task tree
+## Task tree (as built)
 
-| Task | Branch |
-|------|--------|
-| web-org-wave21 | `orch/wave21-ui-p1-org-polish/web-org-wave21` |
-| integrate-wave21 | merge + PR |
-| verify-wave21 | verifier |
+| Task | Branch | Status |
+|------|--------|--------|
+| web-org-wave21 | `orch/wave21-ui-p1-org-polish/web-org-wave21` | ✅ implemented; build + typecheck pass; draft PR opened |
+| integrate-wave21 | merge + PR | planner-owned |
+| verify-wave21 | verifier | planner-owned |
