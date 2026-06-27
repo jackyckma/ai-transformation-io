@@ -15,31 +15,31 @@
       "handoffPath": "handoffs/web-org-wave21.md",
       "startedAt": "2026-06-27T13:30:30.979Z",
       "finishedAt": "2026-06-27T13:37:41.727Z",
-      "lastUpdate": "2026-06-27T13:37:41.728Z",
+      "lastUpdate": "2026-06-27T13:37:45.073Z",
       "note": null,
       "slackTs": null,
       "prNumber": 14,
       "failureMode": null,
-      "verification": null,
+      "verification": "type-check-only",
       "attempts": 1
     },
     {
       "name": "verify-wave21",
       "type": "verifier",
-      "branch": "orch/wave21-ui-p1-org-polish/verify-wave21",
+      "branch": "`orch/wave21-ui-p1-org-polish/web-org-wave21` (no new commits — verifier made no source changes)",
       "startingRef": "orch/wave21-ui-p1-org-polish/web-org-wave21",
       "dependsOn": [
         "web-org-wave21"
       ],
-      "agentId": null,
-      "runId": null,
-      "parentAgentId": null,
-      "status": "running",
-      "resultStatus": null,
-      "handoffPath": null,
+      "agentId": "bc-780a523d-104f-4bab-9682-50133cc1e4e7",
+      "runId": "run-9423ac90-e92f-4acc-b317-4ec692d60d01",
+      "parentAgentId": "bc-bf720411-7a6e-4e1f-86bf-a9dc92844013",
+      "status": "handed-off",
+      "resultStatus": "finished",
+      "handoffPath": "handoffs/verify-wave21.md",
       "startedAt": "2026-06-27T13:37:44.029Z",
-      "finishedAt": null,
-      "lastUpdate": "2026-06-27T13:37:44.029Z",
+      "finishedAt": "2026-06-27T13:43:02.954Z",
+      "lastUpdate": "2026-06-27T13:43:02.955Z",
       "note": null,
       "slackTs": null,
       "prNumber": null,
@@ -48,5 +48,10 @@
       "attempts": 1
     }
   ],
-  "attention": []
+  "attention": [
+    {
+      "at": "2026-06-27T13:37:45.073Z",
+      "message": "web-org-wave21: verification self-reported (type-check-only)"
+    }
+  ]
 }
