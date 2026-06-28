@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { getAllPages, getCuratedHomeFeed } from '@ai-transformation/content';
 
 import { HomeCurationGrid } from '@/components/home-curation-grid';
 import { HomeView } from '@/components/home-view';
+
+const SESSION_COOKIE_NAME = 'atx_session';
 
 function collectCuratedSlugs(feed: ReturnType<typeof getCuratedHomeFeed>): string[] {
   const slugs = new Set<string>();
@@ -14,7 +17,10 @@ function collectCuratedSlugs(feed: ReturnType<typeof getCuratedHomeFeed>): strin
   return Array.from(slugs);
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  const hasSessionCookie = Boolean(cookieStore.get(SESSION_COOKIE_NAME)?.value);
+
   const feed = getCuratedHomeFeed('io');
   const pages = getAllPages();
   const curatedSlugs = collectCuratedSlugs(feed);
@@ -60,7 +66,12 @@ export default function HomePage() {
 
   return (
     <div className="site-panel-x py-6 md:py-8">
-      <HomeView loggedOutContent={loggedOutContent} pages={pages} curatedSlugs={curatedSlugs} />
+      <HomeView
+        loggedOutContent={loggedOutContent}
+        pages={pages}
+        curatedSlugs={curatedSlugs}
+        hasSessionCookie={hasSessionCookie}
+      />
     </div>
   );
 }
