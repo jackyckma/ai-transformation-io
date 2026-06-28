@@ -45,19 +45,40 @@ For each draft it computes an LLM review and persists it to
 `metadata.editorial_agent` via `updateObjectLifecycle({ id, status: existing.status, metadata })`
 — **publish state never changes** (status/visibility/publishedSlug untouched).
 Review logic lives in `review.ts` and reuses `lanes/chat/llm.ts`
-(`resolveLlmConfig` / `isChatLlmConfigured` / `extractAssistantContent`,
-`MINIMAX_API_KEY` / `CHAT_LLM_*`). It **never throws** and the route never 500s:
+(`resolveLlmConfig` / `isChatLlmConfigured`, `MINIMAX_API_KEY` / `CHAT_LLM_*`).
+Parsing tolerates MiniMax `reasoning_split` (JSON in `content` or
+`reasoning_content`, thinking tags, markdown fences, prose-wrapped objects).
+Requests `response_format: json_object` with one retry without it if the provider
+rejects the field. It **never throws** and the route never 500s:
 with no key or any LLM error it writes a skip result.
 
 `metadata.editorial_agent` shape (`EditorialAgentReview` in
 `@ai-transformation/shared` / `wave19-editorial.ts`):
 
 ```jsonc
-// success
-{ "score": 0-100, "flags": ["tone", "factual-risk", ...], "summary": "...", "reviewedAt": "ISO", "model": "MiniMax-M3" }
+// success (substance-first, Wave 19+)
+{
+  "substance_score": 12,
+  "dimensions": {
+    "claim_density": 2,
+    "specificity": 3,
+    "argument_coherence": 2,
+    "falsifiable_stance": 2,
+    "first_hand": 3
+  },
+  "score": 80,
+  "flags": ["padding"],
+  "summary": "...",
+  "reviewedAt": "ISO",
+  "model": "MiniMax-M3"
+}
+// legacy success (score-only still accepted)
+{ "score": 0-100, "flags": [...], "summary": "...", "reviewedAt": "ISO", "model": "..." }
 // graceful skip (no key / llm_error / malformed)
 { "skipped": true, "reviewedAt": "ISO", "reason": "llm_not_configured" }
 ```
+
+Human-readable rubric: `docs/EDITORIAL_REVIEW_RUBRIC.md`
 
 Responses:
 

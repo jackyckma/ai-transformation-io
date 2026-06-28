@@ -5,6 +5,17 @@ import type { EditorialAgentReview, ObjectSubtype } from '@ai-transformation/sha
 import { editorialAgentReviewSchema, resolveClientApiUrl } from '@ai-transformation/shared';
 
 import { formatDate, subtypeLabel } from '@/lib/object-display';
+import {
+  DIMENSION_LABEL,
+  SUBSTANCE_DIMENSION_ORDER,
+  dimensionTier,
+  isTechnicalFlag,
+  reviewHeadlineTier,
+  substanceBandHint,
+  tierCardBorderClass,
+  tierPillClass,
+  tierTextClass,
+} from '@/lib/editorial-review-display';
 
 type EditorialDraft = {
   id: string;
@@ -304,12 +315,23 @@ function DraftCard({
 
   const bodyText = expanded && detail ? detail.body : draft.bodyExcerpt;
   const agentReview = readAgentReview(draft.metadata);
+  const cardTier =
+    agentReview && !('skipped' in agentReview) ? reviewHeadlineTier(agentReview) : null;
 
   return (
-    <li className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5">
+    <li
+      className={`rounded-2xl border bg-[var(--background)] p-5 ${
+        cardTier ? tierCardBorderClass(cardTier) : 'border-[var(--border)]'
+      }`}
+    >
       <article>
         <header className="space-y-2">
-          <h2 className="font-serif text-lg font-normal tracking-tight">{draftHeading(draft)}</h2>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <h2 className="font-serif text-lg font-normal tracking-tight">{draftHeading(draft)}</h2>
+            {agentReview && !('skipped' in agentReview) ? (
+              <ReviewHeadlineBadge review={agentReview} />
+            ) : null}
+          </div>
           <p className="text-xs font-light tracking-wide text-[var(--muted)]">
             {OBJECT_TYPE_LABEL[draft.objectType] ?? draft.objectType} ·{' '}
             {subtypeLabel(draft.type as ObjectSubtype)} · {SITE_LABEL[draft.site] ?? draft.site} ·{' '}
@@ -317,7 +339,13 @@ function DraftCard({
             {sourceLabel(draft.metadata) ? ` · ${sourceLabel(draft.metadata)}` : ''}
           </p>
         </header>
-        {agentReview ? <AgentReviewBlock review={agentReview} /> : null}
+        {agentReview ? (
+          <AgentReviewBlock review={agentReview} />
+        ) : (
+          <p className="mt-4 text-xs font-light text-[var(--muted)]">
+            No agent metrics yet — run agent review to score this draft.
+          </p>
+        )}
         <div
           className={`mt-4 whitespace-pre-wrap text-sm font-light leading-relaxed text-[var(--foreground)] ${
             expanded ? 'max-h-[min(70vh,32rem)] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-4' : 'text-[var(--muted)]'
@@ -344,6 +372,35 @@ function DraftCard({
   );
 }
 
+const DIMENSION_SHORT_LABEL: Record<string, string> = {
+  claim_density: 'Claims',
+  specificity: 'Specificity',
+  argument_coherence: 'Coherence',
+  falsifiable_stance: 'Stance',
+  first_hand: 'First-hand',
+};
+
+function ReviewHeadlineBadge({
+  review,
+}: {
+  review: Exclude<EditorialAgentReview, { skipped: true }>;
+}) {
+  const tier = reviewHeadlineTier(review);
+  const label =
+    review.substance_score !== undefined
+      ? `${review.substance_score}/15`
+      : `${review.score}/100`;
+
+  return (
+    <span
+      className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${tierPillClass(tier)}`}
+      title={substanceBandHint(tier)}
+    >
+      {review.substance_score !== undefined ? `Substance ${label}` : `Score ${label}`}
+    </span>
+  );
+}
+
 function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
   if ('skipped' in review) {
     return (
@@ -356,25 +413,67 @@ function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
     );
   }
 
+  const tier = reviewHeadlineTier(review);
+  const hasDimensions = Boolean(review.dimensions);
+
   return (
     <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">Agent review</p>
-        <span className="text-xs font-medium text-[var(--foreground)]">Score {review.score}/100</span>
+        <ReviewHeadlineBadge review={review} />
       </div>
+      <p className={`mt-1 text-xs font-light ${tierTextClass(tier)}`}>{substanceBandHint(tier)}</p>
+      {review.substance_score !== undefined ? (
+        <p className="mt-1 text-[11px] font-light text-[var(--secondary)]">
+          Queue score {review.score}/100
+        </p>
+      ) : null}
+
+      {hasDimensions && review.dimensions ? (
+        <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {SUBSTANCE_DIMENSION_ORDER.map((key) => {
+            const value = review.dimensions![key];
+            const dimTier = dimensionTier(value);
+            return (
+              <li
+                key={key}
+                className={`rounded-lg border px-2 py-1.5 text-center text-[11px] font-medium leading-tight ${tierPillClass(dimTier)}`}
+                title={DIMENSION_LABEL[key]}
+              >
+                <span className="block text-[10px] font-normal uppercase tracking-wide opacity-80">
+                  {DIMENSION_SHORT_LABEL[key] ?? key}
+                </span>
+                <span className="mt-0.5 block text-sm">{value}/3</span>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="mt-2 text-xs font-light text-amber-900 dark:text-amber-200">
+          Re-run agent review for per-dimension substance metrics.
+        </p>
+      )}
+
       {review.summary ? (
-        <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">{review.summary}</p>
+        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--muted)]">{review.summary}</p>
       ) : null}
       {review.flags.length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">
-          {review.flags.map((flag) => (
-            <li
-              key={flag}
-              className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[11px] font-light text-[var(--secondary)]"
-            >
-              {flag}
-            </li>
-          ))}
+          {review.flags.map((flag) => {
+            const severe = isTechnicalFlag(flag);
+            return (
+              <li
+                key={flag}
+                className={`rounded-full border px-2 py-0.5 text-[11px] font-light ${
+                  severe
+                    ? tierPillClass('weak')
+                    : 'border-[var(--border)] text-[var(--secondary)]'
+                }`}
+              >
+                {flag}
+              </li>
+            );
+          })}
         </ul>
       ) : null}
       {review.model ? (

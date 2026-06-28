@@ -94,11 +94,18 @@ async function createAdminDraft(
   return { id: json.object.id };
 }
 
-function mockChatCompletions(content: string, status = 200): void {
+function mockChatCompletions(
+  message: string | { content?: string | null; reasoning_content?: string | null },
+  status = 200,
+): void {
+  const payload =
+    typeof message === 'string'
+      ? { content: message }
+      : { content: message.content ?? null, reasoning_content: message.reasoning_content ?? null };
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input: RequestInfo | URL) => {
     const url = typeof input === 'string' ? input : input.toString();
     if (url.includes('/chat/completions')) {
-      return new Response(JSON.stringify({ choices: [{ message: { content } }] }), {
+      return new Response(JSON.stringify({ choices: [{ message: payload }] }), {
         status,
         headers: { 'content-type': 'application/json' },
       });
@@ -159,7 +166,19 @@ describe('Wave 19 editorial-review agent', () => {
 
     process.env.MINIMAX_API_KEY = 'fake-key';
     mockChatCompletions(
-      JSON.stringify({ score: 82, flags: ['tone', 'length'], summary: 'Solid, on-brand draft.' }),
+      JSON.stringify({
+        substance_score: 11,
+        dimensions: {
+          claim_density: 2,
+          specificity: 2,
+          argument_coherence: 2,
+          falsifiable_stance: 2,
+          first_hand: 3,
+        },
+        score: 73,
+        flags: ['specificity-gap'],
+        summary: 'Solid, on-brand draft.',
+      }),
     );
 
     const response = await app.request('http://localhost/api/internal/editorial/review-pending', {
@@ -177,8 +196,9 @@ describe('Wave 19 editorial-review agent', () => {
       skipped?: boolean;
     };
     expect(review.skipped).toBeUndefined();
-    expect(review.score).toBe(82);
-    expect(review.flags).toEqual(['tone', 'length']);
+    expect(review.substance_score).toBe(11);
+    expect(review.score).toBe(73);
+    expect(review.flags).toEqual(['specificity-gap']);
     expect(review.summary).toBe('Solid, on-brand draft.');
     expect(stored?.status).toBe('draft');
   });
@@ -208,6 +228,55 @@ describe('Wave 19 editorial-review agent', () => {
     const stored = objectsDb.getObjectById(draft.id);
     expect((stored?.metadata.editorial_agent as { skipped?: boolean }).skipped).toBe(true);
     expect(stored?.status).toBe('draft');
+  });
+
+  it('parses review JSON from reasoning_content when content is only thinking tags', async () => {
+    const { app, db, objectsDb } = await loadBackend();
+    const admin = db.upsertUserByGoogle({
+      googleSub: 'wave19-admin-reasoning',
+      email: ADMIN_EMAIL,
+      name: 'Founder',
+      picture: null,
+    });
+    const adminSession = db.createSession(admin.id, 60_000);
+    process.env.ADMIN_EMAILS = ADMIN_EMAIL;
+
+    const draft = await createAdminDraft(app, adminSession.id);
+
+    process.env.MINIMAX_API_KEY = 'fake-key';
+    mockChatCompletions({
+      content: '<think>Assess tone.</think>',
+      reasoning_content: JSON.stringify({
+        substance_score: 10,
+        dimensions: {
+          claim_density: 2,
+          specificity: 2,
+          argument_coherence: 2,
+          falsifiable_stance: 2,
+          first_hand: 2,
+        },
+        score: 67,
+        flags: ['consensus-only'],
+        summary: 'Mostly on-brand with minor hype risk.',
+      }),
+    });
+
+    const response = await app.request('http://localhost/api/internal/editorial/review-pending', {
+      method: 'POST',
+      headers: { host: 'ai-transformation.org', cookie: `atx_session=${adminSession.id}` },
+    });
+    expect(response.status).toBe(200);
+
+    const stored = objectsDb.getObjectById(draft.id);
+    const review = stored?.metadata.editorial_agent as {
+      score?: number;
+      summary?: string;
+      skipped?: boolean;
+    };
+    expect(review.skipped).toBeUndefined();
+    expect(review.substance_score).toBe(10);
+    expect(review.score).toBe(67);
+    expect(review.summary).toBe('Mostly on-brand with minor hype risk.');
   });
 
   it('reviews a single draft via /drafts/:id/review without changing publish state', async () => {

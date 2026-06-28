@@ -6,8 +6,19 @@ import * as wave12 from './wave12-objects';
  * `metadata.editorial_agent` by POST /api/internal/editorial/review-pending.
  * Never changes publish state — purely advisory.
  */
+export const editorialSubstanceDimensionsSchema = z.object({
+  claim_density: z.number().int().min(1).max(3),
+  specificity: z.number().int().min(1).max(3),
+  argument_coherence: z.number().int().min(1).max(3),
+  falsifiable_stance: z.number().int().min(1).max(3),
+  first_hand: z.number().int().min(1).max(3),
+});
+export type EditorialSubstanceDimensions = z.infer<typeof editorialSubstanceDimensionsSchema>;
+
 export const editorialAgentReviewSuccessSchema = z.object({
   score: z.number().int().min(0).max(100),
+  substance_score: z.number().int().min(5).max(15).optional(),
+  dimensions: editorialSubstanceDimensionsSchema.optional(),
   flags: z.array(z.string()),
   summary: z.string(),
   reviewedAt: z.string(),
