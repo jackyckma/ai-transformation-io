@@ -11,8 +11,8 @@ export type AskModeMetadata = {
 
 export const ASK_MODE_METADATA: Record<AskMode, AskModeMetadata> = {
   ask: {
-    label: 'Ask',
-    placeholder: 'Ask a question about the knowledge base and get a grounded answer.',
+    label: 'Chat',
+    placeholder: 'Ask Copilot a question about the knowledge base and get a grounded answer.',
   },
   capture: {
     label: 'Capture',

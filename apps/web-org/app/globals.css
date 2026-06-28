@@ -1,20 +1,21 @@
 @import 'tailwindcss';
 
 :root {
-  /* 60% — neutral reading ground (white / light grey) */
-  --background: #f7f7f6;
-  --foreground: #1a1f1c;
-  --muted: #5c6360;
-  --border: #dddcd8;
-  /* 30% — brand secondary (original sage green — structure, labels) */
-  --brand: #2d6a4f;
-  --surface: #e4ebe6;
-  --surface-raised: #ffffff;
-  --secondary: #3f5f4c;
-  /* 10% — complementary highlight (muted rose / terracotta vs green) */
-  --accent: #a24d57;
-  --accent-fg: #fffaf9;
-  --card: #ffffff;
+  /* 60% — warm reading ground */
+  --background: #eae7dc;
+  --foreground: #2c2824;
+  --muted: #8e8d8a;
+  --border: #d8c3a5;
+  /* 30% — warm structure (tan / sand) */
+  --brand: #8e8d8a;
+  --surface: #d8c3a5;
+  --surface-raised: #f5f2eb;
+  --secondary: #6f6d68;
+  /* 10% — coral accent */
+  --accent: #e85a4f;
+  --accent-soft: #e98074;
+  --accent-fg: #fffaf8;
+  --card: #f5f2eb;
   --layout-shell: 72rem;
   --layout-read: 48rem;
   --layout-prose: 42rem;
@@ -25,17 +26,18 @@
 }
 
 .dark {
-  --background: #121514;
-  --foreground: #e8ece9;
-  --muted: #9aa39e;
-  --border: #2e3833;
-  --brand: #6ec99a;
-  --surface: #1a2420;
-  --surface-raised: #161d19;
-  --secondary: #8faaa0;
-  --accent: #d4848f;
-  --accent-fg: #121514;
-  --card: #161d19;
+  --background: #1c1916;
+  --foreground: #eae7dc;
+  --muted: #a8a29a;
+  --border: #3d3832;
+  --brand: #d8c3a5;
+  --surface: #2a2620;
+  --surface-raised: #221f1b;
+  --secondary: #c4bdb4;
+  --accent: #e98074;
+  --accent-soft: #e85a4f;
+  --accent-fg: #1c1916;
+  --card: #221f1b;
 }
 
 body {

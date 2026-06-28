@@ -18,7 +18,6 @@ export default function SettingsPage() {
       <PageIntro
         title="Settings"
         description="Tell us your role, industry, and current focus. These fields feed your Home recommendations and personalize Knowledge."
-        seed="settings"
       />
 
       <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8">

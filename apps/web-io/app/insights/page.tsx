@@ -15,9 +15,9 @@ export default function InsightsPage() {
   return (
     <PageShell>
       <PageIntro
+        eyebrow="Insights"
         title="Insights"
         description="External benchmarks, datasets, and surveys — with a short read on what each means for enterprise leaders. Sign in to reorder by your role and industry."
-        seed="insights"
       />
 
       <InsightsCards />

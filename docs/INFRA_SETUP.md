@@ -1,6 +1,6 @@
 # Infrastructure setup
 
-**Last updated:** 2026-06-18
+**Last updated:** 2026-06-28
 
 ## Zeabur service
 
@@ -22,8 +22,23 @@
 | `API_BASE_URL` | `http://127.0.0.1:3001` |
 | `SITE_IO_HOST` | `ai-transformation.io` |
 | `SITE_ORG_HOST` | `ai-transformation.org` |
+| `SQLITE_PATH` | `/data/app.db` |
 
 Config file: `zbpack.ai-transformation-io.json` at repo root.
+
+### Persistent SQLite (2026-06-28)
+
+Production data (users, sessions, editorial `objects`, newsletter, etc.) lives in SQLite on a **Zeabur persistent volume**:
+
+| Item | Value |
+|------|-------|
+| Volume ID | `sqlite-data` |
+| Mount path | `/data` |
+| Database file | `/data/app.db` (`SQLITE_PATH`) |
+
+Mounted via Zeabur `mountVolume` on service `6a3322239a194960c7edec34`. **Do not remove or remount** without backup — remounting clears the directory. Restarts/redeploys keep data; deleting the volume does not.
+
+Before this change, `data/app.db` inside the container was ephemeral and redeploys wiped editorial drafts and published objects.
 
 ### Bound domains
 

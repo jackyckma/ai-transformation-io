@@ -41,16 +41,16 @@ const COPY: Record<
   { title: string; subtitle: string; placeholder: string; toggle: string }
 > = {
   io: {
-    title: 'Companion',
-    subtitle: 'Personalized support grounded in this site.',
+    title: 'Copilot',
+    subtitle: 'Grounded in this site’s library and insights.',
     placeholder: 'Ask about frameworks, roles, or where to start…',
-    toggle: 'Ask companion',
+    toggle: 'Open Copilot',
   },
   org: {
-    title: 'Community companion',
+    title: 'Copilot',
     subtitle: 'Learn, share, and find your next step in the community.',
     placeholder: 'Ask about learn guides, stories, or prompts…',
-    toggle: 'Ask companion',
+    toggle: 'Open Copilot',
   },
 };
 
@@ -420,7 +420,7 @@ export function SidebarChat({ site, layout = 'docked', initialInput }: SidebarCh
         aria-expanded={open}
         aria-controls="site-companion-panel"
         onClick={() => setOpen((value) => !value)}
-        className="fixed bottom-5 right-5 z-[100] rounded-full border border-[var(--accent)] bg-[var(--card)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] shadow-md transition hover:bg-[var(--background)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+        className="fixed bottom-[calc(var(--mobile-nav-h)+1rem)] right-5 z-[100] rounded-full border border-[var(--accent)] bg-[var(--card)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] shadow-md transition hover:bg-[var(--background)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] lg:bottom-5"
       >
         {open ? 'Close companion' : copy.toggle}
       </button>
@@ -428,7 +428,7 @@ export function SidebarChat({ site, layout = 'docked', initialInput }: SidebarCh
       <aside
         id="site-companion-panel"
         aria-hidden={!open}
-        className={`fixed inset-x-0 bottom-0 top-14 z-[100] flex flex-col border-t border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:inset-x-auto sm:inset-y-0 sm:right-0 sm:top-14 sm:w-full sm:max-w-md sm:border-l sm:border-t-0 ${
+        className={`fixed inset-x-0 bottom-[var(--mobile-nav-h)] top-14 z-[100] flex flex-col border-t border-[var(--border)] bg-[var(--background)] shadow-xl transition-transform duration-200 ease-out sm:inset-x-auto sm:inset-y-0 sm:bottom-0 sm:right-0 sm:top-14 sm:w-full sm:max-w-md sm:border-l sm:border-t-0 ${
           open
             ? 'translate-y-0 sm:translate-x-0 sm:translate-y-0'
             : 'pointer-events-none translate-y-full sm:translate-y-0 sm:translate-x-full'

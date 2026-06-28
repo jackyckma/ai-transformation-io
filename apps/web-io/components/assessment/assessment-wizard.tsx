@@ -807,7 +807,7 @@ function ResultsView({
             }
             className="inline-flex items-center rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:border-[var(--accent)]"
           >
-            Ask companion
+            Copilot
           </button>
           <Link
             href="/ask"

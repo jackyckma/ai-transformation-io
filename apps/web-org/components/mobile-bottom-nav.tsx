@@ -7,7 +7,7 @@ const TABS = [
   { href: '/', label: 'Home', icon: HomeIcon },
   { href: '/knowledge', label: 'Knowledge', icon: KnowledgeIcon },
   { href: '/community', label: 'Community', icon: CommunityIcon },
-  { href: '/ask', label: 'Ask', icon: AskIcon },
+  { href: '/ask', label: 'Copilot', icon: CopilotIcon },
 ] as const;
 
 function HomeIcon({ active }: { active: boolean }) {
@@ -37,7 +37,7 @@ function CommunityIcon({ active }: { active: boolean }) {
   );
 }
 
-function AskIcon({ active }: { active: boolean }) {
+function CopilotIcon({ active }: { active: boolean }) {
   return (
     <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M6 7.5c0-2.5 2.7-4.5 6-4.5s6 2 6 4.5-2.7 4.5-6 4.5c-.8 0-1.6-.1-2.3-.4L6 17l1.4-3.5" className={active ? 'fill-current/10' : undefined} />

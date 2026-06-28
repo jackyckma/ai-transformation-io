@@ -5,7 +5,7 @@ export type AskAction = {
 
 export function libraryAskActions(title: string): AskAction[] {
   return [
-    { label: 'Open in Ask', message: `I'm reading "${title}". Walk me through the key ideas.` },
+    { label: 'Open in Copilot', message: `I'm reading "${title}". Walk me through the key ideas.` },
     { label: 'Apply this', message: `How do I apply "${title}" in my organization?` },
   ];
 }

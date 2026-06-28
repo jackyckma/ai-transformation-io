@@ -13,7 +13,7 @@ export const ORG_RIBBON: readonly NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/knowledge', label: 'Knowledge' },
   { href: '/community', label: 'Community' },
-  { href: '/ask', label: 'Ask' },
+  { href: '/ask', label: 'Copilot' },
 ];
 
 /** Hamburger holds account, Agent API, Settings, and About — never the ribbon items. */
@@ -28,6 +28,6 @@ export const ORG_HAMBURGER_LINKS: readonly HamburgerLink[] = [
 export const ORG_EXPLORE_LINKS: readonly NavLink[] = [
   { href: '/knowledge', label: 'Knowledge commons' },
   { href: '/community', label: 'Community highlights' },
-  { href: '/ask', label: 'Ask the companion' },
+  { href: '/ask', label: 'Copilot the companion' },
   { href: '/apprenticeship', label: 'Apprenticeship' },
 ];

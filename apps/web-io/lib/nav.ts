@@ -8,5 +8,5 @@ export const IO_RIBBON: readonly RibbonTab[] = [
   { href: '/', label: 'Home' },
   { href: '/library', label: 'Library' },
   { href: '/insights', label: 'Insights' },
-  { href: '/ask', label: 'Ask' },
+  { href: '/ask', label: 'Copilot' },
 ] as const;

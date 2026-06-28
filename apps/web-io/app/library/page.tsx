@@ -21,9 +21,9 @@ export default function LibraryPage() {
   return (
     <PageShell>
       <PageIntro
+        eyebrow="Library"
         title="Library"
-        description="Every framework, playbook, and reference article in one place. Filter by type or collection, then open any article in Ask."
-        seed="library"
+        description="Every framework, playbook, and reference article in one place. Filter by type or collection, then open any article in Copilot."
       />
       <LibraryBrowser pages={pages} collections={collections} reviewedLabel={reviewedLabel} />
     </PageShell>

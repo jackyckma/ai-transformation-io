@@ -43,7 +43,7 @@ export function AskWorkspace() {
     <div>
       <div
         role="tablist"
-        aria-label="Ask modes"
+        aria-label="Copilot modes"
         className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-4"
       >
         {allowedModes.map((value) => {

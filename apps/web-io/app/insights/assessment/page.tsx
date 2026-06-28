@@ -12,9 +12,9 @@ export default function AssessmentPage() {
   return (
     <PageShell width="wide">
       <PageIntro
+        eyebrow="Insights"
         title="Three Gaps assessment"
         description="Org-level diagnostic across work redesign, governance, and value measurement — save and resume when signed in."
-        seed="insights"
       />
       <AssessmentWizard />
     </PageShell>

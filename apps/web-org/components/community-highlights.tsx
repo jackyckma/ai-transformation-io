@@ -8,7 +8,6 @@ import {
   type CommunityObjectRecord,
   type CommunityObjectType,
 } from '@ai-transformation/shared';
-import { CompanionAskStrip } from '@ai-transformation/chat-ui';
 
 import { useAuthUser } from '@/lib/use-auth-user';
 import { useBookmarks } from '@/lib/use-bookmarks';
@@ -100,10 +99,6 @@ export function CommunityHighlights() {
         </p>
       </header>
 
-      <div className="mb-8">
-        <CompanionAskStrip site="org" />
-      </div>
-
       {state === 'loading' ? <CommunitySkeleton /> : null}
 
       {hasLiveObjects ? (
@@ -144,8 +139,8 @@ export function CommunityHighlights() {
         </h2>
         <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-[var(--muted)]">
           {isMember
-            ? 'Open any item to reply, follow, offer help, join, request a mentor, or apply. Use Find Help to post a request, or Ask to draft a contribution. Opportunity items also have experimental rule-based matching.'
-            : 'Posting and one-click actions require an account. Until then, browse highlights, or use Ask to draft a reply or contribution.'}
+            ? 'Open any item to reply, follow, offer help, join, request a mentor, or apply. Use Find Help to post a request, or Copilot to draft a contribution. Opportunity items also have experimental rule-based matching.'
+            : 'Posting and one-click actions require an account. Until then, browse highlights, or use Copilot to draft a reply or contribution.'}
         </p>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
           <Link

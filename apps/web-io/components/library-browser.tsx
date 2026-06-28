@@ -317,7 +317,7 @@ function MyLibrary({ pages }: { pages: ContentPageMeta[] }) {
         <h2 className="font-serif text-lg font-normal tracking-tight">Private notes</h2>
         {notes.length === 0 ? (
           <p className="mt-3 text-sm font-light text-[var(--muted)]">
-            No notes yet. Capture a private note in Ask.{' '}
+            No notes yet. Capture a private note in Copilot.{' '}
             <Link href="/ask?mode=capture" className="text-[var(--accent)] hover:underline">
               Open Capture
             </Link>

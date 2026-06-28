@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { CompanionAskStrip } from '@ai-transformation/chat-ui';
 
 import { useAuthUser } from '@/lib/use-auth-user';
 import type { KnowledgeIndex } from '@/lib/knowledge-index';
@@ -44,10 +43,6 @@ export function KnowledgeIndexView({ index }: { index: KnowledgeIndex }) {
           </p>
         ) : null}
       </header>
-
-      <div className="mb-8">
-        <CompanionAskStrip site="org" />
-      </div>
 
       {isMember ? (
         <div role="tablist" aria-label="Knowledge views" className="mb-8 flex flex-wrap gap-1 border-b border-[var(--border)]">

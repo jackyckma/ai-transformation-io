@@ -2,22 +2,29 @@
 
 import { usePathname } from 'next/navigation';
 
-import { SiteCompanion as DockedCompanion } from '@/components/site-companion';
+import { SidebarChat } from '@ai-transformation/chat-ui';
 
-/** Index/list routes that demote the docked chat to an inline Ask strip (Wave 15 item 9). */
-const ASK_STRIP_ROUTES = new Set(['/community', '/knowledge']);
+/** Full /ask workspace replaces the docked panel; every other route keeps Copilot visible. */
+function isCopilotWorkspace(pathname: string): boolean {
+  return pathname === '/ask' || pathname.startsWith('/ask?');
+}
 
 export function LayoutCompanion() {
   const pathname = usePathname();
-  if (pathname === '/ask' || ASK_STRIP_ROUTES.has(pathname)) {
+  if (isCopilotWorkspace(pathname)) {
     return null;
   }
 
   return (
-    <div className="border-t border-[var(--border)] lg:flex lg:h-full lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:flex-col lg:overflow-hidden lg:border-t-0 lg:border-l">
-      <div className="hidden h-full min-h-0 flex-col overflow-hidden lg:flex">
-        <DockedCompanion />
+    <>
+      <div className="hidden border-t border-[var(--border)] lg:flex lg:h-full lg:w-[var(--chat-panel-w)] lg:shrink-0 lg:flex-col lg:overflow-hidden lg:border-t-0 lg:border-l">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden">
+          <SidebarChat site="org" layout="docked" />
+        </div>
       </div>
-    </div>
+      <div className="lg:hidden">
+        <SidebarChat site="org" layout="floating" />
+      </div>
+    </>
   );
 }

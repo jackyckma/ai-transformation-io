@@ -13,7 +13,7 @@ export default function ProgressPage() {
     <PageShell width="wide">
       <PageIntro
         title="Your progress"
-        description="Assessment save/resume when signed in. The companion is always available without an account."
+        description="Assessment save/resume when signed in. Copilot is always available without an account."
       />
       <ProgressDashboard />
     </PageShell>

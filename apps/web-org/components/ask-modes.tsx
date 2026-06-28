@@ -49,7 +49,7 @@ export function AskModes() {
 
   return (
     <div>
-      <div role="tablist" aria-label="Ask modes" className="flex flex-wrap gap-2 text-sm">
+      <div role="tablist" aria-label="Copilot modes" className="flex flex-wrap gap-2 text-sm">
         {allowed.map((mode) => {
           const isActive = mode === activeMode;
           return (
