@@ -12,10 +12,10 @@ type CuratedVisualProps = {
 };
 
 const PLACEHOLDER_TONES = [
-  'from-[#d8ebe0] to-[#eef8f2] dark:from-[#142019] dark:to-[#0a100d]',
-  'from-[#c5dfd0] to-[#e5f3ea] dark:from-[#182820] dark:to-[#0c1410]',
-  'from-[#b8d4c4] to-[#dff0e6] dark:from-[#1c3024] dark:to-[#0e1812]',
-  'from-[#a8c9b6] to-[#d4ebe0] dark:from-[#203528] dark:to-[#101a14]',
+  'from-[#d8c3a5] to-[#eae7dc] dark:from-[#2a2620] dark:to-[#1c1916]',
+  'from-[#e98074] to-[#f5ebe0] dark:from-[#3d2824] dark:to-[#1c1916]',
+  'from-[#c4a882] to-[#f0ebe3] dark:from-[#332a20] dark:to-[#1c1916]',
+  'from-[#e85a4f] to-[#d8c3a5] dark:from-[#4a2824] dark:to-[#221f1b]',
 ] as const;
 
 function toneForSeed(seed: string): (typeof PLACEHOLDER_TONES)[number] {
@@ -110,7 +110,7 @@ export function FeatureSpotlightCard({
         />
         <div className="p-5 md:p-6">
           <p className="flex flex-wrap items-center gap-x-2 text-xs font-light tracking-wide text-[var(--muted)]">
-            <span className="rounded-full border border-[var(--brand)]/35 bg-[var(--brand)]/10 px-2 py-0.5 uppercase tracking-wide text-[var(--brand)]">
+            <span className="rounded-full border border-[var(--accent)]/35 bg-[var(--accent)]/12 px-2 py-0.5 uppercase tracking-wide text-[var(--accent)]">
               {category}
             </span>
             {date ? <span>Updated {date}</span> : null}

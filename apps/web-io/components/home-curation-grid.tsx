@@ -82,7 +82,9 @@ export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
                   />
                   <div className="p-4 pb-5">
                     <p className="text-[11px] font-light tracking-wide text-[var(--muted)]">
-                      {tileTypeLabel(tile, href)}
+                      <span className="rounded-full border border-[var(--brand)]/35 bg-[var(--brand)]/12 px-1.5 py-0.5 uppercase tracking-wide text-[var(--brand)]">
+                        {tileTypeLabel(tile, href)}
+                      </span>
                       {updatedLabel ? (
                         <span className="text-[var(--secondary)]"> · Updated {updatedLabel}</span>
                       ) : null}

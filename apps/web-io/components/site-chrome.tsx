@@ -8,7 +8,7 @@ import { IO_RIBBON } from '@/lib/nav';
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 shrink-0 border-b border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--surface)]/85">
+    <header className="sticky top-0 z-30 shrink-0 border-b border-[color-mix(in_srgb,var(--brand)_30%,var(--border))] bg-[var(--surface)] shadow-sm">
       <div className="site-panel-x py-3 sm:py-4">
         <div className="flex items-center justify-between gap-4">
           <Link

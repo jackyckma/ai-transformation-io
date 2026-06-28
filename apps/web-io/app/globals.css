@@ -9,13 +9,13 @@
   /* 30% — ocean / slate structure */
   --brand: #31708e;
   --surface: #8fc1e3;
-  --surface-raised: #ffffff;
+  --surface-raised: #eef5fa;
   --secondary: #5085a5;
   /* 10% — muted green accent */
   --accent: #687864;
   --accent-soft: #8fc1e3;
   --accent-fg: #f7f9fb;
-  --card: #ffffff;
+  --card: #e4eef5;
   --layout-shell: 72rem;
   --layout-read: 48rem;
   --layout-prose: 42rem;
@@ -179,9 +179,10 @@ body {
 }
 
 .surface-panel {
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--border));
   border-radius: 0.75rem;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 88%, var(--background));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 65%, transparent);
 }
 
 .list-rows {

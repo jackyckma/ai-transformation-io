@@ -12,10 +12,10 @@ type CuratedVisualProps = {
 };
 
 const PLACEHOLDER_TONES = [
-  'from-[#ebe3d6] to-[#f7f0e4] dark:from-[#2a241c] dark:to-[#181410]',
-  'from-[#e8ddd0] to-[#f5ebe0] dark:from-[#2d251c] dark:to-[#1a1510]',
-  'from-[#dfd0bc] to-[#f0e6d8] dark:from-[#332a20] dark:to-[#1c1610]',
-  'from-[#d4c4ae] to-[#ede3d4] dark:from-[#3a3024] dark:to-[#201912]',
+  'from-[#8fc1e3] to-[#f7f9fb] dark:from-[#1a3545] dark:to-[#0f1419]',
+  'from-[#5085a5] to-[#c5dced] dark:from-[#152840] dark:to-[#0f1419]',
+  'from-[#687864] to-[#a8c4b8] dark:from-[#1c3024] dark:to-[#0f1419]',
+  'from-[#31708e] to-[#8fc1e3] dark:from-[#1a2836] dark:to-[#152028]',
 ] as const;
 
 function toneForSeed(seed: string): (typeof PLACEHOLDER_TONES)[number] {
@@ -109,9 +109,11 @@ export function FeatureSpotlightCard({
           flush
         />
         <div className="p-5 md:p-6">
-          <p className="text-xs font-light tracking-wide text-[var(--muted)]">
-            {category}
-            {dateLabel ? <span className="text-[var(--secondary)]"> · {dateLabel}</span> : null}
+          <p className="flex flex-wrap items-center gap-x-2 text-xs font-light tracking-wide text-[var(--muted)]">
+            <span className="rounded-full border border-[var(--brand)]/35 bg-[var(--brand)]/12 px-2 py-0.5 uppercase tracking-wide text-[var(--brand)]">
+              {category}
+            </span>
+            {dateLabel ? <span>{dateLabel}</span> : null}
           </p>
           <h3 className="font-serif mt-2 text-xl font-normal leading-snug tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)] md:text-2xl">
             {article.title}

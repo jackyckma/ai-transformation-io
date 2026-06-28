@@ -7,15 +7,15 @@
   --muted: #8e8d8a;
   --border: #d8c3a5;
   /* 30% — warm structure (tan / sand) */
-  --brand: #8e8d8a;
+  --brand: #a84f46;
   --surface: #d8c3a5;
-  --surface-raised: #f5f2eb;
+  --surface-raised: #f8f4ed;
   --secondary: #6f6d68;
   /* 10% — coral accent */
   --accent: #e85a4f;
   --accent-soft: #e98074;
   --accent-fg: #fffaf8;
-  --card: #f5f2eb;
+  --card: #f8f4ed;
   --layout-shell: 72rem;
   --layout-read: 48rem;
   --layout-prose: 42rem;
@@ -202,7 +202,7 @@ body {
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--accent);
 }
 
 .index-tree-list {
@@ -297,7 +297,8 @@ body {
 }
 
 .surface-panel {
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
   border-radius: 0.75rem;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 92%, var(--background));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 70%, transparent);
 }
