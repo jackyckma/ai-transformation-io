@@ -209,7 +209,7 @@ function coerceReview(raw: string, model: string): EditorialAgentReview | null {
   }
 
   const dimensions = readDimensionScores(value);
-  let substanceScore =
+  let substanceScore: number | undefined =
     typeof value.substance_score === 'number'
       ? value.substance_score
       : Number(value.substance_score);
