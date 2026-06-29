@@ -111,7 +111,7 @@ export function MobileNavDrawer() {
         aria-controls="mobile-nav-drawer"
         aria-label={open ? 'Close menu' : 'Open menu'}
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--accent)]/35 bg-[var(--card)] text-[var(--foreground)] shadow-sm"
+        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_srgb,var(--surface-chrome-fg)_32%,transparent)] bg-[color-mix(in_srgb,var(--surface-chrome-fg)_8%,transparent)] text-[var(--surface-chrome-fg)] shadow-sm"
       >
         <svg aria-hidden className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           {open ? (

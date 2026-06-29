@@ -1,21 +1,24 @@
 @import 'tailwindcss';
 
 :root {
-  /* 60% — cool reading ground */
-  --background: #f7f9fb;
-  --foreground: #1a2836;
-  --muted: #5085a5;
-  --border: #c5dced;
-  /* 30% — ocean / slate structure */
-  --brand: #31708e;
-  --surface: #8fc1e3;
-  --surface-raised: #eef5fa;
-  --secondary: #5085a5;
-  /* 10% — muted green accent */
-  --accent: #687864;
-  --accent-soft: #8fc1e3;
-  --accent-fg: #f7f9fb;
-  --card: #e4eef5;
+  /* Palette: #E8EDF2 · #2C3947 · #547A95 · #C2A56D — 60% near-white reading ground */
+  --background: #fafbfc;
+  --foreground: #2c3947;
+  --muted: #547a95;
+  --border: #c8d3dc;
+  /* 30% — steel / charcoal structure */
+  --brand: #2c3947;
+  --surface: #eef2f6;
+  --surface-raised: #ffffff;
+  --surface-chrome: #547a95;
+  --surface-chrome-fg: #f4f7f9;
+  --surface-chrome-muted: #d8e2ea;
+  --secondary: #547a95;
+  /* 10% — warm gold accent on cool base */
+  --accent: #c2a56d;
+  --accent-soft: #e8edf2;
+  --accent-fg: #2c3947;
+  --card: #ffffff;
   --layout-shell: 72rem;
   --layout-read: 48rem;
   --layout-prose: 42rem;
@@ -26,18 +29,21 @@
 }
 
 .dark {
-  --background: #0f1419;
-  --foreground: #e8f1f8;
-  --muted: #8fc1e3;
-  --border: #2a4050;
-  --brand: #8fc1e3;
-  --surface: #1a2836;
-  --surface-raised: #152028;
-  --secondary: #5085a5;
-  --accent: #9db399;
-  --accent-soft: #687864;
-  --accent-fg: #0f1419;
-  --card: #152028;
+  --background: #1a222c;
+  --foreground: #e8edf2;
+  --muted: #9eb3c4;
+  --border: #3a4a5c;
+  --brand: #9eb3c4;
+  --surface: #243040;
+  --surface-raised: #2c3947;
+  --surface-chrome: #2c3947;
+  --surface-chrome-fg: #e8edf2;
+  --surface-chrome-muted: #9eb3c4;
+  --secondary: #547a95;
+  --accent: #c2a56d;
+  --accent-soft: #547a95;
+  --accent-fg: #1a222c;
+  --card: #243040;
 }
 
 body {
@@ -45,6 +51,35 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-weight: 400;
+}
+
+.site-chrome-bar {
+  background: var(--surface-chrome);
+  color: var(--surface-chrome-fg);
+  border-bottom: 1px solid color-mix(in srgb, var(--surface-chrome) 72%, #000);
+}
+
+.site-chrome-bar nav a {
+  color: var(--surface-chrome-muted);
+}
+
+.site-chrome-bar nav a:hover {
+  color: var(--surface-chrome-fg);
+}
+
+.site-chrome-bar nav a[aria-current='page'] {
+  color: var(--surface-chrome-fg);
+}
+
+.site-chrome-bar button {
+  border-color: color-mix(in srgb, var(--surface-chrome-fg) 32%, transparent);
+  color: var(--surface-chrome-muted);
+  background: color-mix(in srgb, var(--surface-chrome-fg) 8%, transparent);
+}
+
+.site-chrome-bar button:hover {
+  color: var(--surface-chrome-fg);
+  background: color-mix(in srgb, var(--surface-chrome-fg) 14%, transparent);
 }
 
 .site-panel-x {
@@ -179,10 +214,10 @@ body {
 }
 
 .surface-panel {
-  border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--border));
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--surface) 88%, var(--background));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 65%, transparent);
+  background: var(--card);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border) 55%, transparent);
 }
 
 .list-rows {

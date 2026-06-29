@@ -24,8 +24,8 @@ export function RibbonNav({ tabs }: { tabs: readonly RibbonTab[] }) {
             aria-current={active ? 'page' : undefined}
             className={`whitespace-nowrap transition ${
               active
-                ? 'font-normal text-[var(--foreground)] underline decoration-[var(--accent)] underline-offset-4'
-                : 'text-[var(--secondary)] hover:text-[var(--foreground)]'
+                ? 'font-normal text-[var(--surface-chrome-fg)] underline decoration-[var(--accent)] underline-offset-4'
+                : 'text-[var(--surface-chrome-muted)] hover:text-[var(--surface-chrome-fg)]'
             }`}
           >
             {tab.label}

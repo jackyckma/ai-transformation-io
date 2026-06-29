@@ -8,15 +8,15 @@ import { ORG_RIBBON } from '@/lib/nav';
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 shrink-0 border-b border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] bg-[var(--surface)] shadow-sm">
+    <header className="site-chrome-bar sticky top-0 z-30 shrink-0 shadow-sm">
       <div className="site-panel-x py-3 sm:py-4">
         <div className="flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="min-w-0 max-w-[calc(100%-3rem)] truncate font-serif text-xl font-normal tracking-tight text-[var(--foreground)] md:max-w-none md:text-[1.35rem]"
+            className="min-w-0 max-w-[calc(100%-3rem)] truncate font-serif text-xl font-normal tracking-tight text-[var(--surface-chrome-fg)] md:max-w-none md:text-[1.35rem]"
           >
             AI Transformation
-            <span className="ml-1 font-sans text-sm font-normal text-[var(--secondary)]">.org</span>
+            <span className="ml-1 font-sans text-sm font-normal text-[var(--surface-chrome-muted)]">.org</span>
           </Link>
 
           <div className="relative z-40 flex shrink-0 items-center gap-2 sm:gap-3">

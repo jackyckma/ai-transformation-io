@@ -12,10 +12,10 @@ type CuratedVisualProps = {
 };
 
 const PLACEHOLDER_TONES = [
-  'from-[#d8c3a5] to-[#eae7dc] dark:from-[#2a2620] dark:to-[#1c1916]',
-  'from-[#e98074] to-[#f5ebe0] dark:from-[#3d2824] dark:to-[#1c1916]',
-  'from-[#c4a882] to-[#f0ebe3] dark:from-[#332a20] dark:to-[#1c1916]',
-  'from-[#e85a4f] to-[#d8c3a5] dark:from-[#4a2824] dark:to-[#221f1b]',
+  'from-[#a5af79] to-[#fffaf4] dark:from-[#827148] dark:to-[#1f1c17]',
+  'from-[#e8a07c] to-[#ffeed6] dark:from-[#3d2824] dark:to-[#1f1c17]',
+  'from-[#827148] to-[#f5f0e6] dark:from-[#332e27] dark:to-[#1f1c17]',
+  'from-[#e8a07c] to-[#a5af79] dark:from-[#4a2824] dark:to-[#2a2620]',
 ] as const;
 
 function toneForSeed(seed: string): (typeof PLACEHOLDER_TONES)[number] {
