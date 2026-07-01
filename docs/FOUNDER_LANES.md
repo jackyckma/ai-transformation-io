@@ -27,7 +27,7 @@ Quick tidy before new lanes work. Owner = who unblocks.
 | Item | Owner | Done when |
 |------|-------|-----------|
 | Agent Review `malformed` on `/editorial` (`max_tokens` fix) | **AT** | Advisory scores appear on pending drafts |
-| `.io` logged-out home — pick **A or B** (see discussion) | **Founder** → AT | **B shipped** — reader paths + thin strips; image regen optional follow-up |
+| `.io` logged-out home — pick **A or B** (see discussion) | **Founder** → AT | **Done** — reader paths; path photos removed (gradient icons) |
 | Wave 25 brief | **AT** | Kickoff or explicit **defer** note in FOUNDER_WAVE_DECISIONS |
 | Orbita w30 + missed 6/29 supply batch | **Orbita** | New drafts land or manual batch recovered |
 | `FOUNDER_WAVE_DECISIONS` wave queue row for Wave 21 | **AT** | Mark ✅ shipped (doc drift) |
@@ -71,7 +71,7 @@ Cross-project handoff: `~/Orbiter-AT-dogfood/state/STATUS.md` (on-demand only).
 | | |
 |--|--|
 | **Last shipped** | v2 IA; Copilot (MiniMax); `.org` four Ask modes; Wave 21 `.org` polish; palette + chrome refresh |
-| **Next (one thing)** | Regenerate `.io` `/curation/path-*.jpg` for cooler tones (optional polish) |
+| **Next (one thing)** | Optional: `node scripts/generate-curation-covers.mjs --site=io` after path cards ship text-only |
 | **Active (≤3)** | ① Home logged-in vs logged-out clarity (session cookie) ② Assessment ↔ Copilot linkage (low) ③ Library full-text search UI (blocked on Lane 2 search API) |
 
 **Not on radar:** Function-primary nav (Wave 24), prominent consultancy CTAs.

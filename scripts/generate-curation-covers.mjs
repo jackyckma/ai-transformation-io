@@ -20,7 +20,7 @@ loadEnvFile(path.join(repoRoot, '.env'));
 const BASE_STYLE =
   'Editorial abstract cover art for a premium knowledge website. Muted palette, subtle paper grain, minimal geometric composition, no text, no letters, no people, no faces, no logos. Calm refined museum-catalog aesthetic, soft diffused light.';
 
-const IO_STYLE = `${BASE_STYLE} Warm stone, cream, bronze, and taupe only — no green tones.`;
+const IO_STYLE = `${BASE_STYLE} Cool steel blue, pale grey, soft gold accent only — match #E8EDF2 / #547A95 / #C2A56D; no warm stone, beige, or green.`;
 const ORG_STYLE = `${BASE_STYLE} Soft moss green, fern, sage, and parchment — community harvest feel, no bronze or coffee brown.`;
 
 function assetList(style, site) {
@@ -106,15 +106,15 @@ const SITE_CONFIG = {
 };
 
 const IO_PALETTES = {
-  cornerstone: ['#ebe3d6', '#c9b08a', '#8f5e2c'],
-  'three-gaps': ['#e8ddd0', '#b8a088', '#6b5340'],
-  roadmap: ['#e5d8c8', '#c9924f', '#7a4f24'],
-  'harvest-stories': ['#ebe3d6', '#c4a882', '#8b6914'],
-  apprenticeship: ['#ebe4d8', '#c9a882', '#8b6914'],
-  'path-governance': ['#e8e0d4', '#8f5e2c'],
-  'path-playbook': ['#e5ddd2', '#7a6554'],
-  'path-explore': ['#f0ebe3', '#a89882'],
-  'path-share': ['#e8ddd0', '#9a6534'],
+  cornerstone: ['#e8edf2', '#547a95', '#2c3947'],
+  'three-gaps': ['#eef2f6', '#547a95', '#c2a56d'],
+  roadmap: ['#e8edf2', '#547a95', '#c2a56d'],
+  'harvest-stories': ['#eef2f6', '#547a95', '#2c3947'],
+  apprenticeship: ['#e8edf2', '#c2a56d', '#547a95'],
+  'path-governance': ['#e8edf2', '#2c3947'],
+  'path-playbook': ['#eef2f6', '#547a95'],
+  'path-explore': ['#fafbfc', '#547a95'],
+  'path-share': ['#e8edf2', '#c2a56d'],
 };
 
 const ORG_PALETTES = {

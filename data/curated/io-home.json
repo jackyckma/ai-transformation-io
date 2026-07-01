@@ -1,6 +1,6 @@
 {
   "site": "io",
-  "updatedAt": "2026-06-22",
+  "updatedAt": "2026-06-29",
   "readerEntry": {
     "headline": "What does AI transformation mean in your context?",
     "description": "Not a vendor checklist — how work, judgment, and value actually change where you sit."
@@ -9,7 +9,6 @@
     {
       "id": "lead",
       "layout": "compact",
-      "image": "/curation/path-governance.jpg",
       "label": "I lead or sponsor change",
       "description": "Governance, roadmap, and measuring value at organizational scale.",
       "articleSlugs": [
@@ -21,7 +20,6 @@
     {
       "id": "implement",
       "layout": "compact",
-      "image": "/curation/path-playbook.jpg",
       "label": "I implement or enable",
       "description": "Patterns, pitfalls, and practical playbook moves.",
       "articleSlugs": [
@@ -33,7 +31,6 @@
     {
       "id": "explore",
       "layout": "compact",
-      "image": "/curation/path-explore.jpg",
       "label": "I'm exploring what this means for me",
       "description": "Start with the cornerstone, then hear from practitioners on .org.",
       "articleSlugs": ["what-is-ai-transformation"],
