@@ -14,4 +14,5 @@ Lane-specific skills live here as `lane-<name>/SKILL.md` — see `lane-based-dev
 | Skill | When to load |
 |-------|--------------|
 | `curated-home-refresh/` | Propose `data/curated/*.json` changes — founder approves PR |
+| `orbiter-handoff/` | **On-demand only** — user asks to check/poll `~/Orbiter-AT-dogfood` (not every session) |
 | `continual-learning/` | Hook follow-up or manual memory sync — brief ≤300-word user reply |

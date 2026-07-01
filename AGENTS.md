@@ -29,7 +29,7 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 
 ## Cross-project handoff (Orbita dogfood)
 
-When work touches Orbita integration, L12 editorial supply, or `.editorial-orbita/`: read **`/home/jackyma/Orbiter-AT-dogfood/`** — start with `state/STATUS.md` and `inbox/orbita-to-at/`; reply in `inbox/at-to-orbita/` per `PROTOCOL.md`. Details: `FOR-ai-transformation-agent.md` in that folder (not duplicated here).
+**On-demand only** — load skill **`.agents/skills/orbiter-handoff/SKILL.md`** when the user explicitly asks (e.g. 檢查 handoff, poll Orbita inbox). Do **not** read `~/Orbiter-AT-dogfood` on every turn or because work mentions Orbita/L12. Protocol: `~/Orbiter-AT-dogfood/PROTOCOL.md`.
 
 ## Orchestrate (`/orchestrate`)
 
@@ -58,7 +58,7 @@ When work touches Orbita integration, L12 editorial supply, or `.editorial-orbit
 - ai-transformation.io — public Library + Insights + personal cockpit (v2); ai-transformation.org — **Community · Knowledge commons** (v2). See `docs/SITE_DESIGN_v2.md`. Production URLs: ai-transformation.io / .org (not `*.zeabur.app`). Apprenticeship remains a special program (`/apprenticeship`).
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Waves 11–19 shipped on `main` (Wave 15 UI, Wave 16 L12 editorial, Wave 17 newsletter pilot, Wave 18 platform depth, Wave 19 editorial-review + objects catalog). **Next:** Wave 21 .org P1 polish (orchestrate); Wave 20b credits @ ≥50 users; Wave 20a newsletter archive deferred (B3); Wave 22 auto-approve blocked until A1. Pre-lock queue in `docs/FOUNDER_WAVE_DECISIONS.md`. L12 Orbita = external non-blocking client (`.editorial-orbita/` runbooks; AT0b/AT1a dogfood via `/home/jackyma/orbita`; no vendored platform code).
+- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Waves 11–21 shipped on `main` (Wave 15 UI, Wave 16 L12 editorial, Wave 17 newsletter pilot, Wave 18 platform depth, Wave 19 editorial-review + objects catalog, Wave 21 .org P1 polish). **Next:** Wave 20b credits @ ≥50 users; Wave 20a newsletter archive deferred (B3); Wave 22 auto-approve blocked until A1. Pre-lock queue in `docs/FOUNDER_WAVE_DECISIONS.md`. L12 Orbita = external non-blocking client (`.editorial-orbita/` runbooks; AT0b/AT1a dogfood via `/home/jackyma/orbita`; no vendored platform code).
 - Product direction: agent-first site — humans and agents are first-class participants; on-site **Copilot** companion (route `/ask`; primary human UI; 8 msg/day anonymous, 25/day signed-in; MiniMax-M3 via `MINIMAX_API_KEY`) plus `/for-agents` and embedded machine-readable hints. Logged-in home: server `atx_session` cookie hint avoids public curation flash before PersonalDashboard.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token. Defer agent credits/payment until ≥50 registered users (C1) — quota-only early; Stripe top-up only at launch, subscriptions later (C3).
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie). Founder Google primary email `jackyma.berlin@gmail.com`; Zeabur `ADMIN_EMAILS` lists both new + legacy `jackymama@gmail.com` during Google email propagation.

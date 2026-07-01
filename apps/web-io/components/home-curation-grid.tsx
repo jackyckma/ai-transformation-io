@@ -3,31 +3,47 @@ import {
   getCuratedHomeFeed,
   resolveCuratedArticles,
   type CuratedHomeFeed,
-  type CuratedHomeTile,
+  type CuratedReaderPath,
 } from '@ai-transformation/content';
-import { FeatureSpotlightCard, CuratedVisual, DECORATIVE_ASPECT } from '@/components/curated-cards';
-import { formatMonthYear } from '@/lib/format-date';
+import { CompactPathCard } from '@/components/curated-cards';
 
-function resolveTileHref(tile: CuratedHomeTile): string | null {
-  if (tile.href) {
-    return tile.href;
-  }
-  if (tile.slug) {
-    const article = resolveCuratedArticles([tile.slug], tile.useOrgLearnPaths)[0];
-    return article?.pathname ?? null;
-  }
-  return null;
+function useKnowledgePaths(value: {
+  useOrgKnowledgePaths?: boolean;
+  useOrgLearnPaths?: boolean;
+}): boolean {
+  return Boolean(value.useOrgKnowledgePaths ?? value.useOrgLearnPaths);
 }
 
-/** Honest content-type label derived from where a curated tile points. */
-function tileTypeLabel(tile: CuratedHomeTile, href: string): string {
-  if (tile.external) return 'Community';
-  if (href.startsWith('/insights/assessment')) return 'Assessment';
-  if (href.startsWith('/insights')) return 'Insights';
-  if (href.startsWith('/library/') || tile.slug) return 'Framework';
-  if (href.startsWith('/library')) return 'Library';
-  if (href.startsWith('/api/agent')) return 'For agents';
-  return 'Guide';
+function ReaderPathLinks({ path }: { path: CuratedReaderPath }) {
+  const articles = resolveCuratedArticles(path.articleSlugs ?? [], useKnowledgePaths(path));
+  const externals = path.externalLinks ?? [];
+
+  if (articles.length === 0 && externals.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {articles.map((article) => (
+        <li key={article.slug}>
+          <Link href={article.pathname} className="text-[var(--secondary)] hover:text-[var(--foreground)]">
+            {article.title}
+          </Link>
+        </li>
+      ))}
+      {externals.map((link) => (
+        <li key={link.href}>
+          <a
+            href={link.href}
+            className="text-[var(--secondary)] hover:text-[var(--foreground)]"
+            rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </>
+  );
 }
 
 type HomeCurationGridProps = {
@@ -35,97 +51,81 @@ type HomeCurationGridProps = {
 };
 
 export function HomeCurationGrid({ feed }: HomeCurationGridProps) {
-  const spotlight = feed.spotlight[0];
-  const tiles = feed.homeTiles ?? [];
-  const updatedLabel = formatMonthYear(feed.updatedAt);
+  const { readerEntry, readerPaths, secondaryLinks } = feed;
 
   return (
-    <div className="space-y-8">
-      {spotlight ? (
-        <section aria-labelledby="home-spotlight-heading">
-          <h1 id="home-spotlight-heading" className="sr-only">
-            Home
-          </h1>
-          {(() => {
-            const article = resolveCuratedArticles([spotlight.slug], spotlight.useOrgLearnPaths)[0];
-            if (!article) return null;
-            return (
-              <FeatureSpotlightCard
-                article={article}
-                editorNote={spotlight.editorNote}
-                image={spotlight.image}
-                category="Framework"
-                dateLabel={updatedLabel ? `Updated ${updatedLabel}` : null}
-              />
-            );
-          })()}
-        </section>
-      ) : null}
+    <div className="space-y-10">
+      <header>
+        <h1 className="font-serif text-2xl font-normal tracking-tight text-[var(--foreground)] md:text-[1.85rem]">
+          {readerEntry.headline}
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm font-light leading-relaxed text-[var(--muted)]">
+          {readerEntry.description}
+        </p>
+      </header>
 
-      {tiles.length > 0 ? (
-        <section aria-labelledby="home-grid-heading">
-          <h2 id="home-grid-heading" className="sr-only">
-            Explore
+      {readerPaths.length > 0 ? (
+        <section aria-labelledby="home-paths-heading">
+          <h2 id="home-paths-heading" className="sr-only">
+            Choose your path
           </h2>
-          <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
-            {tiles.map((tile) => {
-              const href = resolveTileHref(tile);
-              if (!href) return null;
-
-              const inner = (
-                <>
-                  <CuratedVisual
-                    seed={tile.id}
-                    image={tile.image}
-                    aspectClass={`${DECORATIVE_ASPECT.tile} w-full`}
-                    flush
-                  />
-                  <div className="p-4 pb-5">
-                    <p className="text-[11px] font-light tracking-wide text-[var(--muted)]">
-                      <span className="rounded-full border border-[var(--brand)]/35 bg-[var(--brand)]/12 px-1.5 py-0.5 uppercase tracking-wide text-[var(--brand)]">
-                        {tileTypeLabel(tile, href)}
-                      </span>
-                      {updatedLabel ? (
-                        <span className="text-[var(--secondary)]"> · Updated {updatedLabel}</span>
-                      ) : null}
-                    </p>
-                    <h3 className="font-serif mt-1.5 text-base font-normal leading-snug tracking-tight text-[var(--foreground)]">
-                      {tile.title}
-                    </h3>
-                    {tile.summary ? (
-                      <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">
-                        {tile.summary}
-                      </p>
-                    ) : null}
-                  </div>
-                </>
-              );
-
-              const className =
-                'block overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] transition hover:border-[var(--accent)]/40';
-
-              return (
-                <li key={tile.id}>
-                  {tile.external ? (
-                    <a
-                      href={href}
-                      className={className}
-                      data-curation-id={tile.id}
-                      rel="noopener noreferrer"
-                    >
-                      {inner}
-                    </a>
-                  ) : (
-                    <Link href={href} className={className} data-curation-id={tile.id}>
-                      {inner}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
+          <ul className="grid gap-4 md:grid-cols-3">
+            {readerPaths.map((path) => (
+              <CompactPathCard
+                key={path.id}
+                seed={path.id}
+                label={path.label}
+                description={path.description}
+                image={path.image}
+              >
+                <ReaderPathLinks path={path} />
+              </CompactPathCard>
+            ))}
           </ul>
         </section>
       ) : null}
+
+      {secondaryLinks.length > 0 ? (
+        <section aria-labelledby="home-secondary-heading" className="border-t border-[var(--border)] pt-8">
+          <h2 id="home-secondary-heading" className="sr-only">
+            Also on this site
+          </h2>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {secondaryLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="block rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition hover:border-[var(--accent)]/40"
+                >
+                  <h3 className="font-serif text-base font-normal tracking-tight text-[var(--foreground)]">
+                    {link.label}
+                  </h3>
+                  <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">{link.description}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <nav
+        aria-label="Browse the site"
+        className="flex flex-wrap gap-x-4 gap-y-2 border-t border-[var(--border)] pt-6 text-sm font-light text-[var(--secondary)]"
+      >
+        <Link href="/library" className="hover:text-[var(--foreground)]">
+          Library
+        </Link>
+        <Link href="/insights" className="hover:text-[var(--foreground)]">
+          Insights
+        </Link>
+        <a
+          href="https://ai-transformation.org"
+          className="hover:text-[var(--foreground)]"
+          rel="noopener noreferrer"
+        >
+          Community on .org
+        </a>
+      </nav>
     </div>
   );
 }

@@ -78,6 +78,11 @@
       "label": "Organizational diagnostic (36 questions)",
       "description": "For teams leading AI transformation — Three Gaps radar, not a personal quiz.",
       "href": "/insights/assessment"
+    },
+    {
+      "label": "README for agent visitors",
+      "description": "Site intro, API version, and how agents interact without scraping HTML.",
+      "href": "/for-agents"
     }
   ],
   "homeTiles": [

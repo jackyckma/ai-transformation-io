@@ -33,7 +33,7 @@
 |---------|------|
 | Founder decisions | `docs/FOUNDER_WAVE_DECISIONS.md` |
 | Wave 21 | `docs/waves/wave21-ui-p1-org-polish.md` |
-| Orbita handoff | `~/Orbiter-AT-dogfood/state/STATUS.md` |
+| Orbita handoff | `~/Orbiter-AT-dogfood/state/STATUS.md` — **on user request only** (skill `orbiter-handoff`) |
 
 ## Warnings
 

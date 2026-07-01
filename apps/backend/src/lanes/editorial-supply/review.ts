@@ -294,7 +294,8 @@ export async function reviewDraft(input: ReviewInput): Promise<EditorialAgentRev
       model: config.model,
       messages: buildMessages(input),
       temperature: 0.2,
-      max_tokens: 700,
+      // MiniMax reasoning_split can consume the whole budget before JSON lands in `content`.
+      max_tokens: 2500,
       stream: false,
       response_format: { type: 'json_object' },
     };

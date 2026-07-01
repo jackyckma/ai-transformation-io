@@ -188,15 +188,27 @@ type CompactPathCardProps = {
 
 export function CompactPathCard({ label, description, image, seed, children }: CompactPathCardProps) {
   return (
-    <li className="flex h-full flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 md:p-5">
-      <div className="flex items-start gap-3">
-        <CuratedVisual seed={seed} image={image} compact />
-        <div>
-          <h3 className="font-serif text-base font-normal tracking-tight text-[var(--foreground)]">{label}</h3>
-          <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">{description}</p>
-        </div>
+    <li className="flex h-full flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+      {image ? (
+        <CuratedVisual seed={seed} image={image} aspectClass={`${DECORATIVE_ASPECT.tile} w-full`} flush />
+      ) : null}
+      <div className="flex flex-1 flex-col p-4 md:p-5">
+        {!image ? (
+          <div className="flex items-start gap-3">
+            <CuratedVisual seed={seed} compact />
+            <div>
+              <h3 className="font-serif text-base font-normal tracking-tight text-[var(--foreground)]">{label}</h3>
+              <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">{description}</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h3 className="font-serif text-base font-normal tracking-tight text-[var(--foreground)]">{label}</h3>
+            <p className="mt-2 text-sm font-light leading-relaxed text-[var(--muted)]">{description}</p>
+          </>
+        )}
+        <ul className="mt-4 space-y-2 border-t border-[var(--border)] pt-4 text-sm font-light">{children}</ul>
       </div>
-      <ul className="mt-4 space-y-2 border-t border-[var(--border)] pt-4 text-sm font-light">{children}</ul>
     </li>
   );
 }
