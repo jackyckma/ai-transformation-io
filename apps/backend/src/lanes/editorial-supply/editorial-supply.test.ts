@@ -197,6 +197,106 @@ describe('Wave 16 editorial supply lane', () => {
     expect(stored?.metadata.editorial_review).toBe('rejected');
   });
 
+  it('persists editorial comment on approve/reject for agent poll via GET /api/v1/objects/:id', async () => {
+    const { app, db, objectsDb, agentDb } = await loadBackend();
+    const author = db.upsertUserByGoogle({
+      googleSub: 'google-sub-editorial-comment-author',
+      email: 'orbita-author@example.com',
+      name: 'Orbita Author',
+      picture: null,
+    });
+    const token = agentDb.issueWriteToken({
+      email: author.email,
+      clientId: 'content-ai-transformation-org',
+      scopes: ['write:story'],
+    });
+    const admin = db.upsertUserByGoogle({
+      googleSub: 'google-sub-editorial-comment-admin',
+      email: ADMIN_EMAIL,
+      name: 'Founder',
+      picture: null,
+    });
+    const adminSession = db.createSession(admin.id, 60_000);
+    process.env.ADMIN_EMAILS = ADMIN_EMAIL;
+
+    const createResponse = await app.request('http://localhost/api/internal/editorial/drafts', {
+      method: 'POST',
+      headers: {
+        host: 'ai-transformation.org',
+        'content-type': 'application/json',
+        authorization: `Bearer ${token.bearerToken}`,
+      },
+      body: JSON.stringify(KNOWLEDGE_DRAFT),
+    });
+    expect(createResponse.status).toBe(201);
+    const createJson = (await createResponse.json()) as { ok: true; object: { id: string } };
+
+    const approveComment = 'Strong first-hand examples — publish as-is.';
+    const approveResponse = await app.request(
+      `http://localhost/api/internal/editorial/drafts/${createJson.object.id}/approve`,
+      {
+        method: 'POST',
+        headers: {
+          host: 'ai-transformation.org',
+          'content-type': 'application/json',
+          cookie: `atx_session=${adminSession.id}`,
+        },
+        body: JSON.stringify({ comment: approveComment }),
+      },
+    );
+    expect(approveResponse.status).toBe(200);
+
+    const pollApproved = await app.request(
+      `http://localhost/api/v1/objects/${createJson.object.id}`,
+      {
+        headers: {
+          host: 'ai-transformation.org',
+          authorization: `Bearer ${token.bearerToken}`,
+        },
+      },
+    );
+    expect(pollApproved.status).toBe(200);
+    const approvedJson = (await pollApproved.json()) as {
+      ok: true;
+      object: { status: string; metadata: Record<string, unknown> };
+    };
+    expect(approvedJson.object.status).toBe('published');
+    expect(approvedJson.object.metadata.editorial_review).toBe('approved');
+    expect(approvedJson.object.metadata.editorial_comment).toBe(approveComment);
+    expect(typeof approvedJson.object.metadata.editorial_review_at).toBe('string');
+
+    const rejectCreate = await app.request('http://localhost/api/internal/editorial/drafts', {
+      method: 'POST',
+      headers: {
+        host: 'ai-transformation.org',
+        'content-type': 'application/json',
+        authorization: `Bearer ${token.bearerToken}`,
+      },
+      body: JSON.stringify(COMMUNITY_DRAFT),
+    });
+    const rejectCreateJson = (await rejectCreate.json()) as { ok: true; object: { id: string } };
+
+    const rejectComment = 'Too generic — add a concrete pilot example and resubmit.';
+    const rejectResponse = await app.request(
+      `http://localhost/api/internal/editorial/drafts/${rejectCreateJson.object.id}/reject`,
+      {
+        method: 'POST',
+        headers: {
+          host: 'ai-transformation.org',
+          'content-type': 'application/json',
+          cookie: `atx_session=${adminSession.id}`,
+        },
+        body: JSON.stringify({ comment: rejectComment }),
+      },
+    );
+    expect(rejectResponse.status).toBe(200);
+
+    const stored = objectsDb.getObjectById(rejectCreateJson.object.id);
+    expect(stored?.metadata.editorial_review).toBe('rejected');
+    expect(stored?.metadata.editorial_comment).toBe(rejectComment);
+    expect(typeof stored?.metadata.editorial_review_at).toBe('string');
+  });
+
   it('accepts an L11 bearer write token on create-draft', async () => {
     const { app, db, agentDb } = await loadBackend();
     const author = db.upsertUserByGoogle({

@@ -57,6 +57,12 @@ export const editorialReviewPendingResponseSchema = z.object({
 });
 export type EditorialReviewPendingResponse = z.infer<typeof editorialReviewPendingResponseSchema>;
 
+/** Optional body for POST .../drafts/:id/approve|reject (human feedback for submitter agents). */
+export const editorialDecisionRequestSchema = z.object({
+  comment: z.string().trim().max(8000).optional(),
+});
+export type EditorialDecisionRequest = z.infer<typeof editorialDecisionRequestSchema>;
+
 /**
  * Public agent content catalog (Wave 19, pillar 3). One entry per published,
  * public Wave 12 knowledge/community object from GET /api/v1/objects/catalog.

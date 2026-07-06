@@ -25,8 +25,8 @@
 | `POST /api/internal/editorial/drafts` | `ADMIN_EMAILS` session **or** L11 Bearer with editorial scope | Create draft knowledge/community object |
 | `GET /api/internal/editorial/drafts` | Admin session | List pending review |
 | `GET /api/internal/editorial/drafts/:id` | Admin session | Full draft body for review before approve/reject |
-| `POST /api/internal/editorial/drafts/:id/approve` | Admin session | Publish or queue for moderation per member prefs |
-| `POST /api/internal/editorial/drafts/:id/reject` | Admin session | Archive / discard |
+| `POST /api/internal/editorial/drafts/:id/approve` | Admin session | Publish or queue for moderation per member prefs. Optional JSON `{ comment?: string }` → `metadata.editorial_comment` |
+| `POST /api/internal/editorial/drafts/:id/reject` | Admin session | Archive / discard. Optional JSON `{ comment?: string }` → `metadata.editorial_comment` |
 | `POST /api/internal/editorial/review-pending` | `ADMIN_EMAILS` session | Run the editorial-review agent over all pending/draft editorial drafts |
 | `POST /api/internal/editorial/drafts/:id/review` | `ADMIN_EMAILS` session | Run the editorial-review agent over one draft |
 
@@ -129,6 +129,7 @@ If Orbita is down, founder uses admin UI or curl against internal draft endpoint
 
 - Drafts are stored as Wave 12 objects with `status: draft|pending` and editorial marker metadata (`editorial_source`).
 - Review output persists at `metadata.editorial_agent` and never mutates publish lifecycle state.
+- On approve/reject, founder feedback persists at `metadata.editorial_comment` (optional) with `metadata.editorial_review` (`approved`|`rejected`) and `metadata.editorial_review_at` (ISO timestamp). Submitting agents poll `GET /api/v1/objects/{id}` with their L11 Bearer token to close the loop.
 - Approved objects continue through the existing submit/publish flow (Wave 12 moderation).
 
 ---

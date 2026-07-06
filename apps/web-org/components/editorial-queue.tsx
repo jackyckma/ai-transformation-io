@@ -9,6 +9,7 @@ import {
   DIMENSION_LABEL,
   SUBSTANCE_DIMENSION_ORDER,
   dimensionTier,
+  formatAgentReviewComment,
   isTechnicalFlag,
   reviewHeadlineTier,
   substanceBandHint,
@@ -150,13 +151,19 @@ export function EditorialQueue() {
     }
   }
 
-  async function act(draft: EditorialDraft, action: 'approve' | 'reject') {
+  async function act(draft: EditorialDraft, action: 'approve' | 'reject', comment: string) {
     setActingId(draft.id);
     setActionError('');
     try {
+      const trimmed = comment.trim();
       const res = await fetch(
         `${apiBase()}/api/internal/editorial/drafts/${encodeURIComponent(draft.id)}/${action}`,
-        { method: 'POST', credentials: 'include' },
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(trimmed ? { comment: trimmed } : {}),
+        },
       );
       if (!res.ok) {
         throw new Error(`Editorial ${action} failed: ${res.status}`);
@@ -248,8 +255,8 @@ export function EditorialQueue() {
                     key={draft.id}
                     draft={draft}
                     acting={actingId === draft.id}
-                    onApprove={() => void act(draft, 'approve')}
-                    onReject={() => void act(draft, 'reject')}
+                    onApprove={(comment) => void act(draft, 'approve', comment)}
+                    onReject={(comment) => void act(draft, 'reject', comment)}
                   />
                 ))}
               </ul>
@@ -269,13 +276,32 @@ function DraftCard({
 }: {
   draft: EditorialDraft;
   acting: boolean;
-  onApprove: () => void;
-  onReject: () => void;
+  onApprove: (comment: string) => void;
+  onReject: (comment: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [detail, setDetail] = useState<EditorialDraftDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
+  const [comment, setComment] = useState('');
+  const [commentTouched, setCommentTouched] = useState(false);
+
+  const agentReview = readAgentReview(draft.metadata);
+
+  useEffect(() => {
+    setComment('');
+    setCommentTouched(false);
+  }, [draft.id]);
+
+  useEffect(() => {
+    if (commentTouched) {
+      return;
+    }
+    if (!agentReview || 'skipped' in agentReview || !agentReview.summary.trim()) {
+      return;
+    }
+    setComment(formatAgentReviewComment(agentReview));
+  }, [agentReview, commentTouched, draft.id]);
 
   async function loadDetail() {
     if (detail) {
@@ -314,7 +340,6 @@ function DraftCard({
   }
 
   const bodyText = expanded && detail ? detail.body : draft.bodyExcerpt;
-  const agentReview = readAgentReview(draft.metadata);
   const cardTier =
     agentReview && !('skipped' in agentReview) ? reviewHeadlineTier(agentReview) : null;
 
@@ -358,14 +383,38 @@ function DraftCard({
             {detailError}
           </p>
         ) : null}
+        <div className="mt-5">
+          <label
+            htmlFor={`editorial-comment-${draft.id}`}
+            className="text-[11px] font-normal uppercase tracking-wide text-[var(--muted)]"
+          >
+            Editorial comment
+          </label>
+          <p className="mt-1 text-xs font-light text-[var(--muted)]">
+            Optional feedback for the submitting agent. Run agent review to pre-fill from the model
+            summary — edit before you approve or reject.
+          </p>
+          <textarea
+            id={`editorial-comment-${draft.id}`}
+            value={comment}
+            onChange={(event) => {
+              setCommentTouched(true);
+              setComment(event.target.value);
+            }}
+            rows={5}
+            disabled={acting}
+            placeholder="Notes for the author agent (e.g. what to fix, what worked)…"
+            className="mt-2 w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-light leading-relaxed text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:border-[var(--accent)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+          />
+        </div>
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <ActionButton
             label={detailLoading ? 'Loading…' : expanded ? 'Show excerpt' : 'View full article'}
             onClick={() => void toggleExpanded()}
             disabled={acting || detailLoading}
           />
-          <ActionButton label="Approve" onClick={onApprove} disabled={acting} />
-          <ActionButton label="Reject" onClick={onReject} disabled={acting} danger />
+          <ActionButton label="Approve" onClick={() => onApprove(comment)} disabled={acting} />
+          <ActionButton label="Reject" onClick={() => onReject(comment)} disabled={acting} danger />
         </div>
       </article>
     </li>

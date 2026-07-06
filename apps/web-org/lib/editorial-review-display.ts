@@ -104,3 +104,17 @@ export function substanceBandHint(tier: ReviewScoreTier): string {
   }
   return 'Needs close read — likely rewrite or heavy edit';
 }
+
+/** Suggested editorial comment prefill from agent review (editable before approve/reject). */
+export function formatAgentReviewComment(
+  review: Exclude<EditorialAgentReview, { skipped: true }>,
+): string {
+  const lines = ['[Agent review — edit before approve/reject]', '', review.summary.trim()];
+  if (review.flags.length > 0) {
+    lines.push('', `Flags: ${review.flags.join(', ')}`);
+  }
+  if (review.substance_score !== undefined) {
+    lines.push(`Substance: ${review.substance_score}/15`);
+  }
+  return lines.join('\n');
+}

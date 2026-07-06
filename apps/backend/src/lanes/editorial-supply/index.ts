@@ -1,4 +1,4 @@
-import { objectDraftRequestSchema, type EditorialAgentReview } from '@ai-transformation/shared';
+import { objectDraftRequestSchema, editorialDecisionRequestSchema, type EditorialAgentReview } from '@ai-transformation/shared';
 import { Hono } from 'hono';
 
 import {
@@ -74,6 +74,42 @@ function draftDetail(draft: NonNullable<ReturnType<typeof getObjectById>>) {
 function isEditorialDraft(draft: NonNullable<ReturnType<typeof getObjectById>>): boolean {
   const source = draft.metadata?.editorial_source;
   return typeof source === 'string' && source.length > 0;
+}
+
+async function parseEditorialDecisionBody(
+  c: { req: { json: () => Promise<unknown> } },
+): Promise<{ comment?: string } | { error: string }> {
+  let raw: unknown;
+  try {
+    raw = await c.req.json();
+  } catch {
+    return {};
+  }
+  if (raw === undefined || raw === null) {
+    return {};
+  }
+  const parsed = editorialDecisionRequestSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: getValidationErrorMessage(parsed.error) };
+  }
+  const comment = parsed.data.comment?.trim();
+  return comment ? { comment } : {};
+}
+
+function editorialDecisionMetadata(
+  existing: Record<string, unknown>,
+  decision: 'approved' | 'rejected',
+  comment?: string,
+): Record<string, unknown> {
+  const metadata: Record<string, unknown> = {
+    ...existing,
+    editorial_review: decision,
+    editorial_review_at: new Date().toISOString(),
+  };
+  if (comment) {
+    metadata.editorial_comment = comment;
+  }
+  return metadata;
 }
 
 editorialRouter.post('/drafts', async (c) => {
@@ -245,11 +281,16 @@ editorialRouter.post('/drafts/:id/review', async (c) => {
   return c.json({ ok: true, draft: draftDetail(updated) });
 });
 
-editorialRouter.post('/drafts/:id/approve', (c) => {
+editorialRouter.post('/drafts/:id/approve', async (c) => {
   const requester = resolveRequester(c);
   const gate = requireAdmin(requester);
   if (!gate.ok) {
     return c.json({ ok: false, error: gate.error }, gate.status);
+  }
+
+  const decisionBody = await parseEditorialDecisionBody(c);
+  if ('error' in decisionBody) {
+    return c.json({ ok: false, error: decisionBody.error }, 400);
   }
 
   const id = c.req.param('id');
@@ -264,10 +305,7 @@ editorialRouter.post('/drafts/:id/approve', (c) => {
     id: existing.id,
     status: 'published',
     publishedSlug,
-    metadata: {
-      ...existing.metadata,
-      editorial_review: 'approved',
-    },
+    metadata: editorialDecisionMetadata(existing.metadata, 'approved', decisionBody.comment),
   });
   if (!published) {
     return c.json({ ok: false, error: 'Draft not found' }, 404);
@@ -275,11 +313,16 @@ editorialRouter.post('/drafts/:id/approve', (c) => {
   return c.json({ ok: true, object: published });
 });
 
-editorialRouter.post('/drafts/:id/reject', (c) => {
+editorialRouter.post('/drafts/:id/reject', async (c) => {
   const requester = resolveRequester(c);
   const gate = requireAdmin(requester);
   if (!gate.ok) {
     return c.json({ ok: false, error: gate.error }, gate.status);
+  }
+
+  const decisionBody = await parseEditorialDecisionBody(c);
+  if ('error' in decisionBody) {
+    return c.json({ ok: false, error: decisionBody.error }, 400);
   }
 
   const id = c.req.param('id');
@@ -291,10 +334,7 @@ editorialRouter.post('/drafts/:id/reject', (c) => {
   const rejected = updateObjectLifecycle({
     id: existing.id,
     status: 'archived',
-    metadata: {
-      ...existing.metadata,
-      editorial_review: 'rejected',
-    },
+    metadata: editorialDecisionMetadata(existing.metadata, 'rejected', decisionBody.comment),
   });
   if (!rejected) {
     return c.json({ ok: false, error: 'Draft not found' }, 404);
