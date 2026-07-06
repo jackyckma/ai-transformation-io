@@ -5,13 +5,44 @@ import {
   resolveEditorialReviewProfile,
   substanceBandHintForProfile,
   substanceTierForProfile,
+  type EditorialReviewBarLevel,
   type EditorialReviewProfile,
 } from '@ai-transformation/shared';
 
 export type ReviewScoreTier = 'strong' | 'caution' | 'weak';
 
-export { resolveEditorialReviewProfile, type EditorialReviewProfile };
+export { resolveEditorialReviewProfile, type EditorialReviewProfile, type EditorialReviewBarLevel };
 export { hasEditorialGatekeeperFlags, isEditorialGatekeeperFlag };
+
+export const REVIEW_BAR_LEVEL_LABEL: Record<EditorialReviewBarLevel, string> = {
+  light: 'Light bar',
+  medium: 'Medium bar',
+  high: 'High bar',
+};
+
+const REVIEW_BAR_BANNER_CLASS: Record<EditorialReviewBarLevel, string> = {
+  light:
+    'border-[var(--accent)]/35 bg-[var(--accent)]/8 dark:border-[var(--accent)]/40 dark:bg-[var(--accent)]/10',
+  medium:
+    'border-amber-700/30 bg-amber-50/90 dark:border-amber-500/35 dark:bg-amber-950/25',
+  high: 'border-[var(--foreground)]/15 bg-[var(--card)] dark:border-[var(--border)]',
+};
+
+const REVIEW_BAR_LEVEL_PILL_CLASS: Record<EditorialReviewBarLevel, string> = {
+  light:
+    'border-[var(--accent)]/50 bg-[var(--accent)]/15 text-[var(--foreground)] dark:text-[var(--foreground)]',
+  medium:
+    'border-amber-700/35 bg-amber-100/80 text-amber-950 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-100',
+  high: 'border-[var(--foreground)]/20 bg-[var(--background)] text-[var(--foreground)]',
+};
+
+export function reviewBarBannerClass(level: EditorialReviewBarLevel): string {
+  return REVIEW_BAR_BANNER_CLASS[level];
+}
+
+export function reviewBarLevelPillClass(level: EditorialReviewBarLevel): string {
+  return REVIEW_BAR_LEVEL_PILL_CLASS[level];
+}
 
 export const SUBSTANCE_DIMENSION_ORDER: Array<keyof EditorialSubstanceDimensions> = [
   'claim_density',

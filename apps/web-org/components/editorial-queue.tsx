@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { EditorialAgentReview, ObjectSubtype } from '@ai-transformation/shared';
 import { editorialAgentReviewSchema, resolveClientApiUrl } from '@ai-transformation/shared';
 
@@ -14,8 +14,11 @@ import {
   isMarketingFlag,
   isTechnicalFlag,
   resolveEditorialReviewProfile,
+  reviewBarBannerClass,
+  reviewBarLevelPillClass,
   reviewHeadlineHint,
   reviewHeadlineTier,
+  REVIEW_BAR_LEVEL_LABEL,
   tierCardBorderClass,
   tierPillClass,
   tierTextClass,
@@ -57,6 +60,62 @@ const SOURCE_LABEL: Record<string, string> = {
   admin_session: 'Admin draft',
   bearer: 'Agent draft',
 };
+
+type EditorialQueueFilter =
+  | 'all'
+  | 'knowledge'
+  | 'community'
+  | 'discussion'
+  | 'gatekeeper'
+  | 'needs_agent_review';
+
+type SiteFilter = 'all' | 'io' | 'org';
+
+const QUEUE_FILTERS: Array<{ id: EditorialQueueFilter; label: string }> = [
+  { id: 'all', label: 'All' },
+  { id: 'knowledge', label: 'Knowledge' },
+  { id: 'community', label: 'Community' },
+  { id: 'discussion', label: 'Discussions' },
+  { id: 'gatekeeper', label: 'Gatekeeper' },
+  { id: 'needs_agent_review', label: 'Needs agent review' },
+];
+
+const SITE_FILTERS: Array<{ id: SiteFilter; label: string }> = [
+  { id: 'all', label: 'Both sites' },
+  { id: 'org', label: '.org' },
+  { id: 'io', label: '.io' },
+];
+
+function matchesQueueFilter(draft: EditorialDraft, filter: EditorialQueueFilter): boolean {
+  const review = readAgentReview(draft.metadata);
+  switch (filter) {
+    case 'all':
+      return true;
+    case 'knowledge':
+      return draft.objectType === 'knowledge';
+    case 'community':
+      return draft.objectType === 'community';
+    case 'discussion':
+      return draft.objectType === 'community' && draft.type === 'discussion';
+    case 'gatekeeper':
+      return Boolean(review && !('skipped' in review) && hasEditorialGatekeeperFlags(review.flags));
+    case 'needs_agent_review':
+      return !review || 'skipped' in review;
+    default:
+      return true;
+  }
+}
+
+function matchesSiteFilter(draft: EditorialDraft, site: SiteFilter): boolean {
+  if (site === 'all') {
+    return true;
+  }
+  return draft.site === site;
+}
+
+function countForFilter(drafts: EditorialDraft[], filter: EditorialQueueFilter, site: SiteFilter): number {
+  return drafts.filter((draft) => matchesSiteFilter(draft, site) && matchesQueueFilter(draft, filter)).length;
+}
 
 function apiBase(): string {
   return resolveClientApiUrl('/').replace(/\/$/, '');
@@ -100,6 +159,16 @@ export function EditorialQueue() {
   const [actionError, setActionError] = useState('');
   const [reviewing, setReviewing] = useState(false);
   const [reviewError, setReviewError] = useState('');
+  const [queueFilter, setQueueFilter] = useState<EditorialQueueFilter>('all');
+  const [siteFilter, setSiteFilter] = useState<SiteFilter>('all');
+
+  const filteredDrafts = useMemo(
+    () =>
+      drafts.filter(
+        (draft) => matchesSiteFilter(draft, siteFilter) && matchesQueueFilter(draft, queueFilter),
+      ),
+    [drafts, queueFilter, siteFilter],
+  );
 
   async function loadQueue() {
     setIsLoading(true);
@@ -255,17 +324,33 @@ export function EditorialQueue() {
                 No drafts waiting for review. New editorial drafts will appear here.
               </p>
             ) : (
-              <ul className="space-y-4">
-                {drafts.map((draft) => (
-                  <DraftCard
-                    key={draft.id}
-                    draft={draft}
-                    acting={actingId === draft.id}
-                    onApprove={(comment) => void act(draft, 'approve', comment)}
-                    onReject={(comment) => void act(draft, 'reject', comment)}
-                  />
-                ))}
-              </ul>
+              <>
+                <EditorialQueueFilters
+                  drafts={drafts}
+                  queueFilter={queueFilter}
+                  siteFilter={siteFilter}
+                  onQueueFilterChange={setQueueFilter}
+                  onSiteFilterChange={setSiteFilter}
+                  showingCount={filteredDrafts.length}
+                />
+                {filteredDrafts.length === 0 ? (
+                  <p className="text-sm font-light text-[var(--muted)]">
+                    No drafts match this filter. Try another batch or clear filters.
+                  </p>
+                ) : (
+                  <ul className="space-y-4">
+                    {filteredDrafts.map((draft) => (
+                      <DraftCard
+                        key={draft.id}
+                        draft={draft}
+                        acting={actingId === draft.id}
+                        onApprove={(comment) => void act(draft, 'approve', comment)}
+                        onReject={(comment) => void act(draft, 'reject', comment)}
+                      />
+                    ))}
+                  </ul>
+                )}
+              </>
             )}
           </div>
         ) : null}
@@ -372,7 +457,7 @@ function DraftCard({
             {formatDate(draft.createdAt)}
             {sourceLabel(draft.metadata) ? ` · ${sourceLabel(draft.metadata)}` : ''}
           </p>
-          <ReviewProfileNote profile={reviewProfile} />
+          <ReviewProfileBanner profile={reviewProfile} />
         </header>
         {agentReview ? (
           <AgentReviewBlock review={agentReview} profile={reviewProfile} />
@@ -439,13 +524,139 @@ const DIMENSION_SHORT_LABEL: Record<string, string> = {
   first_hand: 'First-hand',
 };
 
-function ReviewProfileNote({ profile }: { profile: EditorialReviewProfile }) {
+function EditorialQueueFilters({
+  drafts,
+  queueFilter,
+  siteFilter,
+  onQueueFilterChange,
+  onSiteFilterChange,
+  showingCount,
+}: {
+  drafts: EditorialDraft[];
+  queueFilter: EditorialQueueFilter;
+  siteFilter: SiteFilter;
+  onQueueFilterChange: (filter: EditorialQueueFilter) => void;
+  onSiteFilterChange: (site: SiteFilter) => void;
+  showingCount: number;
+}) {
   return (
-    <p className="text-xs font-light leading-relaxed text-[var(--secondary)]">
-      <span className="font-normal text-[var(--muted)]">Review bar · {profile.label}</span>
-      {' — '}
-      {profile.barSummary}
-    </p>
+    <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--background)] p-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-normal uppercase tracking-wide text-[var(--muted)]">
+            Batch filter
+          </p>
+          <p className="mt-1 text-sm font-light text-[var(--foreground)]">
+            Showing {showingCount} of {drafts.length} draft{drafts.length === 1 ? '' : 's'}
+          </p>
+        </div>
+        {(queueFilter !== 'all' || siteFilter !== 'all') && (
+          <button
+            type="button"
+            onClick={() => {
+              onQueueFilterChange('all');
+              onSiteFilterChange('all');
+            }}
+            className="text-xs font-light text-[var(--accent)] underline-offset-2 hover:underline"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {QUEUE_FILTERS.map((item) => {
+          const count = countForFilter(drafts, item.id, siteFilter);
+          const active = queueFilter === item.id;
+          return (
+            <FilterChip
+              key={item.id}
+              label={item.label}
+              count={count}
+              active={active}
+              onClick={() => onQueueFilterChange(item.id)}
+            />
+          );
+        })}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-3">
+        <span className="text-[11px] font-normal uppercase tracking-wide text-[var(--muted)]">Site</span>
+        {SITE_FILTERS.map((item) => {
+          const active = siteFilter === item.id;
+          const displayCount =
+            item.id === 'all'
+              ? drafts.length
+              : drafts.filter((draft) => draft.site === item.id).length;
+          return (
+            <FilterChip
+              key={item.id}
+              label={item.label}
+              count={displayCount}
+              active={active}
+              onClick={() => onSiteFilterChange(item.id)}
+              compact
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function FilterChip({
+  label,
+  count,
+  active,
+  onClick,
+  compact = false,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+  compact?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+        active
+          ? 'border-[var(--accent)] bg-[var(--accent)]/12 text-[var(--foreground)]'
+          : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)]/50 hover:text-[var(--foreground)]'
+      } ${compact ? 'py-1' : ''}`}
+    >
+      <span>{label}</span>
+      <span
+        className={`rounded-full px-1.5 py-0.5 text-[10px] font-normal tabular-nums ${
+          active ? 'bg-[var(--background)]/80' : 'bg-[var(--card)]'
+        }`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
+function ReviewProfileBanner({ profile }: { profile: EditorialReviewProfile }) {
+  return (
+    <div
+      className={`mt-3 rounded-xl border-2 px-4 py-3.5 ${reviewBarBannerClass(profile.barLevel)}`}
+      role="note"
+      aria-label={`Review bar: ${profile.label}`}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${reviewBarLevelPillClass(profile.barLevel)}`}
+        >
+          {REVIEW_BAR_LEVEL_LABEL[profile.barLevel]}
+        </span>
+        <span className="font-serif text-base font-normal tracking-tight text-[var(--foreground)]">
+          {profile.label}
+        </span>
+      </div>
+      <p className="mt-2 text-sm font-medium leading-snug text-[var(--foreground)]">{profile.barSummary}</p>
+      <p className="mt-1.5 text-xs font-light leading-relaxed text-[var(--muted)]">{profile.founderNote}</p>
+    </div>
   );
 }
 

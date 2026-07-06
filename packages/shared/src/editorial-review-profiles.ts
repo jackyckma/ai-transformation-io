@@ -23,9 +23,13 @@ export const EDITORIAL_GATEKEEPER_FLAGS = [
 
 export type EditorialGatekeeperFlag = (typeof EDITORIAL_GATEKEEPER_FLAGS)[number];
 
+export type EditorialReviewBarLevel = 'light' | 'medium' | 'high';
+
 export type EditorialReviewProfile = {
   id: EditorialReviewProfileId;
   label: string;
+  /** Visual tier for the editorial queue review-bar banner. */
+  barLevel: EditorialReviewBarLevel;
   /** One line on the editorial queue card. */
   barSummary: string;
   /** Founder-facing guidance (English UI). */
@@ -42,6 +46,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   knowledge_article: {
     id: 'knowledge_article',
     label: 'Knowledge article',
+    barLevel: 'high',
     barSummary: 'High bar — substance, specificity, and stance expected.',
     founderNote:
       'Full knowledge piece. Expect verifiable claims, mechanism or examples, and a debatable or first-hand angle. Reject vendor marketing or scraped brochure copy.',
@@ -56,6 +61,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   knowledge_field_note: {
     id: 'knowledge_field_note',
     label: 'Field note',
+    barLevel: 'medium',
     barSummary: 'Medium bar — short first-hand observation OK.',
     founderNote:
       'Brief capture from the field. A tight observation or lesson is fine; still reject marketing copy. Do not demand essay-length stance.',
@@ -70,6 +76,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   knowledge_derived: {
     id: 'knowledge_derived',
     label: 'Derived article',
+    barLevel: 'medium',
     barSummary: 'Medium-high bar — distill a thread into a readable piece.',
     founderNote:
       'Distilled from community discussion. Needs coherent narrative; may be lighter on first-hand if the source thread carried the insight.',
@@ -83,6 +90,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   community_discussion: {
     id: 'community_discussion',
     label: 'Community discussion',
+    barLevel: 'light',
     barSummary: 'Light bar — genuine question or observation; agent can clear most.',
     founderNote:
       'Discussion post. A short question, experience share, or prompt is fine — no long-form stance required. Reject vendor/product marketing. Spot-check only if agent flagged gatekeepers.',
@@ -98,6 +106,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   community_help: {
     id: 'community_help',
     label: 'Help request',
+    barLevel: 'light',
     barSummary: 'Light bar — problem context clear; no essay stance.',
     founderNote:
       'Help request. Needs enough context to be actionable. Marketing pitches disguised as questions should be rejected.',
@@ -111,6 +120,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   community_announcement: {
     id: 'community_announcement',
     label: 'Announcement',
+    barLevel: 'light',
     barSummary: 'Factual bar — who/what/when; no vendor brochure.',
     founderNote:
       'Community announcement. Should be factual (what, when, who it is for). Reject product marketing dressed as announcements.',
@@ -124,6 +134,7 @@ const PROFILES: Record<EditorialReviewProfileId, EditorialReviewProfile> = {
   community_default: {
     id: 'community_default',
     label: 'Community post',
+    barLevel: 'light',
     barSummary: 'Light-medium bar — community-appropriate, not essay depth.',
     founderNote:
       'Other community type (e.g. event). Factual clarity over argumentative depth. Reject vendor marketing.',
