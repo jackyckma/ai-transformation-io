@@ -5,20 +5,54 @@
 
 Agent review is **advisory only** — human approve/reject remains authoritative. Auto-approve is **not** enabled (founder TBD after calibration).
 
+Code: type profiles in `packages/shared/src/editorial-review-profiles.ts`; LLM prompt in `apps/backend/src/lanes/editorial-supply/review.ts`.
+
 ---
 
 ## Priority: substance over style
 
 Do **not** reject or down-rank for polished AI prose alone. **Writing style is not the bar.**  
-Focus on whether the piece earns publication: information, mechanism, stance, and coherence.
+Focus on whether the piece earns publication for **its type**.
 
 De-prioritize: tone polish, “on-brand voice”, length unless extreme padding.
 
 ---
 
-## Technical failure modes (blockers)
+## Step 0 — Platform gatekeeper (all types)
 
-Check before substance scoring:
+We are **not** a vendor marketplace. **Reject** drafts that read like scraped marketing or product brochures.
+
+| Flag | Meaning |
+|------|---------|
+| `vendor-marketing` | Promotes a company/product/service as a pitch |
+| `product-pitch` | Named product or “our platform/solution” without editorial distance |
+| `promotional-copy` | Brochure tone, feature lists, pricing, CTAs |
+
+Also block on technical failures: `ai-artifact`, `inconsistent`.
+
+If gatekeeper flags fire, founder should **reject** (or demand a full rewrite stripping promo language).
+
+---
+
+## Review profiles by submission type
+
+The agent and `/editorial` UI apply a **profile** per `objectType` + `type`. Bands below use `substance_score` (5–15).
+
+| Profile | Types | Bar | Strong ≥ | Caution ≥ |
+|---------|-------|-----|----------|-----------|
+| **Knowledge article** | `knowledge` / `article` | High — claims, mechanism, stance | 10 | 6 |
+| **Field note** | `knowledge` / `field_note` | Medium — short observation OK | 8 | 5 |
+| **Derived article** | `knowledge` / `derived_article` | Medium-high — coherent synthesis | 9 | 6 |
+| **Community discussion** | `community` / `discussion` | Light — question or observation OK; agent clears most | 7 | 5 |
+| **Help request** | `community` / `help_request` | Light — problem context clear | 6 | 4 |
+| **Announcement** | `community` / `community_announcement` | Factual — who/what/when | 6 | 4 |
+| **Community default** | other community types | Light-medium | 7 | 5 |
+
+**Founder default trap:** applying the knowledge-article bar to every draft. Discussions do **not** need essay-length falsifiable stance.
+
+---
+
+## Technical failure modes (blockers)
 
 | Flag | Meaning |
 |------|---------|
@@ -30,25 +64,16 @@ Check before substance scoring:
 
 ---
 
-## Substance failure modes
+## Substance failure modes (knowledge-heavy)
 
 ### 1. Low claim density
 
 Atmosphere sentences with zero information.  
-**Test:** If the sentence were false, could you cite a counterexample? If not, it may be empty.
-
-Example (empty): “AI is transforming how enterprises operate.”  
-Example (claim): “Early ROI often comes from removing human handoff points, not from novel AI use cases.”
-
 Flag: `low-claim-density`
 
 ### 2. Specificity gap
 
-Concept-level buzzwords carry the piece without mechanism, case, or data.  
-**Test:** Hide adjectives/adverbs — does the skeleton still say something?
-
-Watch for hollow load-bearing terms: *empower, reshape, ecosystem, holistic integration* — fine as garnish, fatal as structure.
-
+Concept-level buzzwords without mechanism, case, or data.  
 Flag: `specificity-gap`
 
 ### 3. Argument incoherence
@@ -58,15 +83,17 @@ Flag: `argument-incoherence`
 
 ---
 
-## Editorial principles (checklist)
+## Editorial principles (knowledge profiles)
 
 | Principle | Question | Flag if failed |
 |-----------|----------|----------------|
-| **So what?** | After each section: does the reader’s judgment or action change? | `padding` |
-| **Falsifiability** | Are there claims someone could disagree with? | `consensus-only` |
-| **Specificity ladder** | Does the draft move abstract → mechanism → example/data → back? | `specificity-gap` |
-| **Stranger test** | Swap “AI transformation” for another vague change meme — still “works”? | `stranger-test-fail` |
-| **First-hand stance** | Author judgment, experience, or a clear “X is wrong” — not only safe middle? | `no-first-hand` |
+| **So what?** | Does the reader’s judgment change? | `padding` |
+| **Falsifiability** | Disagreeable claims? | `consensus-only` |
+| **Specificity ladder** | Abstract → mechanism → example? | `specificity-gap` |
+| **Stranger test** | Vague meme swap still “works”? | `stranger-test-fail` |
+| **First-hand stance** | Author judgment or experience? | `no-first-hand` |
+
+Community **discussion** profiles score stance/first-hand leniently.
 
 ---
 
@@ -82,39 +109,26 @@ Score each dimension **1 (weak) · 2 (adequate) · 3 (strong)**:
 | **falsifiable_stance** | All consensus | At least one debatable position |
 | **first_hand** | Second-hand summary | Author judgment or lived observation |
 
-**Sum → `substance_score`**
-
-| Total | Guidance |
-|-------|----------|
-| **10–15** | Has substance — worth publishing (may still need light edit) |
-| **6–9** | Skeleton OK — needs substantial enrichment |
-| **≤5** | Rewrite likely faster than patch |
-
 Map to queue **`score` (0–100)** for sorting: `round(substance_score / 15 × 100)`.
+
+Use **profile-specific bands** (table above), not one global 10/6 cut.
 
 ---
 
 ## Agent output contract
 
-See `apps/backend/src/lanes/editorial-supply/review.ts` — JSON only:
-
 ```json
 {
   "substance_score": 12,
-  "dimensions": {
-    "claim_density": 2,
-    "specificity": 3,
-    "argument_coherence": 2,
-    "falsifiable_stance": 2,
-    "first_hand": 3
-  },
+  "dimensions": { "...": 2 },
   "score": 80,
   "flags": ["padding"],
-  "summary": "One or two sentences for the founder queue."
+  "summary": "One or two sentences for the founder queue.",
+  "review_profile": "knowledge_article"
 }
 ```
 
-`flags` use kebab-case from tables above; add free-text only when necessary.
+`review_profile` is set server-side from the draft type. `flags` use kebab-case from tables above.
 
 ---
 
@@ -122,5 +136,5 @@ See `apps/backend/src/lanes/editorial-supply/review.ts` — JSON only:
 
 1. Orbita / agent submits draft → `/editorial`
 2. Optional **Run agent review** → `metadata.editorial_agent`
-3. Founder reads **View full article** + agent summary
-4. Approve / reject — agent never changes publish state
+3. Founder reads type bar + gatekeeper flags + **View full article**
+4. Approve / reject with optional `editorial_comment` for the submitting agent

@@ -1,4 +1,8 @@
 import type { EditorialAgentReview, EditorialSubstanceDimensions } from '@ai-transformation/shared';
+import {
+  resolveEditorialReviewProfile,
+  type EditorialReviewProfile,
+} from '@ai-transformation/shared';
 
 import { isChatLlmConfigured, resolveLlmConfig } from '../chat/llm.js';
 
@@ -25,6 +29,9 @@ const SUBSTANCE_DIMENSION_KEYS: Array<keyof EditorialSubstanceDimensions> = [
 ];
 
 const REVIEW_FLAG_HINTS = [
+  'vendor-marketing',
+  'product-pitch',
+  'promotional-copy',
   'ai-artifact',
   'inconsistent',
   'logic-gap',
@@ -37,13 +44,26 @@ const REVIEW_FLAG_HINTS = [
   'no-first-hand',
 ] as const;
 
-function buildReviewSystemPrompt(): string {
+const GATEKEEPER_PROMPT = [
+  'Step 0 — platform gatekeeper (ALL types; reject-worthy if present):',
+  'This is an editorial knowledge commons, NOT a vendor marketplace or product directory.',
+  'Flag vendor-marketing when copy promotes a company/product/service as a pitch.',
+  'Flag product-pitch when a named product or "our platform/solution" is pushed without editorial distance.',
+  'Flag promotional-copy for brochure tone, feature lists, pricing, or CTA/marketing language scraped from vendor sites.',
+  'If any marketing gatekeeper flag applies, say so in summary and cap substance_score at 5.',
+].join('\n');
+
+function buildReviewSystemPrompt(profile: EditorialReviewProfile): string {
   return [
     'You are an editorial reviewer for an enterprise AI-transformation knowledge and community platform.',
     'Substance and editorial fitness matter; polished AI prose or house tone are NOT primary criteria.',
     '',
+    GATEKEEPER_PROMPT,
+    '',
+    profile.agentPromptSection,
+    '',
     'Step 1 — technical checks (flag if present):',
-    '- ai-artifact: garbled or unrelated sentences, obvious generation glitches',
+    '- ai-artifact: garbled text, unrelated sentences, obvious generation glitches',
     '- inconsistent: internal contradictions',
     '- logic-gap: non sequiturs; paragraphs could be reordered without the reader noticing',
     '',
@@ -51,11 +71,10 @@ function buildReviewSystemPrompt(): string {
     '- claim_density: verifiable claims vs atmosphere / zero-information sentences',
     '- specificity: mechanism, case, or data vs concept buzzwords only',
     '- argument_coherence: logical dependency between sections (shuffle test)',
-    '- falsifiable_stance: debatable positions vs all consensus',
+    '- falsifiable_stance: debatable positions vs all consensus (lenient for community discussion)',
     '- first_hand: author judgment or experience vs safe middle / second-hand summary',
     '',
-    'Principles: So what? (padding), falsifiability, specificity ladder, stranger test, first-hand stance.',
-    'Bands: 10–15 publishable substance; 6–9 needs enrichment; ≤5 rewrite likely faster than edit.',
+    `Bands for this profile (${profile.label}): strong ≥${profile.strongSubstanceMin}, caution ≥${profile.cautionSubstanceMin}, else weak.`,
     'Set score = round(substance_score / 15 * 100). Full rubric: docs/EDITORIAL_REVIEW_RUBRIC.md',
     '',
     'Return STRICT JSON only — no prose, no markdown fences — exactly:',
@@ -64,8 +83,10 @@ function buildReviewSystemPrompt(): string {
 }
 
 function buildMessages(input: ReviewInput): Array<{ role: 'system' | 'user'; content: string }> {
-  const system = buildReviewSystemPrompt();
+  const profile = resolveEditorialReviewProfile(input.objectType, input.type);
+  const system = buildReviewSystemPrompt(profile);
   const user = [
+    `Review profile: ${profile.id} (${profile.label})`,
     `Object type: ${input.objectType} / ${input.type}`,
     `Title: ${input.title ?? '(untitled)'}`,
     '',
@@ -339,6 +360,10 @@ export async function reviewDraft(input: ReviewInput): Promise<EditorialAgentRev
     const review = parseReviewFromAssistantMessage(message, config.model);
     if (!review) {
       return { skipped: true, reviewedAt: nowIso(), reason: 'malformed' };
+    }
+    if (!('skipped' in review)) {
+      const profile = resolveEditorialReviewProfile(input.objectType, input.type);
+      return { ...review, review_profile: profile.id };
     }
     return review;
   } catch {

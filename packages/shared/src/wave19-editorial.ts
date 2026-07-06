@@ -23,6 +23,8 @@ export const editorialAgentReviewSuccessSchema = z.object({
   summary: z.string(),
   reviewedAt: z.string(),
   model: z.string().optional(),
+  /** Which type-specific bar was applied (see editorial-review-profiles.ts). */
+  review_profile: z.string().optional(),
 });
 export type EditorialAgentReviewSuccess = z.infer<typeof editorialAgentReviewSuccessSchema>;
 

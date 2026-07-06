@@ -1,6 +1,17 @@
 import type { EditorialAgentReview, EditorialSubstanceDimensions } from '@ai-transformation/shared';
+import {
+  hasEditorialGatekeeperFlags,
+  isEditorialGatekeeperFlag,
+  resolveEditorialReviewProfile,
+  substanceBandHintForProfile,
+  substanceTierForProfile,
+  type EditorialReviewProfile,
+} from '@ai-transformation/shared';
 
 export type ReviewScoreTier = 'strong' | 'caution' | 'weak';
+
+export { resolveEditorialReviewProfile, type EditorialReviewProfile };
+export { hasEditorialGatekeeperFlags, isEditorialGatekeeperFlag };
 
 export const SUBSTANCE_DIMENSION_ORDER: Array<keyof EditorialSubstanceDimensions> = [
   'claim_density',
@@ -19,6 +30,8 @@ export const DIMENSION_LABEL: Record<keyof EditorialSubstanceDimensions, string>
 };
 
 const TECHNICAL_FLAGS = new Set(['ai-artifact', 'inconsistent', 'logic-gap']);
+
+const MARKETING_FLAGS = new Set(['vendor-marketing', 'product-pitch', 'promotional-copy']);
 
 /** Substance total bands from docs/EDITORIAL_REVIEW_RUBRIC.md */
 export function substanceScoreTier(substanceScore: number): ReviewScoreTier {
@@ -52,15 +65,39 @@ export function dimensionTier(value: number): ReviewScoreTier {
   return 'weak';
 }
 
-export function reviewHeadlineTier(review: Exclude<EditorialAgentReview, { skipped: true }>): ReviewScoreTier {
+export function reviewHeadlineTier(
+  review: Exclude<EditorialAgentReview, { skipped: true }>,
+  profile?: EditorialReviewProfile,
+): ReviewScoreTier {
+  if (hasEditorialGatekeeperFlags(review.flags)) {
+    return 'weak';
+  }
+  if (review.substance_score !== undefined && profile) {
+    return substanceTierForProfile(review.substance_score, profile);
+  }
   if (review.substance_score !== undefined) {
     return substanceScoreTier(review.substance_score);
   }
   return legacyScoreTier(review.score);
 }
 
+export function reviewHeadlineHint(
+  review: Exclude<EditorialAgentReview, { skipped: true }>,
+  profile: EditorialReviewProfile,
+): string {
+  if (hasEditorialGatekeeperFlags(review.flags)) {
+    return 'Gatekeeper — reject vendor/marketing or broken copy';
+  }
+  const tier = reviewHeadlineTier(review, profile);
+  return substanceBandHintForProfile(tier, profile);
+}
+
 export function isTechnicalFlag(flag: string): boolean {
-  return TECHNICAL_FLAGS.has(flag);
+  return TECHNICAL_FLAGS.has(flag) || MARKETING_FLAGS.has(flag) || isEditorialGatekeeperFlag(flag);
+}
+
+export function isMarketingFlag(flag: string): boolean {
+  return MARKETING_FLAGS.has(flag);
 }
 
 const TIER_PILL_CLASS: Record<ReviewScoreTier, string> = {
@@ -110,11 +147,19 @@ export function formatAgentReviewComment(
   review: Exclude<EditorialAgentReview, { skipped: true }>,
 ): string {
   const lines = ['[Agent review — edit before approve/reject]', '', review.summary.trim()];
-  if (review.flags.length > 0) {
-    lines.push('', `Flags: ${review.flags.join(', ')}`);
+  const marketingFlags = review.flags.filter(isMarketingFlag);
+  if (marketingFlags.length > 0) {
+    lines.push('', `Gatekeeper (reject recommended): ${marketingFlags.join(', ')}`);
+  }
+  const otherFlags = review.flags.filter((flag) => !isMarketingFlag(flag));
+  if (otherFlags.length > 0) {
+    lines.push('', `Flags: ${otherFlags.join(', ')}`);
   }
   if (review.substance_score !== undefined) {
     lines.push(`Substance: ${review.substance_score}/15`);
+  }
+  if (review.review_profile) {
+    lines.push(`Profile: ${review.review_profile}`);
   }
   return lines.join('\n');
 }

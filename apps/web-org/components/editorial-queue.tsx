@@ -10,12 +10,16 @@ import {
   SUBSTANCE_DIMENSION_ORDER,
   dimensionTier,
   formatAgentReviewComment,
+  hasEditorialGatekeeperFlags,
+  isMarketingFlag,
   isTechnicalFlag,
+  resolveEditorialReviewProfile,
+  reviewHeadlineHint,
   reviewHeadlineTier,
-  substanceBandHint,
   tierCardBorderClass,
   tierPillClass,
   tierTextClass,
+  type EditorialReviewProfile,
 } from '@/lib/editorial-review-display';
 
 type EditorialDraft = {
@@ -203,7 +207,9 @@ export function EditorialQueue() {
           reject to archive — both sites share this queue.
         </p>
         <p className="mt-2 max-w-2xl text-xs font-light leading-relaxed text-[var(--muted)]">
-          Run agent review to score pending drafts and surface flags. It never changes publish state.
+          Run agent review to score pending drafts and surface flags. Review bars differ by type —
+          knowledge articles are strict; community discussions are lighter. Vendor or product marketing
+          copy is a gatekeeper reject. Agent review never changes publish state.
         </p>
         {reviewError ? (
           <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-200">
@@ -287,6 +293,7 @@ function DraftCard({
   const [commentTouched, setCommentTouched] = useState(false);
 
   const agentReview = readAgentReview(draft.metadata);
+  const reviewProfile = resolveEditorialReviewProfile(draft.objectType, draft.type);
 
   useEffect(() => {
     setComment('');
@@ -341,7 +348,9 @@ function DraftCard({
 
   const bodyText = expanded && detail ? detail.body : draft.bodyExcerpt;
   const cardTier =
-    agentReview && !('skipped' in agentReview) ? reviewHeadlineTier(agentReview) : null;
+    agentReview && !('skipped' in agentReview)
+      ? reviewHeadlineTier(agentReview, reviewProfile)
+      : null;
 
   return (
     <li
@@ -354,7 +363,7 @@ function DraftCard({
           <div className="flex flex-wrap items-start justify-between gap-3">
             <h2 className="font-serif text-lg font-normal tracking-tight">{draftHeading(draft)}</h2>
             {agentReview && !('skipped' in agentReview) ? (
-              <ReviewHeadlineBadge review={agentReview} />
+              <ReviewHeadlineBadge review={agentReview} profile={reviewProfile} />
             ) : null}
           </div>
           <p className="text-xs font-light tracking-wide text-[var(--muted)]">
@@ -363,9 +372,10 @@ function DraftCard({
             {formatDate(draft.createdAt)}
             {sourceLabel(draft.metadata) ? ` · ${sourceLabel(draft.metadata)}` : ''}
           </p>
+          <ReviewProfileNote profile={reviewProfile} />
         </header>
         {agentReview ? (
-          <AgentReviewBlock review={agentReview} />
+          <AgentReviewBlock review={agentReview} profile={reviewProfile} />
         ) : (
           <p className="mt-4 text-xs font-light text-[var(--muted)]">
             No agent metrics yet — run agent review to score this draft.
@@ -429,12 +439,24 @@ const DIMENSION_SHORT_LABEL: Record<string, string> = {
   first_hand: 'First-hand',
 };
 
+function ReviewProfileNote({ profile }: { profile: EditorialReviewProfile }) {
+  return (
+    <p className="text-xs font-light leading-relaxed text-[var(--secondary)]">
+      <span className="font-normal text-[var(--muted)]">Review bar · {profile.label}</span>
+      {' — '}
+      {profile.barSummary}
+    </p>
+  );
+}
+
 function ReviewHeadlineBadge({
   review,
+  profile,
 }: {
   review: Exclude<EditorialAgentReview, { skipped: true }>;
+  profile: EditorialReviewProfile;
 }) {
-  const tier = reviewHeadlineTier(review);
+  const tier = reviewHeadlineTier(review, profile);
   const label =
     review.substance_score !== undefined
       ? `${review.substance_score}/15`
@@ -443,14 +465,20 @@ function ReviewHeadlineBadge({
   return (
     <span
       className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${tierPillClass(tier)}`}
-      title={substanceBandHint(tier)}
+      title={reviewHeadlineHint(review, profile)}
     >
       {review.substance_score !== undefined ? `Substance ${label}` : `Score ${label}`}
     </span>
   );
 }
 
-function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
+function AgentReviewBlock({
+  review,
+  profile,
+}: {
+  review: EditorialAgentReview;
+  profile: EditorialReviewProfile;
+}) {
   if ('skipped' in review) {
     return (
       <div className="mt-4 rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)] px-4 py-3">
@@ -462,16 +490,26 @@ function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
     );
   }
 
-  const tier = reviewHeadlineTier(review);
+  const tier = reviewHeadlineTier(review, profile);
   const hasDimensions = Boolean(review.dimensions);
+  const gatekeeper = hasEditorialGatekeeperFlags(review.flags);
 
   return (
     <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3">
+      {gatekeeper ? (
+        <p
+          role="status"
+          className="mb-3 rounded-lg border border-red-600/35 bg-red-50 px-3 py-2 text-xs font-light text-red-800 dark:border-red-500/40 dark:bg-red-950/30 dark:text-red-200"
+        >
+          Gatekeeper — vendor or product marketing detected. We are not a vendor marketplace; reject
+          unless you strip promotional copy.
+        </p>
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[11px] font-normal uppercase tracking-wide text-[var(--secondary)]">Agent review</p>
-        <ReviewHeadlineBadge review={review} />
+        <ReviewHeadlineBadge review={review} profile={profile} />
       </div>
-      <p className={`mt-1 text-xs font-light ${tierTextClass(tier)}`}>{substanceBandHint(tier)}</p>
+      <p className={`mt-1 text-xs font-light ${tierTextClass(tier)}`}>{reviewHeadlineHint(review, profile)}</p>
       {review.substance_score !== undefined ? (
         <p className="mt-1 text-[11px] font-light text-[var(--secondary)]">
           Queue score {review.score}/100
@@ -510,6 +548,7 @@ function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {review.flags.map((flag) => {
             const severe = isTechnicalFlag(flag);
+            const marketing = isMarketingFlag(flag);
             return (
               <li
                 key={flag}
@@ -519,7 +558,7 @@ function AgentReviewBlock({ review }: { review: EditorialAgentReview }) {
                     : 'border-[var(--border)] text-[var(--secondary)]'
                 }`}
               >
-                {flag}
+                {marketing ? `Gatekeeper: ${flag}` : flag}
               </li>
             );
           })}

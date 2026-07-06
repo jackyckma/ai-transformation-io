@@ -44,6 +44,10 @@ scopes which drafts; default = all pending editorial drafts.
 For each draft it computes an LLM review and persists it to
 `metadata.editorial_agent` via `updateObjectLifecycle({ id, status: existing.status, metadata })`
 — **publish state never changes** (status/visibility/publishedSlug untouched).
+Review uses **type-specific profiles** (`packages/shared/src/editorial-review-profiles.ts`) —
+knowledge articles use a high bar; community discussions use a light bar. All types share
+**gatekeeper** flags for vendor/product marketing (`vendor-marketing`, `product-pitch`,
+`promotional-copy`). See `docs/EDITORIAL_REVIEW_RUBRIC.md`.
 Review logic lives in `review.ts` and reuses `lanes/chat/llm.ts`
 (`resolveLlmConfig` / `isChatLlmConfigured`, `MINIMAX_API_KEY` / `CHAT_LLM_*`).
 Parsing tolerates MiniMax `reasoning_split` (JSON in `content` or

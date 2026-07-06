@@ -13,6 +13,7 @@ export * from './wave14-community';
 export * from './wave18-external-agent';
 export * from './wave18-ranking';
 export * from './wave19-editorial';
+export * from './editorial-review-profiles';
 
 export const healthResponseSchema = z.object({
   ok: z.boolean(),
