@@ -22,10 +22,11 @@
       ],
       "deps": [],
       "flag": null,
-      "status": "ready",
+      "status": "in_progress",
       "retries": 0,
       "feedback": [
-        "First fuel for Maker/Checker. Prefer docs-only PR. After merge, REPLAN may seed T-0002+."
+        "First fuel for Maker/Checker. Prefer docs-only PR. After merge, REPLAN may seed T-0002+.",
+        "Maker lease acquired 2026-08-07T18:01:57Z on main."
       ]
     },
     {
