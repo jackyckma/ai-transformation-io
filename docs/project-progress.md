@@ -438,6 +438,7 @@ Waves 3 requires Wave 2 DB. Wave 7 built on Wave 6 + L7 registry. Wave 8 uses Wa
 | 2026-06-18 | Wave 3 results UI | Text vs radar | **Gap radar** + weakest-gap callout |
 | 2026-06-18 | Wave 3 assessment UX | Editorial article layout vs functional | **Functional wizard flow**; keep fonts/theme, not article-index chrome |
 | 2026-06-18 | Wave 3 results CTAs | Function playbooks vs live articles | **Frameworks + playbook + ask + .org** — refine after visual review |
+| 2026-08-07 | Methodology sync | Stay on 1.1.0 vs sync 1.3.0 | **Synced ai-dev-methodologies 1.1.0 → 1.3.0** (framework-owned + Autopilot scaffolds; Automations UI not enabled) |
 
 ---
 

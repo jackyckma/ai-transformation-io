@@ -19,6 +19,19 @@
 | L1 | Static placeholder exists | `test -f public/index.html` |
 | L4 | Production smoke | `curl -sI https://ai-transformation.io` |
 
+## Models available (verified 2026-08-07)
+
+Per `.agents/instructions/model-orchestration.md` §1 — verify names in this
+environment before dispatching; never write model names from memory.
+
+| Tier | Model name | Use for |
+|------|------------|---------|
+| cheap | Cursor Auto / composer-2.5-fast (when listed) | scans, batch edits, mechanical fixes |
+| mid | Cursor default agent (Composer) | implementation, tests, docs |
+| high | Escalate per session / founder request | architecture, debugging dead ends, high-risk review |
+
+Companion LLM (product): **MiniMax-M3** via `MINIMAX_API_KEY` — not a Cursor dispatch tier.
+
 ## Staging / production URLs
 
 | Environment | URL |

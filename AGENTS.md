@@ -1,19 +1,22 @@
 # Agent Instructions (Codex / OpenAI coding agents)
 
-Read **`.agents/instructions/`** before non-trivial work:
+Before non-trivial work, read (in order):
 
-1. [METHODOLOGIES.md](https://github.com/jackyckma/ai-dev-methodologies/blob/main/METHODOLOGIES.md) — or local copy if vendored
-2. `.agents/instructions/karpathy-guidelines.md`
-3. `.agents/instructions/project-guidelines.md`
-4. `.agents/instructions/agent-tooling-guardrails.md`
-5. `.agents/instructions/session-handoff.md` — when resuming or ending a session
-6. `.agents/instructions/framework-adoption.md` — when bootstrapping or syncing methodology
+1. `.agents/instructions/karpathy-guidelines.md` — coding discipline
+2. `.agents/instructions/judgment-rubrics.md` — done / stuck / escalate / ask
+3. `.agents/instructions/project-guidelines.md` — stack, git, deploy, language
+4. `.agents/instructions/agent-tooling-guardrails.md` — MCP-first browser; no silent E2E deps
+
+Then consult **`.agents/README.md`** — it maps every other instruction file
+to its trigger (decisions, handoff, model dispatch, loops, issues,
+methodology sync).
 
 When **resuming**, read `docs/SESSION_HANDOFF.md` first, then **`docs/SITE_DESIGN_v2.md`** for product/IA work.
 
-Optional: `.agents/instructions/lane-based-development.md` for multi-module products.
-
-Do not duplicate long policy here — keep this file a thin pointer.
+Do not duplicate long policy here — keep this file a thin pointer. The
+three entry points (`AGENTS.md`, `CLAUDE.md`,
+`.cursor/rules/shared-instructions.mdc`) must name the **same** core list;
+if you change one, change all three.
 
 **Continual learning:** `.agents/instructions/continual-learning.md` — after a run, reply **≤300 words** (繁體中文); if no durable updates, exactly `No high-signal memory updates.`
 
@@ -46,9 +49,9 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - .org Apprenticeship program: separate product line from enterprise .io consulting (AI-era judgment/formation training); public pages use "we" voice (`apprenticeship-overview-EN.md`); founder first-person thesis stays in `usr/13` as internal source.
 - .org community: public read, login required to post; prefer Harvest Hub contribution model over a self-hosted discussion forum.
 - Site UI language: English-only; light theme default with dark mode toggle. User may converse in Cantonese/Traditional Chinese; agents respond in Traditional Chinese per project-guidelines; docs and code stay English.
-- .io IA (v2): **Library · Insights · Copilot** ribbon; public Library + Insights; logged-in personal cockpit — see `docs/SITE_DESIGN_v2.md`. Legacy top-level hubs (`/frameworks`, `/playbook`, `/functions`) removed (no redirects); content under `/library` and `/insights`. Companion route `/ask` (URL unchanged).
+- .io IA (v2): **Library · Insights · Copilot** ribbon; logged-out home = **reader paths** (text-first cards from `data/curated/io-home.json`); logged-in = PersonalDashboard — see `docs/SITE_DESIGN_v2.md`. Legacy top-level hubs removed (no redirects). Companion route `/ask` (URL unchanged).
 - .org IA (v2): **Knowledge · Community · Copilot**; brand **Community · Knowledge commons**. Legacy `/learn`, `/stories` top-level sections removed (no redirects); content under `/knowledge` and `/community`.
-- Curation & editorial: agent proposes `data/curated/*.json` → founder approves PR; see `data/curated/EDITORIAL_POLICY.md`. **Editorial agent review:** substance-first rubric (5 dimensions, score 5–15; de-emphasize writing style) — `docs/EDITORIAL_REVIEW_RUBRIC.md`. No auto-approve until approval agent passes founder acceptance (A1); during AT1b founder approves all drafts (A5); corpus reset after training iteration complete (A3). Batch pre-locks in `docs/FOUNDER_WAVE_DECISIONS.md`.
+- Curation & editorial: agent proposes `data/curated/*.json` → founder approves PR; see `data/curated/EDITORIAL_POLICY.md`. **Editorial queue:** substance-first agent review (advisory); founder approve/reject with optional comment → `metadata.editorial_comment` + `editorial_review_at`; submitting agents poll `GET /api/v1/objects/{id}`. `/editorial` UI pre-fills comment from agent review. No auto-approve until A1; AT1b founder approves all drafts (A5); corpus reset after A3. Batch pre-locks in `docs/FOUNDER_WAVE_DECISIONS.md`.
 - Site design: content-first editorial; **Copilot** (user-facing label, route `/ask`) with modes (Chat/Capture/Submit/Find Help per site); site-wide Copilot panel on desktop except full `/ask` workspace; agent-native contextual actions → Copilot prefill; not product-marketing chrome. **UI color (60-30-10):** page backgrounds **near-white/light grey** (not full-page saturated palette); **cool .io** (#E8EDF2/#2C3947/#547A95, gold accent #C2A56D) vs **warm .org** (#FFEED6/#A5AF79/#827148/#E8A07C); brand tones + **complementary accent** in header bands, cards, CuratedVisual — avoid monotonic single-hue intensity steps. **Layout:** vary browse patterns (tree+list, feed rows, sidebar filters); reduce card-grid on index pages; home curated cards OK. Mobile: hamburger + bottom ribbon. Cross-agent handoff: write copyable repo markdown files (e.g. `docs/orbita-at1a-answers-for-orbita-agent.md`) rather than long chat-rendered blocks.
 - Enterprise executive info portal: substantive content visible without subscribe; optional subscribe for deeper content later; future newsfeed via RSS and/or agent-curated news.
 - After completing shippable work (content, UI, fixes, docs tied to production), default to commit, push to `main`, and Zeabur deploy without asking — unless the user says otherwise, the change is exploratory, or a critical product decision is pending.
@@ -58,7 +61,7 @@ See `docs/AGENT_ENV.md` for local vs cloud capability matrix.
 - ai-transformation.io — public Library + Insights + personal cockpit (v2); ai-transformation.org — **Community · Knowledge commons** (v2). See `docs/SITE_DESIGN_v2.md`. Production URLs: ai-transformation.io / .org (not `*.zeabur.app`). Apprenticeship remains a special program (`/apprenticeship`).
 - Both domains share one Zeabur combined service with separate Next.js frontends (`web-io`, `web-org`).
 - Remove legacy DNS records (e.g. `dev.ai-transformation.io`) except email-routing-related entries.
-- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Waves 11–21 shipped on `main` (Wave 15 UI, Wave 16 L12 editorial, Wave 17 newsletter pilot, Wave 18 platform depth, Wave 19 editorial-review + objects catalog, Wave 21 .org P1 polish). **Next:** Wave 20b credits @ ≥50 users; Wave 20a newsletter archive deferred (B3); Wave 22 auto-approve blocked until A1. Pre-lock queue in `docs/FOUNDER_WAVE_DECISIONS.md`. L12 Orbita = external non-blocking client (`.editorial-orbita/` runbooks; AT0b/AT1a dogfood via `/home/jackyma/orbita`; no vendored platform code).
+- Lane-based waves: 0–9 production-verified; **SITE_DESIGN_v2 approved** — Waves 11–21 shipped on `main`. **Next:** Wave 20b credits @ ≥50 users; Wave 20a newsletter archive deferred (B3); Wave 22 auto-approve blocked until A1. Founder radar: `docs/FOUNDER_LANES.md`; wave pre-locks in `docs/FOUNDER_WAVE_DECISIONS.md`. L12 Orbita = external client — dogfood polls `GET /api/v1/objects/{id}` for outcomes + `editorial_comment`; on-demand handoff only (`.agents/skills/orbiter-handoff/`).
 - Product direction: agent-first site — humans and agents are first-class participants; on-site **Copilot** companion (route `/ask`; primary human UI; 8 msg/day anonymous, 25/day signed-in; MiniMax-M3 via `MINIMAX_API_KEY`) plus `/for-agents` and embedded machine-readable hints. Logged-in home: server `atx_session` cookie hint avoids public curation flash before PersonalDashboard.
 - Agent read tiers (v1 locked): 3/day anonymous, 10/day registered; write token 180-day TTL; .io and .org share one token. Defer agent credits/payment until ≥50 registered users (C1) — quota-only early; Stripe top-up only at launch, subscriptions later (C3).
 - Cross-domain auth (Wave 4): per-host HttpOnly session cookies via combined `/api` proxy; same Google account maps to one `users` row; second domain needs one-click re-auth (no cross-TLD cookie). Founder Google primary email `jackyma.berlin@gmail.com`; Zeabur `ADMIN_EMAILS` lists both new + legacy `jackymama@gmail.com` during Google email propagation.

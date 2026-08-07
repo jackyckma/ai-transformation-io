@@ -4,15 +4,16 @@ Optional skills bootstrapped from [ai-dev-methodologies](https://github.com/jack
 
 | Skill | When to load |
 |-------|--------------|
-| `editorial-ui/` | Visual/layout work on web-io or web-org — home, curation, chrome, typography (overrides generic frontend-design) |
-| `ux-copy/` | UI microcopy — forms, errors, buttons, nav labels, wizard strings (not knowledge-base articles) |
 | `complexity-review/` | PR or diff review for over-engineering (not correctness) |
 | `deferred-shortcuts/` | Harvest `defer:` comments into a read-only ledger |
 
-Lane-specific skills live here as `lane-<name>/SKILL.md` — see `lane-based-development.md` §7.
+## Project-specific skills
 
 | Skill | When to load |
 |-------|--------------|
-| `curated-home-refresh/` | Propose `data/curated/*.json` changes — founder approves PR |
-| `orbiter-handoff/` | **On-demand only** — user asks to check/poll `~/Orbiter-AT-dogfood` (not every session) |
-| `continual-learning/` | Hook follow-up or manual memory sync — brief ≤300-word user reply |
+| `continual-learning/` | Hook follow-up or manual AGENTS.md memory sync |
+| `editorial-ui/` | UX/UI work in web-io / web-org (overrides generic frontend-design) |
+| `ux-copy/` | Interface microcopy |
+| `curated-home-refresh/` | Propose curated home JSON changes |
+| `orbiter-handoff/` | On-demand Orbiter–AT dogfood inbox only |
+| `lane-*` | Lane work — see `lane-based-development.md` §7 |

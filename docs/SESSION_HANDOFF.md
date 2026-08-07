@@ -20,6 +20,19 @@
 | Orbita | Switch dedup to catalog (E2 locked) |
 | Build + tests | Wave 19: backend **70/70** · Wave 21: web-org build + typecheck ✅ |
 
+## Pending decisions
+
+<!-- Decision briefs awaiting the founder — format in decision-authority.md.
+     Present grouped at sync points; move to Decisions Log once decided. -->
+
+## Loop log
+
+<!-- One row per autonomous-loop / Autopilot iteration — see autonomous-loop.md §3.
+     Leave empty when no loop ran. -->
+
+| # | Issue | Outcome | Commit | Verified by |
+|---|-------|---------|--------|-------------|
+
 ## Top priority next
 
 1. **Orbita** — adopt `objects/catalog` as primary dedup (prod live)

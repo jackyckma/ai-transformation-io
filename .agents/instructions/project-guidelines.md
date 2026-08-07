@@ -79,6 +79,12 @@ Load Zeabur agent skills when doing deploy/log/env operations.
 | Anthropic | `ANTHROPIC_API_KEY` | fallback |
 | OpenRouter | `OPENROUTER_API_KEY` | experiments |
 
+## Adopted optional practices
+
+<!-- Optional practices for this project. Empty = none adopted yet.
+     - Tier E: .agents/instructions/agent-native-practices.md
+     - Cursor Autopilot (B5): cursor-autopilot — docs/autopilot/ scaffolds synced; Automations UI not enabled until founder opts in -->
+
 ## Documentation to read before non-trivial work
 
 1. **`docs/SITE_DESIGN_v2.md`** — product & IA for Wave 11+ (approved)
