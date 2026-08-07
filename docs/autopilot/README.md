@@ -33,12 +33,16 @@ Dispatcher: `node scripts/autopilot/decide-next-action.mjs --lane maker|checker`
 
 ## Setup checklist
 
-1. Fill `roadmap.json` with at least one `approved` epic.
+1. Fill `roadmap.json` with at least one `approved` epic (done for AT — see `AT_ADOPTION.md`).
 2. Add `ready` tasks in `backlog.json` with `acceptance` commands.
-3. Set `scripts/agent-verify.sh` (or `AUTOPILOT_VERIFY_CMD`).
-4. Optional: `project-hooks.json` → `prod_smoke_cmd` for WATCHDOG.
-5. Create **two** Cursor Automations from `automations.md`.
+3. Set `scripts/agent-verify.sh` (L0 typecheck + L1 backend tests).
+4. Optional: `project-hooks.json` → `prod_smoke_cmd` for WATCHDOG (set for .io + .org).
+5. Create **two** Cursor Automations from `automations.md` (**2×/day** cadence).
 6. Confirm `gh` auth and merge permissions for the Checker automation.
+
+## AT-specific
+
+See **[AT_ADOPTION.md](./AT_ADOPTION.md)** for migration from `FOUNDER_LANES` / interactive sessions.
 
 ## Files
 

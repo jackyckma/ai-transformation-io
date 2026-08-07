@@ -1,21 +1,35 @@
 {
-  "_schema": {
-    "decision": {
+  "decisions": [
+    {
       "id": "D-001",
-      "title": "question",
-      "type": "product-direction | contract | compliance",
-      "context": "why human input is needed",
-      "options": [{ "id": "A", "label": "...", "implication": "..." }],
-      "recommendation": "option + why",
-      "default_if_silent": "A or null",
-      "opened_at": "YYYY-MM-DD",
-      "sla_days": 3,
-      "unblocks": ["T-0002"],
-      "status": "open | decided",
+      "title": "Next agent-platform wave: Wave 25 Admin API vs search API v1 first?",
+      "type": "product-direction",
+      "context": "FOUNDER_LANES Lane 2 next item is Wave 25 OR defer. Search API is a named gap blocking Library search UI. Autopilot must not invent direction.",
+      "options": [
+        {
+          "id": "A",
+          "label": "Approve E-03 Wave 25 Admin Agent API next",
+          "implication": "Set roadmap E-03 status approved; Maker REPLAN decomposes wave-admin-agent-api.md"
+        },
+        {
+          "id": "B",
+          "label": "Ship search API v1 first; defer Wave 25",
+          "implication": "Add approved epic for search; keep E-03 proposed; note defer in FOUNDER_WAVE_DECISIONS"
+        },
+        {
+          "id": "C",
+          "label": "Neither — hygiene-only until ≥10 newsletter subs / Orbita supply",
+          "implication": "Keep E-03 proposed; only E-01/E-02 small tasks"
+        }
+      ],
+      "recommendation": "C until Orbita supply + editorial comment loop are stable in daily ops; then B if humans need Library search, else A.",
+      "default_if_silent": "C",
+      "opened_at": "2026-08-07",
+      "sla_days": 7,
+      "unblocks": [],
+      "status": "open",
       "decided_option": null,
       "decided_note": null
-    },
-    "autonomy": "log_veto — reversible calls are decided by Maker and logged in backlog feedback; only product-direction / contract / compliance land here."
-  },
-  "decisions": []
+    }
+  ]
 }

@@ -1,27 +1,34 @@
 {
-  "_schema": {
-    "purpose": "Founder-approved product direction. Maker REPLAN only decomposes status:approved epics.",
-    "epic": {
-      "id": "E-01",
-      "title": "one line",
-      "goal": "outcome",
-      "status": "approved | proposed | done | paused",
-      "phase": "optional",
-      "decomposes_into": ["T-0001"],
-      "decisions": [],
-      "notes": "constraints / flags"
-    }
-  },
   "epics": [
     {
       "id": "E-01",
-      "title": "Bootstrap Autopilot (example)",
-      "goal": "Prove Maker/Checker can run one docs-only task end-to-end.",
+      "title": "Autopilot operational",
+      "goal": "Maker/Checker loop runs twice daily; green verify; first task merges via Checker.",
       "status": "approved",
       "phase": "bootstrap",
       "decomposes_into": ["T-0001"],
       "decisions": [],
-      "notes": "Replace with real product epics after first green loop."
+      "notes": "After T-0001 done, Maker REPLAN may add small docs/backend hygiene tasks under E-02."
+    },
+    {
+      "id": "E-02",
+      "title": "Agent platform hygiene",
+      "goal": "Honest L11 capabilities + machine-checkable gaps closed without Wave 25 scope creep.",
+      "status": "approved",
+      "phase": "platform",
+      "decomposes_into": ["T-0002"],
+      "decisions": ["D-001"],
+      "notes": "Wave 25 admin API stays proposed until D-001. Prefer contract/tests before UI."
+    },
+    {
+      "id": "E-03",
+      "title": "Wave 25 Admin Agent API",
+      "goal": "Admin Bearer API + ops dashboard per docs/waves/wave-admin-agent-api.md.",
+      "status": "proposed",
+      "phase": "platform",
+      "decomposes_into": [],
+      "decisions": ["D-001"],
+      "notes": "Do not decompose until status → approved after founder decision."
     }
   ]
 }

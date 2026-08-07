@@ -1,8 +1,11 @@
 # Founder lanes — product radar
 
 **Purpose:** One-page mental model for **you**. Replaces tracking individual wave numbers day-to-day.  
-**Last updated:** 2026-06-29  
+**Last updated:** 2026-08-07  
+**Execution queue (Autopilot):** [docs/autopilot/](./autopilot/AT_ADOPTION.md) — `roadmap.json` / `backlog.json` / `decisions.json`  
 **Detail for agents:** [CURRENT_STATUS.md](./CURRENT_STATUS.md) · [FOUNDER_WAVE_DECISIONS.md](./FOUNDER_WAVE_DECISIONS.md) · [SITE_DESIGN_v2.md](./SITE_DESIGN_v2.md)
+
+> **Ops shift:** Day-to-day implementation runs via **Cursor Autopilot** (Maker/Checker, 2×/day). Use this radar to decide what to **approve** into `roadmap.json` and what stays human (`/editorial`, newsletter send). Minimize long interactive coding sessions.
 
 ---
 
@@ -11,10 +14,11 @@
 | You want to… | Read |
 |--------------|------|
 | “What should I care about this week?” | **Active items** below (max 3 per lane) |
+| “What is Autopilot building?” | `docs/autopilot/backlog.json` + `reports/` |
 | “What’s shipped vs deferred?” | **Last shipped / Next** per lane |
 | “What can I ignore until a gate opens?” | **Gated future** lane |
 | Implementation / test detail | `CURRENT_STATUS.md` (agents, not daily radar) |
-| Orchestrate kickoff strings | `docs/waves/*.md` |
+| Large wave kickoff | `docs/waves/*.md` → then approve epic in `roadmap.json` |
 
 **Rule:** When an **active item** is done, move it to *Last shipped* and **remove it from your radar** — do not leave stale todos here.
 
@@ -185,4 +189,5 @@ Hybrid (B layout + A-quality small thumbs) is possible **later** — not require
 
 | Date | Change |
 |------|--------|
+| 2026-08-07 | Point execution to Autopilot (`docs/autopilot/`); radar stays human |
 | 2026-06-29 | Initial founder lanes + loose ends + A/B home decision frame |

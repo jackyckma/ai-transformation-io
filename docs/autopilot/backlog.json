@@ -1,18 +1,5 @@
 {
   "_schema": {
-    "task": {
-      "id": "T-0001",
-      "lane": "optional owning area",
-      "phase": "optional grouping",
-      "title": "one-line summary",
-      "description": "specific enough for an unattended agent; include paths and constraints",
-      "acceptance": ["shell commands that exit 0 from repo root"],
-      "deps": [],
-      "flag": "FEATURE_FLAG_NAME or null",
-      "status": "ready | in_progress | in_review | blocked | done | needs_human",
-      "retries": 0,
-      "feedback": []
-    },
     "defaults": {
       "retry_budget": 2,
       "merge_gate": "green-only",
@@ -24,18 +11,40 @@
       "id": "T-0001",
       "lane": "docs",
       "phase": "bootstrap",
-      "title": "Example: confirm autopilot scaffolds are present",
-      "description": "EXAMPLE ONLY — replace or mark done after setup. Verify docs/autopilot/playbook.md and scripts/autopilot/decide-next-action.mjs exist. Do not change product code.",
+      "title": "Confirm Autopilot dispatcher runs on main",
+      "description": "Prove Autopilot scaffolds are wired. Do not change product code. Ensure docs/autopilot/playbook.md and scripts/autopilot/decide-next-action.mjs exist; run dispatcher for both lanes and confirm JSON action is returned (IMPLEMENT/REPLAN/IDLE or REVIEW/…). If already true on main, no code change — still open a PR that only updates task feedback via the playbook lease flow, or skip implement if verify passes with empty diff after documenting in feedback that scaffolds were already present (prefer: touch docs/autopilot/reports/.gitkeep only if needed for a minimal green PR).",
       "acceptance": [
         "test -f docs/autopilot/playbook.md",
         "test -f scripts/autopilot/decide-next-action.mjs",
-        "node scripts/autopilot/decide-next-action.mjs --lane maker >/dev/null"
+        "node scripts/autopilot/decide-next-action.mjs --lane maker >/dev/null",
+        "node scripts/autopilot/decide-next-action.mjs --lane checker >/dev/null",
+        "./scripts/agent-verify.sh"
       ],
       "deps": [],
       "flag": null,
       "status": "ready",
       "retries": 0,
-      "feedback": ["Template seed — delete or complete after first successful Maker tick."]
+      "feedback": [
+        "First fuel for Maker/Checker. Prefer docs-only PR. After merge, REPLAN may seed T-0002+."
+      ]
+    },
+    {
+      "id": "T-0002",
+      "lane": "agent-platform",
+      "phase": "platform",
+      "title": "Document L11 search API gap in /for-agents capabilities notes",
+      "description": "Machine-readable honesty: find where GET /api/v1/capabilities (or /for-agents copy) claims search/list abilities. Add or fix a clear note that full-text search API is not shipped yet (gap). Do not invent a search endpoint. Keep English UI. Acceptance must prove the note exists in repo (grep).",
+      "acceptance": [
+        "rg -n \"search\" apps/backend/src/lanes/agent-protocol apps/web-io apps/web-org --glob '!**/node_modules/**' | head -5",
+        "./scripts/agent-verify.sh"
+      ],
+      "deps": ["T-0001"],
+      "flag": null,
+      "status": "blocked",
+      "retries": 0,
+      "feedback": [
+        "Blocked until T-0001 done. Maker REPLAN may refine acceptance to a specific file path after inventory."
+      ]
     }
   ]
 }

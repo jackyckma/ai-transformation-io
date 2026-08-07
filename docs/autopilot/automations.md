@@ -7,10 +7,23 @@
 
 ---
 
+## Project cadence (ai-transformation-io)
+
+**Two Maker + Checker pairs per day** (slow by design — editorial/human gates
+still dominate; no need for every-2-hour ticks).
+
+| Automation | Cron (UTC) | Approx. CEST (UTC+2) |
+|------------|------------|----------------------|
+| **Maker** | `0 6,18 * * *` | 08:00 · 20:00 |
+| **Checker** | `30 6,18 * * *` | 08:30 · 20:30 |
+
+Adjust times in the Cursor Automations UI if preferred; keep Checker ~30 minutes after Maker so IMPLEMENT PRs exist before REVIEW.
+
+---
+
 ## Maker automation
 
-**Trigger (suggested):** `0 */2 * * *` (every 2 hours at :00).  
-Slow on purpose — each tick costs tokens even on IDLE.
+**Trigger:** `0 6,18 * * *`
 
 **Agent Instruction (paste verbatim):**
 
@@ -24,7 +37,7 @@ You are the autopilot MAKER (Planner + Worker hats). You produce changes and ope
 
 ## Checker automation
 
-**Trigger (suggested):** `30 */2 * * *` (every 2 hours at :30).
+**Trigger:** `30 6,18 * * *`
 
 **Agent Instruction (paste verbatim):**
 
@@ -40,6 +53,12 @@ You are the autopilot CHECKER (Reviewer + Watchdog + Reporter hats). You verify,
 
 - Maker: push to main (for leases / REPLAN docs), create branches, open PRs.
 - Checker: push to main, merge PRs, run verify + optional prod smoke.
+
+## Repo / tools
+
+- Repository: `jackyckma/ai-transformation-io` · branch `main`
+- Enable: git, shell, `gh` (PR create/merge), network for verify + smoke
+- Do **not** enable browser/Playwright for default ticks
 
 ## Migration from many roles
 

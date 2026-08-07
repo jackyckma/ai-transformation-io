@@ -81,9 +81,9 @@ Load Zeabur agent skills when doing deploy/log/env operations.
 
 ## Adopted optional practices
 
-<!-- Optional practices for this project. Empty = none adopted yet.
-     - Tier E: .agents/instructions/agent-native-practices.md
-     - Cursor Autopilot (B5): cursor-autopilot — docs/autopilot/ scaffolds synced; Automations UI not enabled until founder opts in -->
+- **cursor-autopilot** (B5) — Maker/Checker via Cursor Automations; see `docs/autopilot/AT_ADOPTION.md`. Cadence: **2×/day**. Automations UI prompts live in `docs/autopilot/automations.md`.
+
+<!-- Tier E agent-native practices: not adopted yet — see agent-native-practices.md -->
 
 ## Documentation to read before non-trivial work
 

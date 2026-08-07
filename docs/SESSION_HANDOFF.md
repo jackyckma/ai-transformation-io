@@ -1,54 +1,52 @@
 # Session handoff
 
-**Date:** 2026-06-27  
+**Date:** 2026-08-07  
 **Branch:** `main`  
-**Latest commit:** `2d8d3e6` — Merge PR #14 (Wave 21 .org P1 polish)  
+**Latest commit:** methodology 1.3.0 + Autopilot adoption (see git log)  
 **Push status:** on `origin/main`
 
 ## Active task
 
-- **Roadmap:** Waves 11–21 shipped on `main`. **Next:** human ops (newsletter @ ~10 subs); Wave 20b credits when ≥50 users; Wave 20a archive deferred (B3).
-- **Founder decisions:** [FOUNDER_WAVE_DECISIONS.md](./FOUNDER_WAVE_DECISIONS.md) — all locked
+- **Ops:** Cursor Autopilot adopted (2×/day Maker/Checker) — `docs/autopilot/AT_ADOPTION.md`
+- **Roadmap:** Waves 11–21 shipped. Autopilot E-01/E-02; E-03 Wave 25 **proposed** pending D-001
+- **Founder decisions:** [FOUNDER_WAVE_DECISIONS.md](./FOUNDER_WAVE_DECISIONS.md); open Autopilot **D-001** in `docs/autopilot/decisions.json`
 
 ## Current status
 
 | Area | Status |
 |------|--------|
-| Wave 19 | ✅ PR #13 — editorial review + catalog + interaction read-back |
-| Wave 21 | ✅ PR #14 — More in Knowledge footer + Followed/Saved confirmation |
-| Prod catalog | ✅ `GET /api/v1/objects/catalog?site=org` returns 200 (deploy live) |
-| Orbita | Switch dedup to catalog (E2 locked) |
-| Build + tests | Wave 19: backend **70/70** · Wave 21: web-org build + typecheck ✅ |
+| Methodology | ✅ `1.3.0` pinned in `.agents/METHODOLOGY.lock` |
+| Autopilot | ✅ scaffolds + AT seed; Automations UI **create manually** |
+| Wave 19–21 | ✅ on `main` |
+| Prod catalog | ✅ `GET /api/v1/objects/catalog?site=org` |
 
 ## Pending decisions
 
-<!-- Decision briefs awaiting the founder — format in decision-authority.md.
-     Present grouped at sync points; move to Decisions Log once decided. -->
+- **D-001** — Wave 25 vs search API vs hygiene-only (`docs/autopilot/decisions.json`; `default_if_silent=C`, SLA 7 days)
 
 ## Loop log
 
-<!-- One row per autonomous-loop / Autopilot iteration — see autonomous-loop.md §3.
-     Leave empty when no loop ran. -->
-
 | # | Issue | Outcome | Commit | Verified by |
 |---|-------|---------|--------|-------------|
+| — | First Maker tick not yet run | — | — | — |
 
 ## Top priority next
 
-1. **Orbita** — adopt `objects/catalog` as primary dedup (prod live)
-2. **Founder** — `/editorial` Run agent review smoke + approve AT1b drafts
-3. **Newsletter pilot** — first send when ~10 subscribers (B1)
-4. **Wave 20b** — kickoff when ≥50 registered users
+1. **You** — create Maker + Checker Automations (`docs/autopilot/automations.md`)
+2. **You** — `/editorial` approve/reject (human)
+3. **Autopilot** — T-0001 first green merge
+4. **Newsletter** — first send when ~10 subscribers (B1)
 
 ## Key paths
 
 | Concern | Path |
 |---------|------|
-| Founder decisions | `docs/FOUNDER_WAVE_DECISIONS.md` |
-| Wave 21 | `docs/waves/wave21-ui-p1-org-polish.md` |
-| Orbita handoff | `~/Orbiter-AT-dogfood/state/STATUS.md` — **on user request only** (skill `orbiter-handoff`) |
+| Autopilot | `docs/autopilot/` |
+| Founder radar | `docs/FOUNDER_LANES.md` |
+| Orbita handoff | on-demand only — skill `orbiter-handoff` |
 
 ## Warnings
 
-- Editorial review skips without `MINIMAX_API_KEY` — by design
-- Zeabur may lag on `.org` frontend after PR #14 — hard refresh if UI missing
+- Editorial approve stays human; Autopilot must not publish content
+- Zeabur deploy can lag after Checker merge — WATCHDOG allows smoke delay
+- No feature-flag system yet — UI product changes prefer `needs_human` / decisions

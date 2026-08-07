@@ -9,6 +9,13 @@ customized_files:
   - .agents/instructions/project-guidelines.md
   - docs/AGENT_ENV.md
   - docs/SESSION_HANDOFF.md
+  - docs/autopilot/backlog.json
+  - docs/autopilot/roadmap.json
+  - docs/autopilot/decisions.json
+  - docs/autopilot/project-hooks.json
+  - docs/autopilot/automations.md
+  - docs/autopilot/planner-preferences.md
+  - docs/autopilot/AT_ADOPTION.md
   - scripts/agent-verify.sh
   - AGENTS.md
   - CLAUDE.md
@@ -21,8 +28,5 @@ customized_files:
   - .agents/skills/lane-web-org/SKILL.md
   - .agents/skills/lane-harvest/SKILL.md
 notes: >-
-  Synced 1.1.0 → 1.3.0 (via 1.2.0 agent-first maturity + 1.3.0 Cursor Autopilot scaffolds).
-  Framework-owned instructions replaced; hybrid entry points preserved Learned sections,
-  Zeabur IDs, Orbita/Orchestrate notes, Traditional Chinese quick rule, SITE_DESIGN_v2.
-  Autopilot docs/scripts added; Automations UI not enabled (optional practice gate empty).
-  Continual-learning instruction kept project-owned.
+  Synced 1.1.0 → 1.3.0. Autopilot adopted (cursor-autopilot): 2×/day cadence,
+  AT_ADOPTION.md, seeded roadmap/backlog/D-001, prod smoke hooks.

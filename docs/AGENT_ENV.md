@@ -15,9 +15,11 @@
 
 | Level | What | Command / URL |
 |-------|------|---------------|
-| L0 | Repo sanity | `git status` |
-| L1 | Static placeholder exists | `test -f public/index.html` |
-| L4 | Production smoke | `curl -sI https://ai-transformation.io` |
+| L0 | Typecheck monorepo | `pnpm typecheck` (default in `agent-verify.sh`) |
+| L1 | Backend unit tests | `pnpm --filter @ai-transformation/backend test` |
+| L4 | Production smoke | `curl` both sites — also `docs/autopilot/project-hooks.json` → `prod_smoke_cmd` |
+
+Autopilot Checker runs `./scripts/agent-verify.sh` via `scripts/autopilot/verify-all.mjs`.
 
 ## Models available (verified 2026-08-07)
 

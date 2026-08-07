@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 VERIFY_L0="${VERIFY_L0:-pnpm typecheck}"
-VERIFY_L1="${VERIFY_L1:-}"   # e.g. npm test
+VERIFY_L1="${VERIFY_L1:-pnpm --filter @ai-transformation/backend test}"
 
 echo "==> agent-verify (project: $ROOT)"
 
