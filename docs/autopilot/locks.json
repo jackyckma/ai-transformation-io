@@ -4,8 +4,8 @@
     "T-0001": {
       "by": "maker",
       "since": "2026-08-07T18:01:57Z",
-      "branch": null,
-      "pr": null
+      "branch": "cursor/autopilot-maker-action-5c73",
+      "pr": "https://github.com/jackyckma/ai-transformation-io/pull/15"
     }
   }
 }

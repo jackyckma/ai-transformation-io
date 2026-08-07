@@ -3,7 +3,9 @@
     "defaults": {
       "retry_budget": 2,
       "merge_gate": "green-only",
-      "base_acceptance": ["./scripts/agent-verify.sh"]
+      "base_acceptance": [
+        "./scripts/agent-verify.sh"
+      ]
     }
   },
   "tasks": [
@@ -12,7 +14,7 @@
       "lane": "docs",
       "phase": "bootstrap",
       "title": "Confirm Autopilot dispatcher runs on main",
-      "description": "Prove Autopilot scaffolds are wired. Do not change product code. Ensure docs/autopilot/playbook.md and scripts/autopilot/decide-next-action.mjs exist; run dispatcher for both lanes and confirm JSON action is returned (IMPLEMENT/REPLAN/IDLE or REVIEW/…). If already true on main, no code change — still open a PR that only updates task feedback via the playbook lease flow, or skip implement if verify passes with empty diff after documenting in feedback that scaffolds were already present (prefer: touch docs/autopilot/reports/.gitkeep only if needed for a minimal green PR).",
+      "description": "Prove Autopilot scaffolds are wired. Do not change product code. Ensure docs/autopilot/playbook.md and scripts/autopilot/decide-next-action.mjs exist; run dispatcher for both lanes and confirm JSON action is returned (IMPLEMENT/REPLAN/IDLE or REVIEW/\u2026). If already true on main, no code change \u2014 still open a PR that only updates task feedback via the playbook lease flow, or skip implement if verify passes with empty diff after documenting in feedback that scaffolds were already present (prefer: touch docs/autopilot/reports/.gitkeep only if needed for a minimal green PR).",
       "acceptance": [
         "test -f docs/autopilot/playbook.md",
         "test -f scripts/autopilot/decide-next-action.mjs",
@@ -22,11 +24,12 @@
       ],
       "deps": [],
       "flag": null,
-      "status": "in_progress",
+      "status": "in_review",
       "retries": 0,
       "feedback": [
         "First fuel for Maker/Checker. Prefer docs-only PR. After merge, REPLAN may seed T-0002+.",
-        "Maker lease acquired 2026-08-07T18:01:57Z on main."
+        "Maker lease acquired 2026-08-07T18:01:57Z on main.",
+        "IMPLEMENT complete 2026-08-07T18:03:02Z. Scaffolds already on main; PR adds reports/.gitkeep only. Acceptance green. PR #15."
       ]
     },
     {
@@ -39,7 +42,9 @@
         "rg -n \"search\" apps/backend/src/lanes/agent-protocol apps/web-io apps/web-org --glob '!**/node_modules/**' | head -5",
         "./scripts/agent-verify.sh"
       ],
-      "deps": ["T-0001"],
+      "deps": [
+        "T-0001"
+      ],
       "flag": null,
       "status": "blocked",
       "retries": 0,
