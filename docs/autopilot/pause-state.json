@@ -1,7 +1,7 @@
 {
   "_doc": "Kill-switch. paused=true → Maker IDLE. Checker only runs WATCHDOG recovery when by=deploy-watchdog; otherwise Checker IDLEs too.",
-  "paused": false,
-  "reason": null,
-  "since": null,
-  "by": null
+  "paused": true,
+  "reason": "Loop stalled completely: one Maker run on 2026-08-07T18:02 opened PR #15 (T-0001 bootstrap proof), and there has been no activity from either lane in the two days since. This is a DIFFERENT symptom from orbita / ai-business / ViOS, where the Maker kept working and only the Checker was silent — so when diagnosing, check whether BOTH Automations are firing here, not just the Checker. Paused mainly to make the state explicit while that is checked; the queue here is small so little is accumulating. TO RESUME: set paused=false. SEPARATE ITEM, unaffected by this pause: D-001 (Wave 25 Admin API vs search API vs hygiene-only) has default_if_silent=C and sla_days=7 from 2026-08-07, so it auto-applies C around 2026-08-14 unless the founder answers — a real choice being made by default.",
+  "since": "2026-08-09T19:20:00Z",
+  "by": "claude-hub-session"
 }
