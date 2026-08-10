@@ -1,9 +1,9 @@
 {
   "_doc": "Kill-switch. paused=true → Maker IDLE. Checker only runs WATCHDOG recovery when by=deploy-watchdog; otherwise Checker IDLEs too.",
-  "paused": false,
-  "reason": null,
-  "since": null,
-  "by": null,
+  "paused": true,
+  "reason": "Founder-initiated strategic review of market position (site is largely built; reassessing direction before more technical work). Pause holds until further notice.",
+  "since": "2026-08-10",
+  "by": "claude-hub-session",
   "_last_incident": {
     "resolved": "2026-08-10",
     "what": "Checker lane deadlocked 2026-08-07..09 across four repos. locks.json lease.pr held a full URL; the dispatcher did Number(lease.pr) → NaN, and NaN !== 15 is true, so the oldest open PR always looked superseded. decideChecker tests CLOSE_STALE before REVIEW, so every tick proposed closing a healthy PR; the Checker agent correctly refused at the playbook gate and stopped, never reaching REVIEW.",
